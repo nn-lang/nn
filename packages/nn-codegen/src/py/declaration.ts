@@ -1,5 +1,5 @@
-import { Declaration } from "nn-language";
-import { TypeChecker } from "nn-type-checker";
+import { Declaration } from "@nn-lang/nn-language";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 import { PySynthSettings } from ".";
 import { expressions } from "./expression";
 import { inits } from "./init";

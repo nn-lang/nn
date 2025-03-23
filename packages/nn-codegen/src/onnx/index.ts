@@ -1,7 +1,7 @@
 import { onnx } from "onnx-proto";
 
-import { SourceFile } from "nn-language";
-import { TypeChecker } from "nn-type-checker";
+import { SourceFile } from "@nn-lang/nn-language";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 import { declaration, ONNX_NN_DOMAIN, tensorShape } from "./node";
 

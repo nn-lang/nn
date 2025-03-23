@@ -5,9 +5,9 @@ import {
   CompletionParams,
 } from "vscode-languageserver/node";
 
-import { SourceFile } from "nn-language";
-import { TypeChecker } from "nn-type-checker";
-import { isDeclaration, nodeOnPosition } from "nn-language";
+import { SourceFile } from "@nn-lang/nn-language";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
+import { isDeclaration, nodeOnPosition } from "@nn-lang/nn-language";
 
 import { LspContext } from "../types";
 

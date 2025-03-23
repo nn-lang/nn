@@ -1,9 +1,9 @@
 import { Diagnostic } from "vscode-languageserver/node";
 import { URI } from "vscode-uri";
 
-import { SourceFile } from "nn-language";
+import { SourceFile } from "@nn-lang/nn-language";
 
-import { TypeChecker } from "nn-type-checker";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 import { LspContext } from "../types";
 import { ResourceMap } from "../utils/resourceMap";

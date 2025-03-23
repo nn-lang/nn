@@ -1,7 +1,7 @@
 import { inspect } from "util";
 
-import { SourceFile } from "nn-language";
-import { TypeChecker } from "nn-type-checker";
+import { SourceFile } from "@nn-lang/nn-language";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 const source = `
 BatchNorm[input](x: Tensor[input]): Tensor[input]

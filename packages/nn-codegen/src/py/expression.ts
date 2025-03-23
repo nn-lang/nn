@@ -1,7 +1,7 @@
 import { None, Option, Some } from "ts-features";
 
-import { CallExpression, Declaration, Expression, isAssignmentExpression, isCallExpression, isIdentifierExpression, isStringLiteralExpression, isTupleExpression, StringLiteralExpression } from "nn-language";
-import { TypeChecker } from "nn-type-checker";
+import { CallExpression, Declaration, Expression, isAssignmentExpression, isCallExpression, isIdentifierExpression, isStringLiteralExpression, isTupleExpression, StringLiteralExpression } from "@nn-lang/nn-language";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 import { PySynthSettings } from ".";
 

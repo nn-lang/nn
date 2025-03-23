@@ -3,10 +3,10 @@ import * as path from "path";
 
 import { Command } from "commander";
 
-import { SourceFile } from "nn-language";
-import { TypeChecker } from "nn-type-checker";
-import { onnx, py } from "nn-codegen";
-import { analyze } from "nn-analyzer";
+import { SourceFile } from "@nn-lang/nn-language";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
+import { onnx, py } from "@nn-lang/nn-codegen";
+import { analyze } from "@nn-lang/nn-analyzer";
 
 import { exit } from "process";
 

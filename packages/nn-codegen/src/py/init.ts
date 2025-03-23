@@ -1,5 +1,5 @@
-import { CallExpression, Declaration, isCallExpression, StringLiteralExpression, travel } from "nn-language";
-import { SizeType, TypeChecker } from "nn-type-checker";
+import { CallExpression, Declaration, isCallExpression, StringLiteralExpression, travel } from "@nn-lang/nn-language";
+import { SizeType, TypeChecker } from "@nn-lang/nn-type-checker";
 
 import { PySynthSettings } from ".";
 

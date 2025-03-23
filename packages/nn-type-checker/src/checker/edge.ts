@@ -1,5 +1,5 @@
 import { None, Option, Some } from "ts-features";
-import { CallExpression, isAssignmentExpression, isCallExpression, isStringLiteralExpression, isTupleExpression, travel } from "nn-language";
+import { CallExpression, isAssignmentExpression, isCallExpression, isStringLiteralExpression, isTupleExpression, travel } from "@nn-lang/nn-language";
 
 import { DeclarationScope, Flow, Size } from "../resolver";
 import { SizeType, Type, TypeChecker, Vertex } from "..";

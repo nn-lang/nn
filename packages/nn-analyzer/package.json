@@ -1,10 +1,13 @@
 {
-  "name": "nn-analyzer",
+  "name": "@nn-lang/nn-analyzer",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "build": "yarn run -T swc ./src -d ./out",
     "clean": "rm -rf ./out"
+  },
+  "dependencies": {
+    "@nn-lang/nn-language": "workspace:^",
+    "@nn-lang/nn-type-checker": "workspace:^"
   },
   "main": "out/src/index.js",
   "typings": "src/index.ts"

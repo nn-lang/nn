@@ -1,7 +1,6 @@
 {
-  "name": "nn-language-server",
+  "name": "@nn-lang/nn-language-server",
   "version": "0.0.1",
-  "private": true,
   "engines": {
     "vscode": "^1.22.0"
   },
@@ -32,9 +31,9 @@
     "clean": "rm -rf ./out"
   },
   "dependencies": {
+    "@nn-lang/nn-language": "workspace:^",
+    "@nn-lang/nn-type-checker": "workspace:^",
     "commander": "^12.1.0",
-    "nn-language": "workspace:^",
-    "nn-type-checker": "workspace:^",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12",

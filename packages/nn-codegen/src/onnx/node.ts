@@ -10,8 +10,8 @@ import {
   isIdentifierExpression,
   isStringLiteralExpression,
   isTupleExpression,
-} from "nn-language";
-import { Flow, Polynomial, Size, TypeChecker } from "nn-type-checker";
+} from "@nn-lang/nn-language";
+import { Flow, Polynomial, Size, TypeChecker } from "@nn-lang/nn-type-checker";
 import { DEFAULT_OPSET_IMPORTS } from ".";
 
 export const ONNX_NN_DOMAIN = new onnx.OperatorSetIdProto({

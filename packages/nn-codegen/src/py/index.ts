@@ -1,5 +1,5 @@
-import { SourceFile } from "nn-language"
-import { TypeChecker } from "nn-type-checker"
+import { SourceFile } from "@nn-lang/nn-language"
+import { TypeChecker } from "@nn-lang/nn-type-checker"
 
 import { declaration } from "./declaration"
 

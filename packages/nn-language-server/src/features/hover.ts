@@ -17,9 +17,9 @@ import {
   Node,
   nodeOnPosition,
   SourceFile,
-} from "nn-language";
+} from "@nn-lang/nn-language";
 
-import { Type, TypeChecker } from "nn-type-checker";
+import { Type, TypeChecker } from "@nn-lang/nn-type-checker";
 
 import { MarkdownString } from "../utils";
 

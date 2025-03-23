@@ -1,14 +1,13 @@
 {
-  "name": "nn-codegen",
+  "name": "@nn-lang/nn-codegen",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "build": "yarn run -T swc ./src -d ./out",
     "clean": "rm -rf ./out"
   },
   "dependencies": {
-    "nn-language": "workspace:^",
-    "nn-type-checker": "workspace:^",
+    "@nn-lang/nn-language": "workspace:^",
+    "@nn-lang/nn-type-checker": "workspace:^",
     "onnx-proto": "^8.0.1"
   },
   "typings": "src/index.ts",

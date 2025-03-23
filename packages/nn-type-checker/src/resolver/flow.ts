@@ -5,7 +5,7 @@ import {
   isCallExpression,
   travel,
   TypeNode,
-} from "nn-language";
+} from "@nn-lang/nn-language";
 
 import { DeclarationScope, FileScope } from "./scope";
 import { Size, TypeChecker, Value } from "..";

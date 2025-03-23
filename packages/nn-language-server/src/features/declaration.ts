@@ -11,9 +11,9 @@ import {
   isIdentifierSizeNode,
   nodeOnPosition,
   SourceFile,
-} from "nn-language";
+} from "@nn-lang/nn-language";
 
-import { TypeChecker } from "nn-type-checker";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 export async function declaration(
   params: DeclarationParams,

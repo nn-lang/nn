@@ -1,4 +1,4 @@
-import type { Declaration } from "nn-language";
+import type { Declaration } from "@nn-lang/nn-language";
 
 import { Value } from "./value";
 import { Size } from "./size";

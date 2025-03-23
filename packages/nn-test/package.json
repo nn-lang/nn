@@ -1,5 +1,5 @@
 {
-  "name": "nn-test",
+  "name": "@nn-lang/nn-test",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -12,7 +12,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "nn-language": "workspace:^",
-    "nn-type-checker": "workspace:^"
+    "@nn-lang/nn-language": "workspace:^",
+    "@nn-lang/nn-type-checker": "workspace:^"
   }
 }

@@ -1,5 +1,5 @@
-import { Declaration, isCallExpression, travel } from "nn-language";
-import { Type, TypeChecker, Polynomial, Flow } from "nn-type-checker";
+import { isCallExpression, travel } from "@nn-lang/nn-language";
+import { Flow, Polynomial, TypeChecker } from "@nn-lang/nn-type-checker";
 
 export interface AnalyzerTarget {
   declaration: string;
@@ -23,7 +23,7 @@ export function analyze(
 function getPolynomialForFlow(
   checker: TypeChecker,
   flow: Flow,
-  settings: AnalyzerSettings
+  _settings: AnalyzerSettings
 ) {
   const calls = travel(flow.declaration.node, isCallExpression);
 

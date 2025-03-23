@@ -1,4 +1,4 @@
-import { SourceFile } from "nn-language";
+import { SourceFile } from "@nn-lang/nn-language";
 
 import { Scope } from "./scope";
 import { Flow, Size, TypeChecker, Value } from "..";

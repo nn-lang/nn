@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import { SourceFile } from 'nn-language';
-import { TypeChecker } from "nn-type-checker";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 const file = fs.readdirSync(path.join(__dirname, 'cases'));
 const sources = file.filter((f) => f.endsWith('.nn'));

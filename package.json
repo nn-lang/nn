@@ -1,5 +1,5 @@
 {
-  "name": "nn",
+  "name": "@nn-lang/nn",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -15,21 +15,36 @@
     "treesitter": "yarn workspace nn-tree-sitter run tree-sitter",
     "lint": "yarn eslint .",
     "lint:fix": "yarn eslint . --fix",
-    "nn": "node --enable-source-maps out/src/nn.js"
+    "nn": "node --enable-source-maps out/src/nn.js",
+    "publish": "release-it"
   },
   "dependencies": {
+    "@nn-lang/nn-analyzer": "workspace:^",
+    "@nn-lang/nn-codegen": "workspace:^",
+    "@nn-lang/nn-language": "workspace:^",
+    "@nn-lang/nn-type-checker": "workspace:^",
     "ts-features": "^1.3.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
+    "@release-it-plugins/workspaces": "^4.2.0",
     "@swc/cli": "^0.5.2",
     "@swc/core": "^1.10.0",
     "@types/node": "^22.10.1",
     "eslint": "^9.16.0",
     "globals": "^15.11.0",
+    "release-it": "^17.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.17.0"
+  },
+  "release-it": {
+    "plugins": {
+      "@release-it-plugins/workspaces": true
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "packageManager": "yarn@4.6.0",
   "workspaces": [

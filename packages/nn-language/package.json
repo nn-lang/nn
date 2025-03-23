@@ -1,9 +1,8 @@
 {
-  "name": "nn-language",
+  "name": "@nn-lang/nn-language",
   "version": "0.0.1",
-  "private": true,
   "dependencies": {
-    "nn-tree-sitter": "workspace:^"
+    "@nn-lang/nn-tree-sitter": "workspace:^"
   },
   "scripts": {
     "build": "yarn run -T swc . -d ./out",

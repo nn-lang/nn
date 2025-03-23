@@ -1,5 +1,5 @@
 import { None, Option, Some } from "ts-features";
-import { isAssignmentExpression, isCallExpression, isIdentifierExpression, Node, travel } from "nn-language";
+import { isAssignmentExpression, isCallExpression, isIdentifierExpression, Node, travel } from "@nn-lang/nn-language";
 
 import { Type } from "./type";
 import { DeclarationScope, Value } from "../resolver";
