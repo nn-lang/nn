@@ -2,11 +2,22 @@
   "name": "@nn-lang/nn-type-checker",
   "version": "0.1.1",
   "dependencies": {
-    "@nn-lang/nn-language": "workspace:^"
+    "@nn-lang/nn-language": "0.1.1"
   },
   "scripts": {
     "build": "yarn run -T swc ./src -d ./out",
     "clean": "rm -rf ./out"
+  },
+  "release-it": {
+    "git": false,
+    "@release-it/bumper": {
+      "out": {
+        "file": "package.json",
+        "path": [
+          "dependencies.@nn-lang/nn-language"
+        ]
+      }
+    }
   },
   "main": "out/src/index.js",
   "typings": "src/index.ts"

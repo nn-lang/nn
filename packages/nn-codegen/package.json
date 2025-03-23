@@ -10,6 +10,9 @@
     "@nn-lang/nn-type-checker": "workspace:^",
     "onnx-proto": "^8.0.1"
   },
+  "release-it": {
+    "git": false
+  },
   "typings": "src/index.ts",
   "main": "out/src/index.js"
 }

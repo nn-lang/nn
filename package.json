@@ -16,7 +16,8 @@
     "lint": "yarn eslint .",
     "lint:fix": "yarn eslint . --fix",
     "nn": "node --enable-source-maps out/src/nn.js",
-    "publish": "release-it"
+    "publish": "release-it",
+    "release": "release-it"
   },
   "dependencies": {
     "@nn-lang/nn-analyzer": "workspace:^",
@@ -39,9 +40,17 @@
     "typescript-eslint": "^8.17.0"
   },
   "release-it": {
+    "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+    "github": {
+      "release": true
+    },
     "plugins": {
       "@release-it-plugins/workspaces": true
-    }
+    },
+    "git": {
+      "requireCleanWorkingDir": false
+    },
+    "npm": false
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

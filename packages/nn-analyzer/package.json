@@ -9,6 +9,9 @@
     "@nn-lang/nn-language": "workspace:^",
     "@nn-lang/nn-type-checker": "workspace:^"
   },
+  "release-it": {
+    "git": false
+  },
   "main": "out/src/index.js",
   "typings": "src/index.ts"
 }

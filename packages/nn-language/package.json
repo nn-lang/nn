@@ -8,6 +8,9 @@
     "build": "yarn run -T swc . -d ./out",
     "clean": "rm -rf ./out"
   },
+  "release-it": {
+    "git": false
+  },
   "main": "out/src/index.js",
   "typings": "src/index.ts"
 }

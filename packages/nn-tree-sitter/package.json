@@ -29,6 +29,9 @@
     "build:full": "yarn clean || tree-sitter init && tree-sitter generate && node-gyp-build",
     "postinstall": "yarn build"
   },
+  "release-it": {
+    "git": false
+  },
   "main": "bindings/node/index.js",
   "types": "bindings/node",
   "typings": "bindings/node/index.d.ts",
