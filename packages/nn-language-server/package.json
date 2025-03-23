@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-language-server",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.22.0"
   },

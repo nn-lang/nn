@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-language",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "dependencies": {
     "@nn-lang/nn-tree-sitter": "workspace:^"
   },
