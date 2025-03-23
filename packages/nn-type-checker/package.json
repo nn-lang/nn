@@ -1,8 +1,8 @@
 {
   "name": "@nn-lang/nn-type-checker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "dependencies": {
-    "@nn-lang/nn-language": "0.1.1"
+    "@nn-lang/nn-language": "0.1.2"
   },
   "scripts": {
     "build": "yarn run -T swc ./src -d ./out",
