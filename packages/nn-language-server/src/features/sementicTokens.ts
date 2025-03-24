@@ -5,7 +5,7 @@ import {
   isCallExpression,
   SourceFile,
   travel,
-} from 'nn-language'
+} from '@nn-lang/nn-language'
 
 export function semanticTokens(params: DocumentSymbolParams, context: LspContext): SemanticTokens {
   const document = context.documents.get(params.textDocument.uri);

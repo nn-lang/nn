@@ -61,12 +61,25 @@ class GetErrRequest {
   }
 }
 
-export function openTextDocument(params: DidOpenTextDocumentParams, context: LspContext): void {
+export function openTextDocument(_params: DidOpenTextDocumentParams, _context: LspContext): void {
   // TODO
 }
 
 export function onDidCloseTextDocument(params: DidCloseTextDocumentParams, context: LspContext): void {
-  // TODO
+  pendingDiagnostics.delete(URI.parse(params.textDocument.uri));
+
+  if (pendingErr) {
+    pendingErr.cancel();
+    pendingErr = undefined;
+  }
+
+  const document = context.documents.get(params.textDocument.uri);
+  if (document) {
+    context.client.sendDiagnostics({
+      uri: params.textDocument.uri,
+      diagnostics: [],
+    });
+  }
 }
 
 export function onDidChangeTextDocument(params: TextDocumentChangeEvent<TextDocument>, context: LspContext): void {

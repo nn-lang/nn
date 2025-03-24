@@ -23,7 +23,7 @@ export async function initialize(params: InitializeParams, context: Partial<LspC
       hoverProvider: true,
       // inlayHintProvider: true,
       // linkedEditingRangeProvider: true,
-      // renameProvider: true,
+      renameProvider: true,
       // referencesProvider: true,
       // selectionRangeProvider: true,
       // signatureHelpProvider: {},
