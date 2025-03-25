@@ -11,9 +11,10 @@ import {
 import { initialize } from './features/initialize';
 import { completion } from './features/completion';
 import { hover } from './features/hover';
-import { semanticTokens } from './features/sementicTokens';
+import { semanticTokens } from './features/sementic-tokens';
 import { declaration } from './features/declaration';
 import { rename } from './features/rename';
+import { documentSymbol } from './features/document-symbol';
 
 import { LspContext } from './types';
 import { LspClientLogger } from './utils/Logger';
@@ -45,6 +46,7 @@ export function createLspConnection(options: LspConnectionOptions) {
   connection.onDeclaration((params, token) => declaration(params, context as LspContext, token))
   connection.onDefinition((params, token) => declaration(params, context as LspContext, token))
   connection.onRenameRequest((params, token) => rename(params, context as LspContext, token))
+  connection.onDocumentSymbol((params, token) => documentSymbol(params, context as LspContext, token))
 
   connection.languages.semanticTokens.on((params) => semanticTokens(params, context as LspContext))
 

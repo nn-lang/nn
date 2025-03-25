@@ -18,7 +18,7 @@ export async function initialize(params: InitializeParams, context: Partial<LspC
       // documentFormattingProvider: true,
       // documentRangeFormattingProvider: true,
       // documentHighlightProvider: true,
-      // documentSymbolProvider: true,
+      documentSymbolProvider: true,
       executeCommandProvider: { commands: [] },
       hoverProvider: true,
       // inlayHintProvider: true,
