@@ -1056,22 +1056,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@nn-lang/nn-language-server@workspace:packages/nn-language-server":
-  version: 0.0.0-use.local
-  resolution: "@nn-lang/nn-language-server@workspace:packages/nn-language-server"
-  dependencies:
-    "@nn-lang/nn-language": "workspace:^"
-    "@nn-lang/nn-type-checker": "workspace:^"
-    "@types/vscode": "npm:^1.93.0"
-    commander: "npm:^12.1.0"
-    vscode-languageclient: "npm:^9.0.1"
-    vscode-languageserver: "npm:^9.0.1"
-    vscode-languageserver-textdocument: "npm:^1.0.12"
-    vscode-uri: "npm:^3.0.8"
-  languageName: unknown
-  linkType: soft
-
-"@nn-lang/nn-language@workspace:^, @nn-lang/nn-language@workspace:packages/nn-language":
+"@nn-lang/nn-language@npm:0.1.3, @nn-lang/nn-language@workspace:^, @nn-lang/nn-language@workspace:packages/nn-language":
   version: 0.0.0-use.local
   resolution: "@nn-lang/nn-language@workspace:packages/nn-language"
   dependencies:
@@ -1112,7 +1097,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@nn-lang/nn-type-checker@workspace:packages/nn-type-checker"
   dependencies:
-    "@nn-lang/nn-language": "workspace:^"
+    "@nn-lang/nn-language": "npm:0.1.3"
   languageName: unknown
   linkType: soft
 
@@ -5592,6 +5577,21 @@ __metadata:
   checksum: 10c0/9faec009b8b403efbc407f45306d07de5cc58e09df5b00bdd55b01384cd18b0fd29a97aef6915428ba3b5abb0a5c132c3507468c0c3c101e8d737c1337386786
   languageName: node
   linkType: hard
+
+"nn@workspace:packages/nn-language-server":
+  version: 0.0.0-use.local
+  resolution: "nn@workspace:packages/nn-language-server"
+  dependencies:
+    "@nn-lang/nn-language": "workspace:^"
+    "@nn-lang/nn-type-checker": "workspace:^"
+    "@types/vscode": "npm:^1.93.0"
+    commander: "npm:^12.1.0"
+    vscode-languageclient: "npm:^9.0.1"
+    vscode-languageserver: "npm:^9.0.1"
+    vscode-languageserver-textdocument: "npm:^1.0.12"
+    vscode-uri: "npm:^3.0.8"
+  languageName: unknown
+  linkType: soft
 
 "node-abi@npm:^3.3.0":
   version: 3.68.0
