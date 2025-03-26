@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-type-checker",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "dependencies": {
     "@nn-lang/nn-language": "workspace:^"
   },

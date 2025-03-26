@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-tree-sitter",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "dependencies": {
     "node-gyp-build": "^4.8.1",
     "tree-sitter": "^0.22.1",
@@ -35,10 +35,11 @@
   "files": [
     "grammar.js",
     "binding.gyp",
+    "tree-sitter.json",
     "prebuilds/**",
     "bindings/node/*",
     "queries/*",
     "src/**",
-    "*.wasm"
+    "scripts/**"
   ]
 }

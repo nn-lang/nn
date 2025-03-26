@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-analyzer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "scripts": {
     "build": "yarn run -T swc ./src -d ./out",
     "clean": "rm -rf ./out"
