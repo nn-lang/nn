@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-tree-sitter",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "dependencies": {
     "node-gyp-build": "^4.8.1",
     "tree-sitter": "^0.22.1",
@@ -28,9 +28,6 @@
     "build": "yarn hash-compare || yarn build:full && yarn hash-update",
     "build:full": "yarn clean || tree-sitter init && tree-sitter generate && node-gyp-build",
     "postinstall": "yarn build"
-  },
-  "release-it": {
-    "git": false
   },
   "main": "bindings/node/index.js",
   "types": "bindings/node",

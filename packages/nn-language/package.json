@@ -1,15 +1,12 @@
 {
   "name": "@nn-lang/nn-language",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "dependencies": {
     "@nn-lang/nn-tree-sitter": "workspace:^"
   },
   "scripts": {
     "build": "yarn run -T swc . -d ./out",
     "clean": "rm -rf ./out"
-  },
-  "release-it": {
-    "git": false
   },
   "main": "out/src/index.js",
   "typings": "src/index.ts"
