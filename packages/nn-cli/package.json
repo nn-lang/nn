@@ -1,14 +1,16 @@
 {
-  "name": "@nn-lang/nn-analyzer",
-  "version": "0.1.7",
+  "name": "@nn-lang/nn-cli",
+  "version": "0.1.6",
   "scripts": {
     "build": "yarn run -T swc ./src -d ./out",
     "clean": "rm -rf ./out"
   },
   "dependencies": {
+    "@nn-lang/nn-analyzer": "workspace:^",
+    "@nn-lang/nn-codegen": "workspace:^",
     "@nn-lang/nn-language": "workspace:^",
+    "@nn-lang/nn-tree-sitter": "workspace:^",
     "@nn-lang/nn-type-checker": "workspace:^"
   },
-  "main": "out/src/index.js",
-  "typings": "src/index.ts"
+  "bin": "out/src/index.js"
 }

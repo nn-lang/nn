@@ -1,9 +1,8 @@
-import Parser from "tree-sitter";
+import type { SyntaxNode } from "tree-sitter";
 
 import { Declaration } from "./ast";
 import { Diagnostic } from "./types";
 import { toPosition } from "./utils";
-import { parser } from "./treesitter";
 import { convertDeclaration } from "./convert";
 import { Node, NodeContext } from "./node";
 
@@ -11,7 +10,7 @@ export interface SourceFile {
   path: string;
   content: string;
 
-  oldTree: Parser.Tree;
+  oldTree: any;
   tree: Declaration[];
 
   diagnostics: Diagnostic[];
@@ -21,12 +20,16 @@ export interface SourceFile {
   };
 }
 
+export interface Parser {
+  parse(content: string, old?: any | null): any;
+}
+
 export namespace SourceFile {
-  function getErrorNodes(root: Parser.SyntaxNode): Parser.SyntaxNode[] {
+  function getErrorNodes(root: SyntaxNode): SyntaxNode[] {
     const travel = (
-      node: Parser.SyntaxNode,
-      acc: Parser.SyntaxNode[]
-    ): Parser.SyntaxNode[] => {
+      node: SyntaxNode,
+      acc: SyntaxNode[]
+    ): SyntaxNode[] => {
       if (node.isError) {
         acc.push(node);
         return acc;
@@ -42,7 +45,7 @@ export namespace SourceFile {
     return travel(root, []);
   }
 
-  function getMessageForErrorNode(node: Parser.SyntaxNode): string {
+  function getMessageForErrorNode(node: SyntaxNode): string {
     const child = node.child(0);
 
     if (child && child.type !== "ERROR") {
@@ -55,6 +58,7 @@ export namespace SourceFile {
   export function parse(
     content: string,
     path: string,
+    parser: Parser,
     old?: SourceFile
   ): SourceFile {
     const parse = parser.parse(content, old?.oldTree);
@@ -78,15 +82,15 @@ export namespace SourceFile {
     }));
 
     result.tree = parse.rootNode.children
-      .filter((node) => node.type === "declaration")
-      .map((declNode) => convertDeclaration(declNode, result));
+      .filter((node: any) => node.type === "declaration")
+      .map((declNode: any) => convertDeclaration(declNode, result));
 
     return result;
   }
 }
 
-export * from "./utils";
-export * from "./types";
 export * from "./ast";
 export * from "./ast-is";
 export * from "./node";
+export * from "./types";
+export * from "./utils";

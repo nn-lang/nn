@@ -21,13 +21,14 @@
       }
     ],
     "links": {
-      "repository": "https://github.com/tree-sitter/tree-sitter-nn"
+      "repository": "https://github.com/nn-lang/nn/tree/main/packages/nn-tree-sitter"
     }
   },
   "bindings": {
     "c": false,
     "go": false,
     "node": true,
+    "wasm": true,
     "python": false,
     "rust": false,
     "swift": false

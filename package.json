@@ -9,7 +9,7 @@
   "private": true,
   "bin": "out/src/nn.js",
   "scripts": {
-    "test": "yarn workspace nn-test test",
+    "test": "yarn workspace @nn-lang/nn-test test",
     "build": "yarn workspaces foreach --all --parallel run build && yarn build:cli",
     "build:cli": "yarn swc src -d out",
     "clean": "yarn workspaces foreach --all --parallel run clean",
@@ -21,10 +21,7 @@
     "bump:patch": "yarn workspaces foreach -Apit --no-private version patch"
   },
   "dependencies": {
-    "@nn-lang/nn-analyzer": "workspace:^",
-    "@nn-lang/nn-codegen": "workspace:^",
-    "@nn-lang/nn-language": "workspace:^",
-    "@nn-lang/nn-type-checker": "workspace:^",
+    "@nn-lang/nn-cli": "workspace:^",
     "ts-features": "^1.3.5"
   },
   "devDependencies": {
@@ -41,7 +38,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "yarn@4.8.0",
   "workspaces": [
     "packages/*"
   ]

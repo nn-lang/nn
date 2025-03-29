@@ -1,4 +1,4 @@
-import { SizeNode } from 'nn-language';
+import { SizeNode } from '@nn-lang/nn-language';
 
 import { DeclarationScope, Size } from '../resolver';
 import { Polynomial } from './polynomial';

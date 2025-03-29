@@ -1,13 +1,13 @@
 {
   "name": "@nn-lang/nn-language",
-  "version": "0.1.6",
-  "dependencies": {
-    "@nn-lang/nn-tree-sitter": "workspace:^"
-  },
+  "version": "0.1.9",
   "scripts": {
     "build": "yarn run -T swc . -d ./out",
     "clean": "rm -rf ./out"
   },
   "main": "out/src/index.js",
-  "typings": "src/index.ts"
+  "typings": "src/index.ts",
+  "dependencies": {
+    "tree-sitter": "^0.22.4"
+  }
 }

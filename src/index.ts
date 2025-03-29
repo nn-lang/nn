@@ -1,7 +1,10 @@
 import { inspect } from "util";
+import Parser from "tree-sitter";
 
 import { SourceFile } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
+
+import language from "@nn-lang/nn-tree-sitter/node";
 
 const source = `
 BatchNorm[input](x: Tensor[input]): Tensor[input]
@@ -73,18 +76,25 @@ UNet[Channel](x: Tensor[H, W, C]) =
   |> UNetDecoder[Channel * 2](s2)
   |> UNetDecoder[Channel](s1)
 
-`
+`;
 
-const result = SourceFile.parse(source, 'Linear.nn')
-const context = TypeChecker.check(result)
+(async () => {
+  const parser = new Parser()
+  parser.setLanguage(language as any)
 
-console.log(
-  inspect(
-    context.scope.flows['Conv2D']['return'],
-    { depth: 3 }
-  ),
-  inspect(
-    context.scope.flows['Conv2D']['returnType'],
-    { depth: 3 }
+  const result = SourceFile.parse(source, 'Linear.nn', parser as any)
+  const context = TypeChecker.check(result)
+
+  console.log(context.diagnostics)
+
+  console.log(
+    inspect(
+      context.scope.flows['Conv2D']['return'],
+      { depth: 3 }
+    ),
+    inspect(
+      context.scope.flows['Conv2D']['returnType'],
+      { depth: 3 }
+    )
   )
-)
+})()

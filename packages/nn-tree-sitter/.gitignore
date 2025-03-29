@@ -3,7 +3,8 @@ out
 # tree-sitter build output
 
 build
-bindings
+bindings/node
+tree-sitter-nn.wasm
 
 # tree-sitter
 

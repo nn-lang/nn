@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "NodeNext",
 
 		"target": "es2020",
 		"lib": ["es2020"],
@@ -10,7 +10,7 @@
     "noEmit": true,
 
     "resolveJsonModule": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "skipLibCheck": true,
 
 		"rootDir": ".",
