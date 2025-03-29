@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-language",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "scripts": {
     "build": "yarn run -T swc . -d ./out",
     "clean": "rm -rf ./out"

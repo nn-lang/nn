@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-tree-sitter",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "dependencies": {
     "node-addon-api": "^8.3.1",
     "node-gyp-build": "^4.8.1",
