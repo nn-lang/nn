@@ -1,15 +1,13 @@
 {
   "name": "@nn-lang/nn-tree-sitter",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "dependencies": {
     "node-addon-api": "^8.3.1",
     "node-gyp-build": "^4.8.1",
-    "tree-sitter": "^0.22.1",
-    "tree-sitter-cli": "^0.24.4"
+    "tree-sitter-cli": "^0.25.3"
   },
   "peerDependencies": {
-    "node-gyp-build": "^4.8.1",
-    "tree-sitter": "^0.22.1"
+    "node-gyp-build": "^4.8.1"
   },
   "peerDependenciesMeta": {
     "tree_sitter": {

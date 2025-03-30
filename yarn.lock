@@ -1029,6 +1029,7 @@ __metadata:
     "@nn-lang/nn-language": "workspace:^"
     "@nn-lang/nn-tree-sitter": "workspace:^"
     "@nn-lang/nn-type-checker": "workspace:^"
+    tree-sitter: "npm:^0.22.4"
   bin:
     nn-cli: out/src/index.js
   languageName: unknown
@@ -1048,7 +1049,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@nn-lang/nn-language@workspace:packages/nn-language"
   dependencies:
-    tree-sitter: "npm:^0.22.4"
+    web-tree-sitter: "npm:^0.25.3"
   languageName: unknown
   linkType: soft
 
@@ -1061,6 +1062,7 @@ __metadata:
     "@nn-lang/nn-type-checker": "workspace:^"
     "@types/jest": "npm:^29.5.13"
     jest: "npm:^29.7.0"
+    tree-sitter: "npm:^0.22.4"
     ts-jest: "npm:^29.2.5"
     typescript: "npm:^5.7.2"
   languageName: unknown
@@ -1073,11 +1075,9 @@ __metadata:
     node-addon-api: "npm:^8.3.1"
     node-gyp-build: "npm:^4.8.1"
     prebuildify: "npm:^6.0.1"
-    tree-sitter: "npm:^0.22.1"
-    tree-sitter-cli: "npm:^0.24.4"
+    tree-sitter-cli: "npm:^0.25.3"
   peerDependencies:
     node-gyp-build: ^4.8.1
-    tree-sitter: ^0.22.1
   peerDependenciesMeta:
     tree_sitter:
       optional: true
@@ -5439,16 +5439,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tree-sitter-cli@npm:^0.24.4":
-  version: 0.24.7
-  resolution: "tree-sitter-cli@npm:0.24.7"
+"tree-sitter-cli@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "tree-sitter-cli@npm:0.25.3"
   bin:
     tree-sitter: cli.js
-  checksum: 10c0/8b2f0db5781a1f05a08a54bc360b7aaa815c5cb5defbff0252d0ff407da3a35032a867c63d11dd47ab5096bbb63f4ec254dc675c6855ebfef655202e8ff427a8
+  checksum: 10c0/b82e020f1cdacbab7f4e52838e1c66afb2f7007ae50c5bb27394cd84058818f64af4121adafd001e50aafb374779639550f7381b5db02802e6fff2a3728d3596
   languageName: node
   linkType: hard
 
-"tree-sitter@npm:^0.22.1, tree-sitter@npm:^0.22.4":
+"tree-sitter@npm:^0.22.4":
   version: 0.22.4
   resolution: "tree-sitter@npm:0.22.4"
   dependencies:
@@ -5711,6 +5711,13 @@ __metadata:
   dependencies:
     makeerror: "npm:1.0.12"
   checksum: 10c0/a17e037bccd3ca8a25a80cb850903facdfed0de4864bd8728f1782370715d679fa72e0a0f5da7c1c1379365159901e5935f35be531229da53bbfc0efdabdb48e
+  languageName: node
+  linkType: hard
+
+"web-tree-sitter@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "web-tree-sitter@npm:0.25.3"
+  checksum: 10c0/1f39d60d44b001cff78179d33b365cfa829223d18639b5abbbc48bc7816f2d19de35c86c473c809a01aa59fcfea6d0e5f136a026404afcdcb98287337a306c75
   languageName: node
   linkType: hard
 

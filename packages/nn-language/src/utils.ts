@@ -1,4 +1,4 @@
-import { SyntaxNode } from "tree-sitter";
+import { Node as SyntaxNode } from "web-tree-sitter";
 
 import { Node } from "./node";
 import { Position } from "./types";

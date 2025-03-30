@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-language",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "scripts": {
     "build": "yarn run -T swc . -d ./out",
     "clean": "rm -rf ./out"
@@ -8,6 +8,6 @@
   "main": "out/src/index.js",
   "typings": "src/index.ts",
   "dependencies": {
-    "tree-sitter": "^0.22.4"
+    "web-tree-sitter": "^0.25.3"
   }
 }

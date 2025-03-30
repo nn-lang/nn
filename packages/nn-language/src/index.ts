@@ -1,4 +1,4 @@
-import type { SyntaxNode } from "tree-sitter";
+import type { Node as SyntaxNode } from "web-tree-sitter";
 
 import { Declaration } from "./ast";
 import { Diagnostic } from "./types";
@@ -36,7 +36,7 @@ export namespace SourceFile {
       }
 
       for (const child of node.children) {
-        travel(child, acc);
+        child && travel(child, acc);
       }
 
       return acc;

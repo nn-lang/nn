@@ -1,29 +1,27 @@
-import Parser from "tree-sitter";
+import { Node as SyntaxNode } from "web-tree-sitter";
 
 import {
   ArgumentList,
+  ArithmeticSizeNode,
   AssignmentExpression,
   CallExpression,
   Declaration,
   Expression,
   Identifier,
   IdentifierExpression,
+  IdentifierSizeNode,
+  NumberSizeNode,
   SizeDeclList,
   SizeNode,
   StringLiteralExpression,
   TupleExpression,
   TypeNode,
 } from "./ast";
-import {
-  ArithmeticSizeNode,
-  IdentifierSizeNode,
-  NumberSizeNode,
-  SourceFile,
-} from ".";
 import { createNode } from "./node";
+import { SourceFile } from "./index";
 
 function convertIdentifier(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   _context: SourceFile
 ): Identifier {
   if (!node) {
@@ -34,7 +32,7 @@ function convertIdentifier(
 }
 
 function convertSizeDeclList(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): SizeDeclList {
   return node
@@ -52,17 +50,19 @@ function convertSizeDeclList(
 }
 
 function convertArgumentList(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): ArgumentList {
   return node
     ? createNode(
         "ArgumentList",
         {
-          args: node.namedChildren.map((child) => ({
-            ident: convertIdentifier(child.child(0), context),
-            valueType: convertTypeNode(child.child(2), context),
-          })),
+          args: node.namedChildren
+            .filter((child) => child !== null)
+            .map((child) => ({
+              ident: convertIdentifier(child.child(0), context),
+              valueType: convertTypeNode(child.child(2), context),
+            })),
         },
         node,
         context
@@ -71,7 +71,7 @@ function convertArgumentList(
 }
 
 export function convertDeclaration(
-  node: Parser.SyntaxNode,
+  node: SyntaxNode,
   context: SourceFile
 ): Declaration {
   return createNode(
@@ -100,9 +100,11 @@ export function convertDeclaration(
 
       commentLeading: node
         .childrenForFieldName("commentLeading")
+        .filter((child) => child !== null)
         .map((child) => child.text.slice(1).trim()),
       commentTrailing: node
         .childrenForFieldName("commentTrailing")
+        .filter((child) => child !== null)
         .map((child) => child.text.slice(1).trim()),
     },
     node,
@@ -111,7 +113,7 @@ export function convertDeclaration(
 }
 
 function convertTypeNode(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): TypeNode {
   if (!node) {
@@ -134,7 +136,7 @@ function convertTypeNode(
 }
 
 function convertSizeNode(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): SizeNode {
   if (!node) {
@@ -228,7 +230,7 @@ function convertSizeNode(
 }
 
 function convertCallExpression(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): CallExpression {
   if (!node) {
@@ -245,7 +247,7 @@ function convertCallExpression(
             .namedChildren.map((child) => convertSizeNode(child, context))
         : [],
       args: node.children
-        .filter((child) => child.type.includes("expression"))
+        .filter((child) => child !== null && child.type.includes("expression"))
         .map((child) => convertExpression(child, context)),
     },
     node,
@@ -254,7 +256,7 @@ function convertCallExpression(
 }
 
 function convertTupleExpression(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): TupleExpression {
   if (!node) {
@@ -274,7 +276,7 @@ function convertTupleExpression(
 }
 
 function convertAssignmentExpression(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): AssignmentExpression {
   if (!node) {
@@ -285,7 +287,7 @@ function convertAssignmentExpression(
     "AssignmentExpression",
     {
       left: convertIdentifier(node.child(0), context),
-    right: convertExpression(node.child(2), context),
+      right: convertExpression(node.child(2), context),
     },
     node,
     context
@@ -293,7 +295,7 @@ function convertAssignmentExpression(
 }
 
 function convertIdentExpression(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): IdentifierExpression {
   if (!node) {
@@ -311,7 +313,7 @@ function convertIdentExpression(
 }
 
 function convertStringExpression(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): StringLiteralExpression {
   if (!node) {
@@ -329,7 +331,7 @@ function convertStringExpression(
 }
 
 function convertExpression(
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   context: SourceFile
 ): Expression {
   if (!node) {

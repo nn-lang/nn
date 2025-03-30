@@ -10,7 +10,8 @@
     "@nn-lang/nn-codegen": "workspace:^",
     "@nn-lang/nn-language": "workspace:^",
     "@nn-lang/nn-tree-sitter": "workspace:^",
-    "@nn-lang/nn-type-checker": "workspace:^"
+    "@nn-lang/nn-type-checker": "workspace:^",
+    "tree-sitter": "^0.22.4"
   },
   "bin": "out/src/index.js"
 }

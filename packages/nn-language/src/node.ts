@@ -1,4 +1,4 @@
-import Parser from "tree-sitter";
+import { Node as SyntaxNode } from "web-tree-sitter";
 
 import { emptyPosition, SourceFile, toPosition } from ".";
 import { Position } from "./types";
@@ -18,7 +18,7 @@ export interface NodeContext {
 export function createNode<T extends Node>(
   type: T["type"],
   props: Omit<T, "type" | "id" | "position">,
-  node: Parser.SyntaxNode | null,
+  node: SyntaxNode | null,
   file: SourceFile
 ): T {
   const result = {
