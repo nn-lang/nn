@@ -1078,9 +1078,6 @@ __metadata:
     tree-sitter-cli: "npm:^0.25.3"
   peerDependencies:
     node-gyp-build: ^4.8.1
-  peerDependenciesMeta:
-    tree_sitter:
-      optional: true
   languageName: unknown
   linkType: soft
 

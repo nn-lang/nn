@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-tree-sitter",
-  "version": "0.1.11",
+  "version": "0.1.14",
   "dependencies": {
     "node-addon-api": "^8.3.1",
     "node-gyp-build": "^4.8.1",
@@ -8,11 +8,6 @@
   },
   "peerDependencies": {
     "node-gyp-build": "^4.8.1"
-  },
-  "peerDependenciesMeta": {
-    "tree_sitter": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "prebuildify": "^6.0.1"
@@ -25,22 +20,18 @@
     "hash-compare": "node scripts/hash-compare.js",
     "hash-update": "node scripts/hash-update.js",
     "build": "yarn hash-compare || yarn build:full && yarn hash-update",
-    "build:full": "yarn prebuild && node-gyp-build && tree-sitter build --wasm -o ./bindings/wasm/tree-sitter-nn.wasm",
+    "build:full": "yarn prebuild && node-gyp-build && tree-sitter build --wasm",
     "prebuild": "yarn clean && tree-sitter init && tree-sitter generate"
   },
-  "exports": {
-    "./node": "./bindings/node/index.js",
-    "./wasm": "./bindings/wasm/index.js"
-  },
-  "types": "./bindings/wasm/index.d.ts",
-  "typings": "./bindings/wasm/index.d.ts",
+  "main": "./bindings/node/index.js",
+  "typings": "./bindings/node/index.d.ts",
   "files": [
     "grammar.js",
     "binding.gyp",
     "tree-sitter.json",
     "prebuilds/**",
     "bindings/node/*",
-    "bindings/wasm/*",
+    "tree-sitter-nn.wasm",
     "queries/*",
     "src/**",
     "scripts/**"

@@ -4,7 +4,7 @@ import Parser from "tree-sitter";
 import { SourceFile } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 
-import language from "@nn-lang/nn-tree-sitter/node";
+import language from "@nn-lang/nn-tree-sitter";
 
 const source = `
 BatchNorm[input](x: Tensor[input]): Tensor[input]
