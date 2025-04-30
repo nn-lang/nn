@@ -1,0 +1,78 @@
+ScaledDotProductAttention(
+  q: Tensor[Heads, Seq, Input],
+  k: Tensor[Heads, Seq, Input],
+  v: Tensor[Heads, Seq, Input]
+): Tensor[Heads, Seq, Input] =
+  MatMul(q, Transpose[Heads, Input, Seq](k)) / sqrt(Input) # [Heads, Seq, Seq]
+  |> SoftMax(), v
+  |> MatMul()
+
+MultiHeadAttention[Output, Heads](
+  q: Tensor[Seq, Input],
+  k: Tensor[Seq, Input],
+  v: Tensor[Seq, Input]
+) = 
+  |> Linear.each[Input]()
+  |> Reshape.each[Heads, Seq / Heads, Output]
+  |> ScaledDotProductAttention()
+  |> Linear[Output]
+
+FeedForwardNetwork[Output, Filter](
+  x: Tensor[Seq, Input]
+) =
+  |> Linear[Filter]()
+  |> ReLU()
+  |> Dropout()
+  |> Linear[Output]()
+
+EncoderLayer[Filter, Heads](
+  x: Tensor[Seq, Hidden]
+) = 
+  |> LayerNorm()
+  |> MultiHeadAttention[Hidden, Heads]($, $, $)
+  |> Dropout()
+  |> attn = Add(x)
+
+  |> LayerNorm()
+  |> FeedForwardNetwork[Hidden, Filter]()
+  |> Dropout()
+  |> Add(attn)
+
+DecoderLayer[Filter, Heads](
+  x: Tensor[Seq, Hidden],
+  enc_output: Tensor[Seq, Hidden]
+) = 
+  |> LayerNorm()
+  |> MultiHeadAttention[Hidden, Heads]($, $, $)
+  |> Dropout()
+  |> attn = Add(x)
+
+  |> LayerNorm()
+  |> MultiHeadAttention[Hidden, Heads](enc_output, enc_output)
+  |> Dropout()
+  |> enc_attn = Add(attn)
+
+  |> LayerNorm()
+  |> FeedForwardNetwork[Hidden, Filter]()
+  |> Dropout()
+  |> Add(enc_attn), enc_output
+
+Encoder[Filter, Heads, Layers](
+  x: Tensor[Seq, Hidden]
+): Tensor[Seq, Hidden] =
+  |> EncoderLayer@Layers[Filter, Heads]()
+  |> LayerNorm()
+
+Decoder[Filter, Heads, Layers](
+  x: Tensor[Seq, Hidden],
+  enc_output: Tensor[Seq, Hidden]
+): Tensor[Seq, Hidden] = 
+  |> DecoderLayer@Layers[Filter, Heads]()
+  |> LayerNorm($0)
+
+Transformer[Filter, Heads, Layers](
+  inputs: Tensor[Seq, Hidden],
+  target: Tensor[Seq, Hidden]
+): Tensor[Seq, Hidden] =
+  Encoder[Filter, Heads, Layers](inputs)
+  |> Decoder[Filter, Heads, Layers](target, $)
