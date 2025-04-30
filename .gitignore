@@ -15,3 +15,8 @@ out
 
 # windsurf rules
 .windsurfrules
+
+# secrets
+.yarnrc.yml
+.env
+.env.*
