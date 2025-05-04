@@ -6,7 +6,7 @@ import Parser from "tree-sitter";
 import { SourceFile } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 
-import language from "@nn-lang/nn-tree-sitter/node";
+import language from "@nn-lang/nn-tree-sitter";
 
 const file = fs.readdirSync(path.join(__dirname, "cases"));
 const sources = file.filter((f) => f.endsWith(".nn"));

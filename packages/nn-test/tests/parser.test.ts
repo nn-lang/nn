@@ -3,7 +3,7 @@ import * as path from "path";
 
 import Parser from "tree-sitter";
 
-import language from "@nn-lang/nn-tree-sitter/node";
+import language from "@nn-lang/nn-tree-sitter";
 import { SourceFile } from "@nn-lang/nn-language";
 
 import { getErrorJson } from "./utils";

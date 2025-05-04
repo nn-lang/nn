@@ -1,4 +1,4 @@
-import { Node as SyntaxNode } from "web-tree-sitter";
+import type * as TreeSitter from "tree-sitter";
 
 import { Node } from "./node";
 import { Position } from "./types";
@@ -6,7 +6,7 @@ import { SizeNode, TypeNode } from "./ast";
 
 export const emptyPosition: Position = { pos: 0, end: 0 };
 
-export function toPosition(node: SyntaxNode | SyntaxNode[]): Position {
+export function toPosition(node: TreeSitter.SyntaxNode | TreeSitter.SyntaxNode[]): Position {
   if (Array.isArray(node)) {
     return {
       pos: node[0].startIndex,

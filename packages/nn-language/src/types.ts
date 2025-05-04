@@ -6,5 +6,6 @@ export interface Position {
 export interface Diagnostic {
   message: string
 
+  scope?: string
   position: Position
 }

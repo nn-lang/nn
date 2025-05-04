@@ -1,9 +1,9 @@
-import type { Node as SyntaxNode } from "web-tree-sitter";
+import type * as TreeSitter from "tree-sitter";
 
 import { Declaration } from "./ast";
 import { Diagnostic } from "./types";
 import { toPosition } from "./utils";
-import { convertDeclaration } from "./convert";
+import { Transform } from "./transform/convert";
 import { Node, NodeContext } from "./node";
 
 export interface SourceFile {
@@ -21,15 +21,15 @@ export interface SourceFile {
 }
 
 export interface Parser {
-  parse(content: string, old?: any | null): any;
+  parse(content: string, old?: any | null): TreeSitter.Tree;
 }
 
 export namespace SourceFile {
-  function getErrorNodes(root: SyntaxNode): SyntaxNode[] {
+  function getErrorNodes(root: TreeSitter.SyntaxNode): TreeSitter.SyntaxNode[] {
     const travel = (
-      node: SyntaxNode,
-      acc: SyntaxNode[]
-    ): SyntaxNode[] => {
+      node: TreeSitter.SyntaxNode,
+      acc: TreeSitter.SyntaxNode[]
+    ): TreeSitter.SyntaxNode[] => {
       if (node.isError) {
         acc.push(node);
         return acc;
@@ -45,7 +45,7 @@ export namespace SourceFile {
     return travel(root, []);
   }
 
-  function getMessageForErrorNode(node: SyntaxNode): string {
+  function getMessageForErrorNode(node: TreeSitter.SyntaxNode): string {
     const child = node.child(0);
 
     if (child && child.type !== "ERROR") {
@@ -61,8 +61,8 @@ export namespace SourceFile {
     parser: Parser,
     old?: SourceFile
   ): SourceFile {
-    const parse = parser.parse(content, old?.oldTree);
-    const result: SourceFile = old ?? {
+    const tree = parser.parse(content, old?.oldTree);
+    const context: SourceFile = old ?? {
       content,
       path,
       oldTree: parse,
@@ -76,16 +76,14 @@ export namespace SourceFile {
       }
     };
 
-    result.diagnostics = getErrorNodes(parse.rootNode).map((node) => ({
+    context.diagnostics = getErrorNodes(tree.rootNode).map((node) => ({
       message: getMessageForErrorNode(node),
       position: toPosition(node),
     }));
 
-    result.tree = parse.rootNode.children
-      .filter((node: any) => node.type === "declaration")
-      .map((declNode: any) => convertDeclaration(declNode, result));
+    context.tree = Transform.TreeSitter.sourceFile(tree, context)
 
-    return result;
+    return context;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Node as SyntaxNode } from "web-tree-sitter";
+import type { SyntaxNode } from "tree-sitter";
 
 import { emptyPosition, SourceFile, toPosition } from ".";
 import { Position } from "./types";
