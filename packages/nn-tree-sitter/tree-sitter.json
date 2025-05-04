@@ -4,16 +4,15 @@
       "name": "nn",
       "camelcase": "NnTreeSitter",
       "scope": "source.nn",
-      "file-types": [
-        ".nn"
-      ],
+      "path": ".",
+      "file-types": ["nn"],
       "injection-regex": "^nn$"
     }
   ],
   "metadata": {
     "version": "0.1.0",
     "license": "MIT",
-    "description": "Nn grammar for tree-sitter",
+    "description": "nn grammar for tree-sitter",
     "authors": [
       {
         "name": "SieR-VR",

@@ -1075,7 +1075,7 @@ __metadata:
     node-addon-api: "npm:^8.3.1"
     node-gyp-build: "npm:^4.8.1"
     prebuildify: "npm:^6.0.1"
-    tree-sitter-cli: "npm:^0.25.3"
+    tree-sitter-cli: "npm:^0.24.7"
   peerDependencies:
     node-gyp-build: ^4.8.1
   languageName: unknown
@@ -5436,12 +5436,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tree-sitter-cli@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "tree-sitter-cli@npm:0.25.3"
+"tree-sitter-cli@npm:^0.24.7":
+  version: 0.24.7
+  resolution: "tree-sitter-cli@npm:0.24.7"
   bin:
     tree-sitter: cli.js
-  checksum: 10c0/b82e020f1cdacbab7f4e52838e1c66afb2f7007ae50c5bb27394cd84058818f64af4121adafd001e50aafb374779639550f7381b5db02802e6fff2a3728d3596
+  checksum: 10c0/8b2f0db5781a1f05a08a54bc360b7aaa815c5cb5defbff0252d0ff407da3a35032a867c63d11dd47ab5096bbb63f4ec254dc675c6855ebfef655202e8ff427a8
   languageName: node
   linkType: hard
 
