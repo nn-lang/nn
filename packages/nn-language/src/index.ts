@@ -3,14 +3,14 @@ import type * as TreeSitter from "tree-sitter";
 import { Declaration } from "./ast";
 import { Diagnostic } from "./types";
 import { toPosition } from "./utils";
-import { Transform } from "./transform/convert";
+import { Transform } from "./transform/tree-sitter";
 import { Node, NodeContext } from "./node";
 
 export interface SourceFile {
   path: string;
   content: string;
 
-  oldTree: any;
+  oldTree: TreeSitter.Tree;
   tree: Declaration[];
 
   diagnostics: Diagnostic[];
@@ -65,7 +65,7 @@ export namespace SourceFile {
     const context: SourceFile = old ?? {
       content,
       path,
-      oldTree: parse,
+      oldTree: tree,
       tree: [],
       diagnostics: [],
       _context: {
