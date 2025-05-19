@@ -30,7 +30,7 @@
     "binding.gyp",
     "tree-sitter.json",
     "prebuilds/**",
-    "bindings/node/*",
+    "bindings/*",
     "tree-sitter-nn.wasm",
     "queries/*",
     "src/**",

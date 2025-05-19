@@ -1,2 +1,7 @@
-export * as py from "./py"
-export * as onnx from "./onnx"
+import { Python } from "./py"
+import { Onnx } from "./onnx"
+
+export default {
+  Python,
+  Onnx
+}

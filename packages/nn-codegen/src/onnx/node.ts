@@ -10,9 +10,20 @@ import {
   isIdentifierExpression,
   isStringLiteralExpression,
   isTupleExpression,
+  StringLiteralExpression,
 } from "@nn-lang/nn-language";
 import { Flow, Polynomial, Size, TypeChecker } from "@nn-lang/nn-type-checker";
-import { DEFAULT_OPSET_IMPORTS } from ".";
+
+export const DEFAULT_OPSET_IMPORTS = [
+  new onnx.OperatorSetIdProto({
+    domain: "",
+    version: 21,
+  }),
+  new onnx.OperatorSetIdProto({
+    domain: "ai.onnx.ml",
+    version: 2,
+  })
+]
 
 export const ONNX_NN_DOMAIN = new onnx.OperatorSetIdProto({
   domain: "nn",
@@ -113,6 +124,10 @@ export function expressionName(expr: Expression, context: OnnxContext): string {
   }
 
   if (isCallExpression(expr)) {
+    if (expr.callee.value === "Trainable") {
+      return (expr.args[0] as StringLiteralExpression).value;
+    }
+
     if (context.temporaryNameRecord.has(expr)) {
       return context.temporaryNameRecord.get(expr)!;
     }

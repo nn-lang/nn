@@ -78,23 +78,22 @@ UNet[Channel](x: Tensor[H, W, C]) =
 
 `;
 
-(async () => {
-  const parser = new Parser()
-  parser.setLanguage(language as any)
+const parser = new Parser()
+parser.setLanguage(language as any)
 
-  const result = SourceFile.parse(source, 'Linear.nn', parser as any)
-  const context = TypeChecker.check(result)
+const result = SourceFile.parse(source, 'Linear.nn', parser as any)
 
-  console.log(context.diagnostics)
+const context = TypeChecker.check(result)
 
-  console.log(
-    inspect(
-      context.scope.flows['Conv2D']['return'],
-      { depth: 3 }
-    ),
-    inspect(
-      context.scope.flows['Conv2D']['returnType'],
-      { depth: 3 }
-    )
+console.log(context.diagnostics)
+
+console.log(
+  inspect(
+    context.scope.flows['Conv2D']['return'],
+    { depth: 3 }
+  ),
+  inspect(
+    context.scope.flows['Conv2D']['returnType'],
+    { depth: 3 }
   )
-})()
+)
