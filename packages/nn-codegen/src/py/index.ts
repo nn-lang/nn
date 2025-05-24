@@ -57,7 +57,7 @@ export namespace Python {
       `# Target: ${settings.target}\n\n` +
       importClause(settings) + "\n\n";
 
-    source.tree.forEach((decl) => {
+    source.declarations.forEach((decl) => {
       code += declaration(decl, checker, settings)
     })
 

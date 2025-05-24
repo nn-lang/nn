@@ -76,6 +76,7 @@ export namespace Edge {
 
       if (!isCallExpression(firstExpression) && callNeeded) {
         context.diagnostics.push({
+          source: scope.file.file,
           message: 'First expression must be a function call if there is a pipe',
           position: firstExpression.position
         })
@@ -138,6 +139,7 @@ export namespace Edge {
           !Polynomial.isSame(SizeType.polynomial(left[first]), SizeType.polynomial(left[index]))
         ) {
           context.diagnostics.push({
+            source: edge.toSolve.expression.source,
             message: `Cannot assign ${SizeType.toString(left[first])} to ${SizeType.toString(left[index])}`,
             position: edge.toSolve.expression.position
           });
@@ -164,6 +166,7 @@ export namespace Edge {
       .forEach(size => {
         if (!sizeDict.has(size)) {
           context.diagnostics.push({
+            source: edge.toSolve.expression.source,
             message: `Size ${size.ident} is ambiguous.`,
             position: edge.toSolve.expression.position
           });
@@ -203,6 +206,7 @@ export namespace Edge {
 
       if (!Polynomial.isSame(leftPolynomial, rightPolynomial)) {
         context.diagnostics.push({
+          source: edge.toSolve.expression.source,
           message: `Size mismatch: ${Polynomial.inspect(leftPolynomial)} != ${Polynomial.inspect(rightPolynomial)}.`,
           position: edge.toSolve.expression.position
         });
@@ -217,6 +221,7 @@ export namespace Edge {
 
     if (edge.callee.args.length !== edge.args.length) {
       context.diagnostics.push({
+        source: edge.toSolve.expression.source,
         message: `Expected ${edge.callee.args.length} arguments, but got ${edge.args.length}.`,
         position: edge.toSolve.expression.position
       });
@@ -233,6 +238,7 @@ export namespace Edge {
       if (edge.sizeArgs.length && edge.callee.sizes.length) {
         if (edge.sizeArgs.length !== edge.callee.sizes.length) {
           context.diagnostics.push({
+            source: edge.toSolve.expression.source,
             message: `Expected ${edge.callee.sizes.length} sizes, but got ${edge.sizeArgs.length}.`,
             position: edge.toSolve.expression.position
           });
@@ -259,6 +265,7 @@ export namespace Edge {
         .map_or_else(
           () => {
             context.diagnostics.push({
+              source: edge.toSolve.expression.source,
               message: `Cannot assign ${
                 Type.toString(firstLeftArg.type.unwrap())
               } to ${
@@ -287,6 +294,7 @@ export namespace Edge {
             .map_or_else(
               () => {
                 context.diagnostics.push({
+                  source: edge.toSolve.expression.source,
                   message: `Cannot assign ${
                     Type.toString(leftArg.type.unwrap())
                   } to ${

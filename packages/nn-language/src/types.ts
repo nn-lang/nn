@@ -1,11 +1,14 @@
+import { SourceFile } from ".";
+
 export interface Position {
-  pos: number
-  end: number
+  pos: number;
+  end: number;
 }
 
 export interface Diagnostic {
-  message: string
+  source: SourceFile;
+  message: string;
 
-  scope?: string
-  position: Position
+  scope?: string;
+  position: Position;
 }

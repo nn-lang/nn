@@ -1,8 +1,8 @@
 import { Err, None, Ok, Option, Result, Some } from 'ts-features';
-import { CallExpression, Diagnostic, Node, SourceFile } from '@nn-lang/nn-language';
+import { CallExpression, Diagnostic, Node, Workspace } from '@nn-lang/nn-language';
 
 import { checker, Type, Vertex } from './checker';
-import { FileScope, Flow, resolve } from './resolver';
+import { Flow, resolve, WorkspaceScope } from './resolver';
 
 import { Callee, Edge } from './checker/edge';
 
@@ -10,9 +10,7 @@ export * from './resolver'
 export * from './checker'
 
 export interface TypeChecker {
-  path: string;
-
-  scope: FileScope;
+  scope: WorkspaceScope;
 
   globalFlows: Record<string, Flow>;
   vertices: Map<Node, Vertex>;
@@ -34,11 +32,9 @@ export namespace TypeChecker {
    * @param source the source file object to check
    * @returns the type checker object
    */
-  export function check(source: SourceFile): TypeChecker {
+  export function check(workspace: Workspace): TypeChecker {
     const context: TypeChecker = {
-      path: source.path,
-
-      scope: {} as FileScope,
+      scope: {} as WorkspaceScope,
 
       globalFlows: {},
       vertices: new Map(),
@@ -52,7 +48,7 @@ export namespace TypeChecker {
       }
     }
 
-    resolve(source, context);
+    resolve(workspace, context);
     if (context.nonRecoverable) {
       return context;
     }

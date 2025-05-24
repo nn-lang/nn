@@ -71,6 +71,7 @@ export namespace Size {
           .map_or_else<unknown>(
             () => {
               context.diagnostics.push({
+                source: scope.file.file,
                 message: `Using undeclared size name '${sizeNode.ident.value}'.`,
                 position: sizeNode.position
               })
@@ -86,6 +87,7 @@ export namespace Size {
           .map_or_else<unknown>(
             () => {
               context.diagnostics.push({
+                source: scope.file.file,
                 message: `Using undeclared size name '${sizeNode.ident.value}'.`,
                 position: sizeNode.position
               })

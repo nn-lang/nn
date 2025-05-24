@@ -2,6 +2,7 @@ import { isCallExpression, travel } from "@nn-lang/nn-language";
 import { Flow, Polynomial, TypeChecker } from "@nn-lang/nn-type-checker";
 
 export interface AnalyzerTarget {
+  source: string;
   declaration: string;
 }
 
@@ -14,7 +15,7 @@ export function analyze(
   target: AnalyzerTarget,
   settings: AnalyzerSettings
 ) {
-  const flow = checker.scope.flows[target.declaration];
+  const flow = checker.scope.files[target.source].flows[target.declaration];
 
   const polynomial = getPolynomialForFlow(checker, flow, settings);
   return Polynomial.inspect(polynomial);
@@ -31,9 +32,7 @@ function getPolynomialForFlow(
     const calleeName = call.callee.value;
 
     if (calleeName === "Trainable") {
-      const type = TypeChecker
-        .getType(call, checker)
-        .unwrap();
+      const type = TypeChecker.getType(call, checker).unwrap();
 
       const product = type.shape.reduce(
         (prev, curr) => Polynomial.mul(prev, Polynomial.from(curr)),
@@ -42,7 +41,7 @@ function getPolynomialForFlow(
 
       return Polynomial.add(prev, product);
     }
-    
+
     return prev;
   }, Polynomial.constant(0));
 

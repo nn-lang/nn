@@ -1,67 +1,91 @@
-import { SourceFile } from "@nn-lang/nn-language";
+import { Workspace } from "@nn-lang/nn-language";
 
 import { Scope } from "./scope";
 import { Flow, Size, TypeChecker, Value } from "..";
 
 /**
  * Resolves the names in the syntax tree.
- * 
+ *
  * @param source the syntax tree to resolve names
  * @param path the path of the file
  * @param context the context of the checker
  */
-export function resolve(source: SourceFile, context: TypeChecker): void {
-  context.scope = Scope.makeFile(source.path);
-  context.scope.flows = { ...context.globalFlows };
+export function resolve(workspace: Workspace, context: TypeChecker): void {
+  context.scope = Scope.makeWorkspace(workspace);
 
-  source.tree.forEach(decl => {
-    const scope = Scope.makeDeclaration(context.scope, decl);
-    const flow = Flow.make(scope);
+  workspace.sources.forEach((source, path) => {
+    const fileScope = Scope.makeFile(context.scope, path);
+    context.scope.files[path] = fileScope;
 
-    context.scope.declarations[decl.name.value] = scope;
-    context.scope.flows[decl.name.value] = flow;
-  });
+    fileScope.flows = { ...context.globalFlows };
 
-  Object
-    .values(context.scope.declarations)
-    .flatMap((scope) => Value.resolve(scope, context));
+    source.declarations.forEach((decl) => {
+      const scope = Scope.makeDeclaration(fileScope, decl);
+      const flow = Flow.make(scope);
 
-  Object
-    .values(context.scope.declarations)
-    .flatMap((scope) => Size.resolve(scope, context));
-
-  Flow.resolve(context.scope, context);
-
-  Object
-    .values(context.scope.declarations)
-    .map(decl => decl.node.name)
-    .filter((name, index, names) => names.indexOf(name) !== index)
-    .forEach(name => {
-      context.diagnostics.push({
-        message: `Duplicate function name '${name.value}'.`,
-        position: name.position
-      })
-      context.nonRecoverable = true;
+      fileScope.declarations[decl.name.value] = scope;
+      fileScope.flows[decl.name.value] = flow;
     });
 
-  Object
-    .values(context.scope.flows)
-    .map((flow) => {
+    Object.values(fileScope.declarations).flatMap((scope) =>
+      Value.resolve(scope, context)
+    );
+
+    Object.values(fileScope.declarations).flatMap((scope) =>
+      Size.resolve(scope, context)
+    );
+  });
+
+  workspace.sources.forEach((source, path) => {
+    const fileScope = context.scope.files[path];
+    const dependencies = workspace.dependencyGraph.get(path) || [];
+
+    dependencies.forEach(({ path, clause }) => {
+      const targetScope = context.scope.files[path];
+      if (!targetScope) return;
+
+      clause.idents.forEach(({ value }) => {
+        fileScope.flows[value] = targetScope.flows[value];
+      });
+    });
+  });
+
+  workspace.sources.forEach((_, path) => {
+    const fileScope = context.scope.files[path];
+    Flow.resolve(fileScope, context);
+
+    Object.values(fileScope.declarations)
+      .map((decl) => decl.node.name)
+      .filter((name, index, names) => names.indexOf(name) !== index)
+      .forEach((name) => {
+        context.diagnostics.push({
+          source: fileScope.file,
+          message: `Duplicate function name '${name.value}'.`,
+          position: name.position,
+        });
+        context.nonRecoverable = true;
+      });
+
+    Object.values(fileScope.flows).map((flow) => {
       const result = Flow.findCircular(flow);
 
       if (result.is_some()) {
         const flows = result.unwrap();
 
         context.diagnostics.push({
-          message: `Circular flow detected from '${flows.map(flow => flow.declaration.declaration).join(', ')}'.`,
-          position: flows[0].declaration.node.position
+          source: fileScope.file,
+          message: `Circular flow detected from '${flows
+            .map((flow) => flow.declaration.declaration)
+            .join(", ")}'.`,
+          position: flows[0].declaration.node.position,
         });
         context.nonRecoverable = true;
       }
     });
+  });
 }
 
-export * from './scope'
-export * from './value'
-export * from './size'
-export * from './flow'
+export * from "./scope";
+export * from "./value";
+export * from "./size";
+export * from "./flow";

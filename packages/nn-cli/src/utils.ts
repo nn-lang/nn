@@ -1,15 +1,15 @@
 import Parser from "tree-sitter";
 import { Err, Ok, Result } from "ts-features";
+import { cwd } from "node:process";
 
-import { Diagnostic, SourceFile } from "@nn-lang/nn-language";
+import { Diagnostic, Workspace } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 import language from "@nn-lang/nn-tree-sitter";
 
 export function formatDiagnostic(
-  path: string,
-  lines: string[],
-  { message, position }: Diagnostic
+  { source, message, position }: Diagnostic
 ): string {
+  const lines = source.content.split("\n");
   let result = "";
 
   const [line, pos] = (() => {
@@ -46,32 +46,33 @@ export function formatDiagnostic(
     }
   });
 
-  result += "\n" + `> ${message} ${path}:${line + 1}:${pos + 1}\n`;
+  result += "\n" + `> ${message} ${source.path}:${line + 1}:${pos + 1}\n`;
   return result;
 }
 
-export function compilation(
-  path: string,
-  content: string
-): Result<
-  {
-    sourceFile: SourceFile;
-    checker: TypeChecker;
-  },
-  Diagnostic[]
-> {
+export function compilation(path: string): Result<{
+  workspace: Workspace;
+  checker: TypeChecker;
+}, Diagnostic[]> {
   const parser = new Parser();
   parser.setLanguage(language as any);
 
-  const source = SourceFile.parse(content, path, parser);
-  const checkContext = TypeChecker.check(source);
+  const options = { cwd: cwd() };
 
-  const diagnostics = [...source.diagnostics, ...checkContext.diagnostics];
+  const workspace = Workspace.create([path], options, parser);
+  const checker = TypeChecker.check(workspace);
+
+  const diagnostics = [
+    ...[...workspace.sources.values()].flatMap(
+      ({ diagnostics }) => diagnostics
+    ),
+    ...checker.diagnostics,
+  ];
 
   if (diagnostics.length) return Err(diagnostics);
 
   return Ok({
-    sourceFile: source,
-    checker: checkContext,
-  })
+    workspace,
+    checker,
+  });
 }
