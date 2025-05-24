@@ -1,23 +1,22 @@
+import * as fs from "fs";
 import type * as TreeSitter from "tree-sitter";
 
-import { Declaration } from "./ast";
-import { Diagnostic } from "./types";
+import { Declaration, Import } from "./ast";
 import { toPosition } from "./utils";
 import { Transform } from "./transform/tree-sitter";
-import { Node, NodeContext } from "./node";
+import { Workspace } from "./workspace";
+import { Diagnostic } from "./types";
+import { getErrorNodes, getMessageForErrorNode } from "./diagnostics";
 
 export interface SourceFile {
   path: string;
   content: string;
 
-  oldTree: TreeSitter.Tree;
-  tree: Declaration[];
+  declarations: Declaration[];
+  dependencies: Import[];
 
   diagnostics: Diagnostic[];
-
-  _context: {
-    node: NodeContext;
-  };
+  _oldTree: TreeSitter.Tree | null;
 }
 
 export interface Parser {
@@ -25,63 +24,38 @@ export interface Parser {
 }
 
 export namespace SourceFile {
-  function getErrorNodes(root: TreeSitter.SyntaxNode): TreeSitter.SyntaxNode[] {
-    const travel = (
-      node: TreeSitter.SyntaxNode,
-      acc: TreeSitter.SyntaxNode[]
-    ): TreeSitter.SyntaxNode[] => {
-      if (node.isError) {
-        acc.push(node);
-        return acc;
-      }
-
-      for (const child of node.children) {
-        child && travel(child, acc);
-      }
-
-      return acc;
-    };
-
-    return travel(root, []);
-  }
-
-  function getMessageForErrorNode(node: TreeSitter.SyntaxNode): string {
-    const child = node.child(0);
-
-    if (child && child.type !== "ERROR") {
-      return `Unexpected ${child.type}.`;
-    } else {
-      return `Unexpected token '${node.text}'.`;
-    }
-  }
-
-  export function parse(
-    content: string,
+  export function create(
     path: string,
+    workspace: Workspace,
     parser: Parser,
     old?: SourceFile
   ): SourceFile {
-    const tree = parser.parse(content, old?.oldTree);
+    const content = fs.readFileSync(path, "utf-8");
+
+    const tree = parser.parse(content, old?._oldTree);
     const context: SourceFile = old ?? {
       content,
       path,
-      oldTree: tree,
-      tree: [],
+      _oldTree: tree,
+      declarations: [],
+      dependencies: [],
       diagnostics: [],
-      _context: {
-        node: {
-          nextId: 0,
-          nodes: new Map<number, Node>(),
-        }
-      }
     };
 
-    context.diagnostics = getErrorNodes(tree.rootNode).map((node) => ({
+    const diagnostics: Diagnostic[] = getErrorNodes(tree.rootNode).map((node) => ({
+      source: context,
       message: getMessageForErrorNode(node),
       position: toPosition(node),
     }));
 
-    context.tree = Transform.TreeSitter.sourceFile(tree, context)
+    const { declarations, imports } = Transform.TreeSitter.sourceFile(
+      tree,
+      { source: context, workspace }
+    );
+
+    context.diagnostics = diagnostics;
+    context.declarations = declarations;
+    context.dependencies = imports;
 
     return context;
   }
@@ -92,3 +66,5 @@ export * from "./ast-is";
 export * from "./node";
 export * from "./types";
 export * from "./utils";
+export * from "./workspace";
+export * from "./diagnostics";

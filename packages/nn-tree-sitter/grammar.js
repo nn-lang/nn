@@ -3,7 +3,9 @@
 function seperated_list(item, seperator, prefix, postfix, allow_empty) {
   return seq(
     ...(prefix ? [prefix] : []),
-    allow_empty ? field("item_first", optional(item)) : field("item_first", item),
+    allow_empty
+      ? field("item_first", optional(item))
+      : field("item_first", item),
     repeat(seq(seperator, field("item_remain", item))),
     optional(seperator),
     ...(postfix ? [postfix] : [])
@@ -13,8 +15,10 @@ function seperated_list(item, seperator, prefix, postfix, allow_empty) {
 module.exports = grammar({
   name: "nn",
   rules: {
-    source_file: ($) => repeat($.declaration),
-    declaration: ($) =>
+    source_file: ($) =>
+      repeat(choice($.declaration_statement, $.import_statement)),
+
+    declaration_statement: ($) =>
       seq(
         field("comment_leading", repeat($.comment)),
         field("name", $.ident),
@@ -33,6 +37,13 @@ module.exports = grammar({
             )
           )
         )
+      ),
+    import_statement: ($) =>
+      seq(
+        "import",
+        seperated_list($.ident, ",", "{", "}", true),
+        "from",
+        field("target", $.string),
       ),
 
     size_declaration_list: ($) => seperated_list($.ident, ",", "[", "]"),
@@ -58,7 +69,7 @@ module.exports = grammar({
         seq(
           field("callee", $.ident),
           field("sizes", optional($.size_type)),
-          field("arguments", $.argument_list),
+          field("arguments", $.argument_list)
         )
       ),
     expression_tuple: ($) =>

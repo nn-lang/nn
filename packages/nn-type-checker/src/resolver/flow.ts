@@ -69,6 +69,7 @@ export namespace Flow {
     travel(scope.node, isCallExpression).forEach((callExpression) => {
       if (callExpression.callee.value === scope.declaration) {
         context.diagnostics.push({
+          source: scope.file.file,
           message: `Recursive call to '${scope.declaration}'.`,
           position: callExpression.callee.position,
         });
@@ -77,6 +78,7 @@ export namespace Flow {
         scope.flow!.calls.add(callFlow);
       } else if (!_builtin.includes(callExpression.callee.value)) {
         context.diagnostics.push({
+          source: scope.file.file,
           message: `Using undeclared flow name '${callExpression.callee.value}'.`,
           position: callExpression.callee.position,
         });

@@ -1,0 +1,4 @@
+import { UNet } from "./UNet.nn"
+
+Model(x: Tensor[64, 64, 3]) = 
+  |> UNet[128]()
