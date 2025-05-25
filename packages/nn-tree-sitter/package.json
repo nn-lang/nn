@@ -20,7 +20,9 @@
     "hash-compare": "node scripts/hash-compare.js",
     "hash-update": "node scripts/hash-update.js",
     "build": "yarn hash-compare || yarn build:full && yarn hash-update",
-    "build:full": "yarn prebuild && node-gyp-build && tree-sitter build --wasm",
+    "build:wasm": "tree-sitter build --wasm",
+    "build:node": "node-gyp-build",
+    "build:full": "yarn prebuild && (yarn build:wasm | yarn build:node)",
     "prebuild": "yarn clean && tree-sitter init && tree-sitter generate"
   },
   "main": "./bindings/node/index.js",
