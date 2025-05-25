@@ -4,7 +4,7 @@ import * as path from "path";
 import Parser from "tree-sitter";
 
 import language from "@nn-lang/nn-tree-sitter";
-import { SourceFile } from "@nn-lang/nn-language";
+import { Workspace } from "@nn-lang/nn-language";
 
 import { getErrorJson } from "./utils";
 
@@ -29,32 +29,38 @@ beforeAll(async () => {
 describe("parser", () => {
   ok.forEach((file) => {
     it(`should parse ${file}`, async () => {
-      const parserInput = fs.readFileSync(
-        path.join(__dirname, "cases", file),
-        "utf8"
-      );
-      const source = SourceFile.parse(parserInput, file, parser);
+      const options = { cwd: path.join(__dirname, "cases") };
+      const workspace = Workspace.create([file], options, parser);
 
-      if (source.diagnostics.length) {
-        console.log(source.diagnostics);
+      const diagnostics = [
+        ...[...workspace.sources.values()].flatMap(
+          ({ diagnostics }) => diagnostics
+        ),
+      ];
+
+      if (diagnostics.length) {
+        console.log(diagnostics);
       }
 
-      expect(source.diagnostics.length).toBe(0);
+      expect(diagnostics.length).toBe(0);
     });
   });
 
   err.forEach((file) => {
     it(`should emit errors at ${file}`, async () => {
-      const parserInput = fs.readFileSync(
-        path.join(__dirname, "cases", file),
-        "utf8"
-      );
+      const options = { cwd: path.join(__dirname, "cases") };
+
       const errorJson = getErrorJson(__dirname, file);
+      const workspace = Workspace.create([file], options, parser);
 
-      const source = SourceFile.parse(parserInput, file, parser);
+      const diagnostics = [
+        ...[...workspace.sources.values()].flatMap(
+          ({ diagnostics }) => diagnostics
+        ),
+      ].map(({ message, position }) => ({ message, position }));
 
-      expect(source.diagnostics.length).toBeGreaterThan(0);
-      expect(source.diagnostics).toStrictEqual(errorJson);
+      expect(diagnostics.length).toBeGreaterThan(0);
+      expect(diagnostics).toStrictEqual(errorJson);
     });
   });
 });

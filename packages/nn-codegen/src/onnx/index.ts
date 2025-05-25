@@ -1,24 +1,31 @@
 import { onnx } from "onnx-proto";
 
-import { SourceFile } from "@nn-lang/nn-language";
+import { Workspace } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 
-import { declaration, DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN, tensorShape } from "./node";
+import { DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN, tensorShape } from "./node";
 
 export namespace Onnx {
   export interface OnnxSettings {
     version: "0.1" | string;
-    target: string;
+
+    target: {
+      source: string;
+      declaration: string;
+    };
 
     sizeMap: Record<string, number>;
   }
 
   export function codegen(
-    source: SourceFile,
+    workspace: Workspace,
     checker: TypeChecker,
     settings: OnnxSettings
   ): Uint8Array {
-    const flow = checker.scope.flows[settings.target];
+    const flow =
+      checker.scope.files[settings.target.source].flows[
+        settings.target.declaration
+      ];
 
     if (!flow) {
       throw new Error(`Flow ${settings.target} not found`);
@@ -31,11 +38,9 @@ export namespace Onnx {
       sizeMap: settings.sizeMap,
     };
 
-    const functions = source.tree.map((t) =>
-      declaration(t, context)
-    );
+    const functions: onnx.FunctionProto[] = []; // !TODO
 
-    const target = functions.find((f) => f.name === settings.target)!;
+    const target = functions.find((f) => f.name === settings.target.source)!;
     const [inputShapes, outputShape] = tensorShape(flow, context);
 
     const modelProto = new onnx.ModelProto({
@@ -60,10 +65,7 @@ export namespace Onnx {
         node: target.node,
         initializer: [],
       }),
-      opsetImport: [
-        ...DEFAULT_OPSET_IMPORTS,
-        ONNX_NN_DOMAIN
-      ],
+      opsetImport: [...DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN],
     });
 
     return onnx.ModelProto.encode(modelProto).finish();

@@ -64,6 +64,7 @@ export namespace Value {
           .filter(identExpr => identExpr.ident.value === assignmentExpr.left.value)
           .forEach(identExpr => {
             context.diagnostics.push({
+              source: scope.file.file,
               message: `Using undeclared value name '${identExpr.ident.value}'.`,
               position: identExpr.ident.position
             });
@@ -77,6 +78,7 @@ export namespace Value {
           .map_or_else<unknown>(
             () => {
               context.diagnostics.push({
+                source: scope.file.file,
                 message: `Using undeclared value name '${identExpr.ident.value}'.`,
                 position: identExpr.ident.position
               });
@@ -87,6 +89,7 @@ export namespace Value {
                 value.nodes.add(identExpr.ident)
               } else {
                 context.diagnostics.push({
+                  source: scope.file.file,
                   message: `Using undeclared value name '${identExpr.ident.value}'.`,
                   position: identExpr.ident.position
                 });

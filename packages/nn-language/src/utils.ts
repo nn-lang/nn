@@ -40,7 +40,7 @@ export function travel<T>(
       typeof node === "number"
     )
       return;
-    if ("pos" in node) return;
+    if ("pos" in node || "path" in node) return;
 
     if (Array.isArray(node)) {
       node.forEach(_travel);

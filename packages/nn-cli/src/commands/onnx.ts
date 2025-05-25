@@ -1,12 +1,11 @@
-import { readFileSync, writeFileSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 import { Args, Command, Flags } from "@oclif/core";
 
 import Codegen from "@nn-lang/nn-codegen";
 
 import { compilation, formatDiagnostic } from "../utils";
-
 
 export default class Onnx extends Command {
   static args = {
@@ -38,21 +37,12 @@ export default class Onnx extends Command {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Onnx);
 
-    const filePath = resolve(args.file);
-    const content = readFileSync(filePath, "utf-8");
+    const filePath = args.file;
+    const compilationResult = compilation(filePath);
 
-    const compilationResult = compilation(filePath, content);
-
-    const { checker, sourceFile } = compilationResult.unwrap_or_else(
+    const { checker, workspace } = compilationResult.unwrap_or_else(
       (diagnostics) => {
-        const lines = content.split("\n");
-
-        console.error(
-          diagnostics
-            .map((diagnostic) => formatDiagnostic(filePath, lines, diagnostic))
-            .join("\n\n")
-        );
-
+        console.error(diagnostics.map(formatDiagnostic).join("\n\n"));
         this.exit(1);
       }
     );
@@ -63,16 +53,19 @@ export default class Onnx extends Command {
       return acc;
     }, {} as Record<string, number>);
 
-    const result = Codegen.Onnx.codegen(sourceFile, checker, {
+    const result = Codegen.Onnx.codegen(workspace, checker, {
       version: "0.1",
-      target: flags.target,
+      target: { declaration: flags.target, source: filePath },
       sizeMap,
     });
 
     const output =
       flags.output ||
-      join(process.cwd(), basename(filePath.replace(/\.nn$/, ".onnx")));
+      path.join(
+        process.cwd(),
+        path.basename(filePath.replace(/\.nn$/, ".onnx"))
+      );
 
-    writeFileSync(output, result);
+    fs.writeFileSync(output, result);
   }
 }

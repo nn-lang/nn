@@ -18,6 +18,13 @@ export interface Identifier extends Node {
   type: "Identifier"
 }
 
+export interface Import extends Node {
+  idents: Identifier[],
+  target: string
+  
+  type: "Import"
+}
+
 export interface Declaration extends Node {
   name: Identifier
   sizeDeclList: SizeDeclList

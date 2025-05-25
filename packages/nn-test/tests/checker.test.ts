@@ -3,7 +3,7 @@ import * as path from "path";
 
 import Parser from "tree-sitter";
 
-import { SourceFile } from "@nn-lang/nn-language";
+import { Workspace } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 import language from "@nn-lang/nn-tree-sitter";
@@ -20,13 +20,10 @@ beforeAll(async () => {
 describe("checker", () => {
   sources.forEach((file) => {
     it(`should type check ${file}`, async () => {
-      const parserInput = fs.readFileSync(
-        path.join(__dirname, "cases", file),
-        "utf8"
-      );
+      const options = { cwd: path.join(__dirname, "cases") };
 
-      const source = SourceFile.parse(parserInput, file, parser as any);
-      expect(() => TypeChecker.check(source)).not.toThrow();
+      const workspace = Workspace.create([file], options, parser);
+      expect(() => TypeChecker.check(workspace)).not.toThrow();
     });
   });
 });
