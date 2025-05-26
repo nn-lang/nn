@@ -1,4 +1,4 @@
-import { PySynthSettings } from "."
+import { PySynthSettings } from ".";
 
 const tinygrad: PySynthSettings = {
   version: "0.1",
@@ -7,34 +7,34 @@ const tinygrad: PySynthSettings = {
     {
       opName: "conv2d",
       tensorOp: true,
-      target: "Conv2D"
+      target: "Conv2D",
     },
     {
       opName: "conv2d_transpose",
       tensorOp: true,
-      target: "Conv2DTransposed"
+      target: "Conv2DTransposed",
     },
     {
       opName: "concat",
       tensorOp: true,
-      target: "Concat"
+      target: "Concat",
     },
     {
       opName: "relu",
       tensorOp: true,
-      target: "ReLU"
+      target: "ReLU",
     },
     {
       opName: "batchnorm",
       tensorOp: true,
-      target: "BatchNorm"
+      target: "BatchNorm",
     },
     {
       opName: "max_pool2d",
       tensorOp: true,
-      target: "MaxPool"
-    }
-  ]
-}
+      target: "MaxPool",
+    },
+  ],
+};
 
-export default tinygrad
+export default tinygrad;

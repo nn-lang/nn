@@ -1,5 +1,4 @@
-import type { SyntaxNode, Tree } from "tree-sitter";
-
+import { SourceFile } from "..";
 import {
   ArgumentList,
   ArithmeticSizeNode,
@@ -20,7 +19,7 @@ import {
 } from "../ast";
 import { createNode } from "../node";
 import { Workspace } from "../workspace";
-import { SourceFile } from "..";
+import type { SyntaxNode, Tree } from "tree-sitter";
 
 export namespace Transform {
   export namespace TreeSitter {
@@ -35,7 +34,7 @@ export namespace Transform {
 
     export function sourceFile(
       tree: Tree,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): { declarations: Declaration[]; imports: Import[] } {
       return {
         declarations: tree.rootNode.children
@@ -49,7 +48,7 @@ export namespace Transform {
 
     function declaration(
       node: SyntaxNode,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): Declaration {
       return createNode(
         "Declaration",
@@ -57,11 +56,11 @@ export namespace Transform {
           name: identifier(node.childForFieldName("name"), context),
           sizeDeclList: sizeDeclarationList(
             node.childForFieldName("size_declaration_list"),
-            context
+            context,
           ),
           argumentList: argumentDeclarationList(
             node.childForFieldName("argument_declaration_list"),
-            context
+            context,
           ),
           returnType: node.childForFieldName("return_type")
             ? typeNode(node.childForFieldName("return_type"), context)
@@ -85,13 +84,13 @@ export namespace Transform {
             .map((child) => child.text.slice(1).trim()),
         },
         node,
-        context
+        context,
       );
     }
 
     function importDeclaration(
       node: SyntaxNode,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): Import {
       const target = node.childForFieldName("target")!.child(0)!;
       const targetString =
@@ -103,18 +102,18 @@ export namespace Transform {
         "Import",
         {
           idents: Util.fromSeperatedList(node).map((item) =>
-            identifier(item, context)
+            identifier(item, context),
           ),
           target: targetString,
         },
         node,
-        context
+        context,
       );
     }
 
     function identifier(
       node: SyntaxNode | null,
-      _context: { source: SourceFile; workspace: Workspace }
+      _context: { source: SourceFile; workspace: Workspace },
     ): Identifier {
       if (!node) {
         throw new Error(`Expected an identifier node, got null`);
@@ -125,25 +124,25 @@ export namespace Transform {
 
     function sizeDeclarationList(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): SizeDeclList {
       return node
         ? createNode(
             "SizeDeclList",
             {
               decls: Util.fromSeperatedList(node).map((item) =>
-                identifier(item, context)
+                identifier(item, context),
               ),
             },
             node,
-            context
+            context,
           )
         : createNode("SizeDeclList", { decls: [] }, null, context);
     }
 
     function argumentDeclarationList(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): ArgumentList {
       return node
         ? createNode(
@@ -155,14 +154,14 @@ export namespace Transform {
               })),
             },
             node,
-            context
+            context,
           )
         : createNode("ArgumentList", { args: [] }, null, context);
     }
 
     function typeNode(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): TypeNode {
       if (!node) {
         throw new Error("Expected a type node");
@@ -179,13 +178,13 @@ export namespace Transform {
             : [],
         },
         node,
-        context
+        context,
       );
     }
 
     function sizeNode(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): SizeNode {
       if (!node) {
         throw new Error("Expected a size node");
@@ -204,7 +203,7 @@ export namespace Transform {
               sizeType: "pow",
             },
             node,
-            context
+            context,
           );
         case "size_mul":
           return createNode<ArithmeticSizeNode>(
@@ -215,7 +214,7 @@ export namespace Transform {
               sizeType: "mul",
             },
             node,
-            context
+            context,
           );
         case "size_div":
           return createNode<ArithmeticSizeNode>(
@@ -226,7 +225,7 @@ export namespace Transform {
               sizeType: "div",
             },
             node,
-            context
+            context,
           );
         case "size_add":
           return createNode<ArithmeticSizeNode>(
@@ -237,7 +236,7 @@ export namespace Transform {
               sizeType: "add",
             },
             node,
-            context
+            context,
           );
         case "size_sub":
           return createNode<ArithmeticSizeNode>(
@@ -248,7 +247,7 @@ export namespace Transform {
               sizeType: "sub",
             },
             node,
-            context
+            context,
           );
         case "size_ident":
           return createNode<IdentifierSizeNode>(
@@ -258,7 +257,7 @@ export namespace Transform {
               sizeType: "ident",
             },
             node,
-            context
+            context,
           );
         case "size_number":
           return createNode<NumberSizeNode>(
@@ -268,7 +267,7 @@ export namespace Transform {
               sizeType: "number",
             },
             node,
-            context
+            context,
           );
         case "size_paren":
           return sizeNode(node.child(1), context);
@@ -279,7 +278,7 @@ export namespace Transform {
 
     function callExpression(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): CallExpression {
       if (!node) {
         throw new Error("Expected a call expression node");
@@ -295,18 +294,18 @@ export namespace Transform {
               ?.namedChildren.map((child) => sizeNode(child, context)) || [],
           args: node.childForFieldName("arguments")
             ? Util.fromSeperatedList(node.childForFieldName("arguments")!).map(
-                (node) => expression(node, context)
+                (node) => expression(node, context),
               )
             : [],
         },
         node,
-        context
+        context,
       );
     }
 
     function tupleExpression(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): TupleExpression {
       if (!node) {
         throw new Error("Expected a tuple expression node");
@@ -316,17 +315,17 @@ export namespace Transform {
         "TupleExpression",
         {
           elements: node.namedChildren.map((child) =>
-            expression(child, context)
+            expression(child, context),
           ),
         },
         node,
-        context
+        context,
       );
     }
 
     function assignmentExpression(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): AssignmentExpression {
       if (!node) {
         throw new Error("Expected an assignment expression node");
@@ -339,13 +338,13 @@ export namespace Transform {
           right: expression(node.child(2), context),
         },
         node,
-        context
+        context,
       );
     }
 
     function identExpression(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): IdentifierExpression {
       if (!node) {
         throw new Error("Expected an identifier expression node");
@@ -357,13 +356,13 @@ export namespace Transform {
           ident: identifier(node.child(0), context),
         },
         node,
-        context
+        context,
       );
     }
 
     function stringExpression(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): StringLiteralExpression {
       if (!node) {
         throw new Error("Expected a string literal expression node");
@@ -375,13 +374,13 @@ export namespace Transform {
           value: node.text,
         },
         node,
-        context
+        context,
       );
     }
 
     function expression(
       node: SyntaxNode | null,
-      context: { source: SourceFile; workspace: Workspace }
+      context: { source: SourceFile; workspace: Workspace },
     ): Expression {
       if (!node) {
         throw new Error("Expected an expression node");

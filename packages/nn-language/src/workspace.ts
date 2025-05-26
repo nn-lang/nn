@@ -1,7 +1,6 @@
+import { CreateNodeState, Import, Parser, SourceFile } from ".";
 import * as fs from "node:fs";
 import path from "path";
-
-import { CreateNodeState, Import, Parser, SourceFile } from ".";
 
 export interface CompilerOptions {
   cwd: string;
@@ -29,7 +28,7 @@ export namespace Workspace {
     files: string[],
     options: CompilerOptions,
     parser: Parser,
-    old?: Workspace
+    old?: Workspace,
   ): Workspace {
     const workspace: Workspace = {
       sources: new Map(),
@@ -48,14 +47,14 @@ export namespace Workspace {
         filePath,
         workspace,
         parser,
-        old?.sources.get(filePath)
+        old?.sources.get(filePath),
       );
 
       const dependencies = sourceFile.dependencies.map((dependency) => ({
         source: sourceFile,
         dependency,
         targetFile: path.normalize(
-          path.resolve(path.dirname(sourceFile.path), dependency.target)
+          path.resolve(path.dirname(sourceFile.path), dependency.target),
         ),
       }));
 
@@ -65,7 +64,7 @@ export namespace Workspace {
         dependencies.map(({ dependency, targetFile }) => ({
           clause: dependency,
           path: targetFile,
-        }))
+        })),
       );
 
       unresolved.push(...dependencies);
@@ -92,14 +91,14 @@ export namespace Workspace {
         targetFile,
         workspace,
         parser,
-        old?.sources.get(targetFile)
+        old?.sources.get(targetFile),
       );
 
       const dependencies = sourceFile.dependencies.map((dependency) => ({
         source: sourceFile,
         dependency,
         targetFile: path.normalize(
-          path.resolve(path.dirname(sourceFile.path), dependency.target)
+          path.resolve(path.dirname(sourceFile.path), dependency.target),
         ),
       }));
 
@@ -109,7 +108,7 @@ export namespace Workspace {
         dependencies.map(({ dependency, targetFile }) => ({
           clause: dependency,
           path: targetFile,
-        }))
+        })),
       );
 
       unresolved.push(...dependencies);

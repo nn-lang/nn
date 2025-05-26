@@ -1,17 +1,16 @@
 {
-    "$schema": "https://swc.rs/schema.json",
-    "jsc": {
-        "parser": {
-            "syntax": "typescript",
-            "tsx": false
-        },
-        "transform": {},
-        "target": "es2015"
+  "$schema": "https://swc.rs/schema.json",
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": false
     },
-    "module": {
-        "type": "commonjs"
-    },
-    "sourceMaps": true,
-    "exclude": ["out", "node_modules"]
+    "transform": {},
+    "target": "es2015"
+  },
+  "module": {
+    "type": "commonjs"
+  },
+  "sourceMaps": true,
+  "exclude": ["out", "node_modules"]
 }
-

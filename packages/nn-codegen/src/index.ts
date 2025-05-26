@@ -1,7 +1,7 @@
-import { Python } from "./py"
-import { Onnx } from "./onnx"
+import { Onnx } from "./onnx";
+import { Python } from "./py";
 
 export default {
   Python,
-  Onnx
-}
+  Onnx,
+};

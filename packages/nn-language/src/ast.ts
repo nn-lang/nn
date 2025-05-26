@@ -1,76 +1,76 @@
-import { Node } from "./node"
+import { Node } from "./node";
 
 export interface SizeDeclList extends Node {
-  decls: Identifier[]
+  decls: Identifier[];
 
-  type: "SizeDeclList"
+  type: "SizeDeclList";
 }
 
 export interface ArgumentList extends Node {
-  args: { ident: Identifier, valueType: TypeNode }[]
+  args: { ident: Identifier; valueType: TypeNode }[];
 
-  type: "ArgumentList"
+  type: "ArgumentList";
 }
 
 export interface Identifier extends Node {
-  value: string
+  value: string;
 
-  type: "Identifier"
+  type: "Identifier";
 }
 
 export interface Import extends Node {
-  idents: Identifier[],
-  target: string
-  
-  type: "Import"
+  idents: Identifier[];
+  target: string;
+
+  type: "Import";
 }
 
 export interface Declaration extends Node {
-  name: Identifier
-  sizeDeclList: SizeDeclList
-  argumentList: ArgumentList
+  name: Identifier;
+  sizeDeclList: SizeDeclList;
+  argumentList: ArgumentList;
 
-  firstPipe: boolean
-  exprs: Expression[]
-  
-  returnType?: TypeNode
+  firstPipe: boolean;
+  exprs: Expression[];
 
-  commentLeading: string[],
-  commentTrailing: string[],
-  type: "Declaration"
+  returnType?: TypeNode;
+
+  commentLeading: string[];
+  commentTrailing: string[];
+  type: "Declaration";
 }
 
 export interface CallExpression extends Node {
-  callee: Identifier
-  sizes?: SizeNode[]
-  args: Expression[]
+  callee: Identifier;
+  sizes?: SizeNode[];
+  args: Expression[];
 
-  type: "CallExpression"
+  type: "CallExpression";
 }
 
 export interface TupleExpression extends Node {
-  elements: Expression[]
+  elements: Expression[];
 
-  type: "TupleExpression"
+  type: "TupleExpression";
 }
 
 export interface AssignmentExpression extends Node {
-  left: Identifier
-  right: Expression
+  left: Identifier;
+  right: Expression;
 
-  type: "AssignmentExpression"
+  type: "AssignmentExpression";
 }
 
 export interface IdentifierExpression extends Node {
-  ident: Identifier
+  ident: Identifier;
 
-  type: "IdentifierExpression"
+  type: "IdentifierExpression";
 }
 
 export interface StringLiteralExpression extends Node {
-  value: string
+  value: string;
 
-  type: "StringLiteralExpression"
+  type: "StringLiteralExpression";
 }
 
 export type Expression =
@@ -78,38 +78,35 @@ export type Expression =
   | TupleExpression
   | AssignmentExpression
   | IdentifierExpression
-  | StringLiteralExpression
+  | StringLiteralExpression;
 
 export interface ArithmeticSizeNode extends Node {
-  left: SizeNode
-  right: SizeNode
+  left: SizeNode;
+  right: SizeNode;
 
-  sizeType: "pow" | "mul" | "div" | "add" | "sub"
-  type: "ArithmeticSizeNode"
+  sizeType: "pow" | "mul" | "div" | "add" | "sub";
+  type: "ArithmeticSizeNode";
 }
 
 export interface IdentifierSizeNode extends Node {
-  ident: Identifier
+  ident: Identifier;
 
-  sizeType: "ident"
-  type: "IdentifierSizeNode"
+  sizeType: "ident";
+  type: "IdentifierSizeNode";
 }
 
 export interface NumberSizeNode extends Node {
-  number: number
+  number: number;
 
-  sizeType: "number"
-  type: "NumberSizeNode"
+  sizeType: "number";
+  type: "NumberSizeNode";
 }
 
-export type SizeNode =
-  | ArithmeticSizeNode
-  | IdentifierSizeNode
-  | NumberSizeNode
+export type SizeNode = ArithmeticSizeNode | IdentifierSizeNode | NumberSizeNode;
 
 export interface TypeNode extends Node {
-  isTensor: boolean // true
-  sizes?: SizeNode[]
+  isTensor: boolean; // true
+  sizes?: SizeNode[];
 
-  type: "TypeNode"
+  type: "TypeNode";
 }

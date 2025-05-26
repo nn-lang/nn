@@ -31,7 +31,7 @@ nn의 크기 인자를 통해 크기 값의 흐름을 직관적으로 표기할 
 ### 텐서 타입 체킹
 
 ```nn
-Linear[input, output](x: Tensor[input]) = 
+Linear[input, output](x: Tensor[input]) =
   |> MatMul(Trainable[input, output]('weight'))
   |> Bias(Trainable[input]('bias'))
                     ^^^^^
@@ -68,7 +68,7 @@ UNet[Channel](x: Tensor[H, W, C]) =
   |> s2 = UNetEncoder[Channel * 2]()
   |> s3 = UNetEncoder[Channel * 4]()
   |> s4 = UNetEncoder[Channel * 8]()
-  
+
   |> ConvBlock[Channel * 8]()
 
   |> UNetDecoder[Channel * 8](s4)
@@ -82,7 +82,7 @@ UNet[Channel](x: Tensor[H, W, C]) =
 ### 컴파일 타임 정적 분석
 
 ```
-Linear[input, output](x: Tensor[input]) = 
+Linear[input, output](x: Tensor[input]) =
   |> MatMul(Trainable[input, output]('weight'))
   |> Bias(Trainable[output]('bias'))
 
@@ -92,14 +92,14 @@ Estimated Size
 
 Estimated Computing Size
 - MatMul[input, output] x 1
-- Bias[output] x 1 
+- Bias[output] x 1
 ```
 
 모델이 컴파일될 때, 모델의 파라미터를 이용하여 이 모델이 얼마나 많은 매개변수를 가질 지, 얼마나 많은 연산량을 가지는지 나타낼 수 있습니다.
 
 ### 문법상의 관심사 분리
 
-nn 모델을 정의할 때 기억해야 할 키워드는 `Tensor` 하나입니다. 
+nn 모델을 정의할 때 기억해야 할 키워드는 `Tensor` 하나입니다.
 
 그 외엔 전부 특수문자, 사용자 정의 이름들로 이루어져 있으며, 언어를 모르는 사람도 이해할 수 있도록 코드를 작성할 수 있습니다.
 

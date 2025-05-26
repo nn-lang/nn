@@ -1,8 +1,8 @@
 import type { Declaration, SourceFile, Workspace } from "@nn-lang/nn-language";
 
-import { Value } from "./value";
-import { Size } from "./size";
 import { Flow } from "./flow";
+import { Size } from "./size";
+import { Value } from "./value";
 
 export interface WorkspaceScope {
   workspace: Workspace;
@@ -50,7 +50,7 @@ export namespace Scope {
    */
   export function makeFile(
     workspaceScope: WorkspaceScope,
-    path: string
+    path: string,
   ): FileScope {
     return {
       workspaceScope,
@@ -72,7 +72,7 @@ export namespace Scope {
    */
   export function makeDeclaration(
     file: FileScope,
-    decl: Declaration
+    decl: Declaration,
   ): DeclarationScope {
     const scope: DeclarationScope = {
       file,

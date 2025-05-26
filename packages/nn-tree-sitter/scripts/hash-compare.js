@@ -2,22 +2,22 @@
 // if the hashes are different, update the hash in the ./scripts/.build-hash file
 // if the hashes are the same, do nothing
 
-const { existsSync, readFileSync } = require('fs');
-const { exit } = require('process');
+const { existsSync, readFileSync } = require("fs");
+const { exit } = require("process");
 
-const target = readFileSync('./grammar.js', 'utf8');
+const target = readFileSync("./grammar.js", "utf8");
 
-const newHash = require('crypto')
-  .createHash('sha256')
+const newHash = require("crypto")
+  .createHash("sha256")
   .update(target)
-  .digest('hex');
+  .digest("hex");
 
-const hashExists = existsSync('./scripts/.build-hash');
+const hashExists = existsSync("./scripts/.build-hash");
 if (!hashExists) {
   exit(1);
 }
 
-const currentHash = readFileSync('./scripts/.build-hash', 'utf8');
+const currentHash = readFileSync("./scripts/.build-hash", "utf8");
 
 if (currentHash !== newHash) {
   exit(1);

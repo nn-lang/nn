@@ -8,7 +8,7 @@ function seperated_list(item, seperator, prefix, postfix, allow_empty) {
       : field("item_first", item),
     repeat(seq(seperator, field("item_remain", item))),
     optional(seperator),
-    ...(postfix ? [postfix] : [])
+    ...(postfix ? [postfix] : []),
   );
 }
 
@@ -33,10 +33,10 @@ module.exports = grammar({
               field("comment_trailing", repeat($.comment)),
               field("first_pipe", optional("|>")),
               field("expression_first", $.expression),
-              repeat(seq("|>", field("expression_remain", $.expression)))
-            )
-          )
-        )
+              repeat(seq("|>", field("expression_remain", $.expression))),
+            ),
+          ),
+        ),
       ),
     import_statement: ($) =>
       seq(
@@ -59,7 +59,7 @@ module.exports = grammar({
         $.expression_tuple,
         $.expression_assign,
         $.expression_ident,
-        $.expression_string
+        $.expression_string,
       ),
     expression_plain: ($) =>
       choice($.expression_call, $.expression_ident, $.expression_string),
@@ -69,8 +69,8 @@ module.exports = grammar({
         seq(
           field("callee", $.ident),
           field("sizes", optional($.size_type)),
-          field("arguments", $.argument_list)
-        )
+          field("arguments", $.argument_list),
+        ),
       ),
     expression_tuple: ($) =>
       prec(10, seq($.expression_plain, repeat1(seq(",", $.expression_plain)))),
@@ -89,7 +89,7 @@ module.exports = grammar({
         $.size_sub,
         $.size_paren,
         $.size_ident,
-        $.size_number
+        $.size_number,
       ),
     size_operation: ($) =>
       choice($.size_pow, $.size_mul, $.size_div, $.size_add, $.size_sub),

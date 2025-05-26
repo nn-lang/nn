@@ -2,11 +2,11 @@ import * as fs from "fs";
 import type * as TreeSitter from "tree-sitter";
 
 import { Declaration, Import } from "./ast";
-import { toPosition } from "./utils";
-import { Transform } from "./transform/tree-sitter";
-import { Workspace } from "./workspace";
-import { Diagnostic } from "./types";
 import { getErrorNodes, getMessageForErrorNode } from "./diagnostics";
+import { Transform } from "./transform/tree-sitter";
+import { Diagnostic } from "./types";
+import { toPosition } from "./utils";
+import { Workspace } from "./workspace";
 
 export interface SourceFile {
   path: string;
@@ -28,7 +28,7 @@ export namespace SourceFile {
     path: string,
     workspace: Workspace,
     parser: Parser,
-    old?: SourceFile
+    old?: SourceFile,
   ): SourceFile {
     const content = fs.readFileSync(path, "utf-8");
 
@@ -42,16 +42,18 @@ export namespace SourceFile {
       diagnostics: [],
     };
 
-    const diagnostics: Diagnostic[] = getErrorNodes(tree.rootNode).map((node) => ({
-      source: context,
-      message: getMessageForErrorNode(node),
-      position: toPosition(node),
-    }));
-
-    const { declarations, imports } = Transform.TreeSitter.sourceFile(
-      tree,
-      { source: context, workspace }
+    const diagnostics: Diagnostic[] = getErrorNodes(tree.rootNode).map(
+      (node) => ({
+        source: context,
+        message: getMessageForErrorNode(node),
+        position: toPosition(node),
+      }),
     );
+
+    const { declarations, imports } = Transform.TreeSitter.sourceFile(tree, {
+      source: context,
+      workspace,
+    });
 
     context.diagnostics = diagnostics;
     context.declarations = declarations;

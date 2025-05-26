@@ -5,12 +5,12 @@ import {
   CallExpression,
   Declaration,
   Expression,
+  StringLiteralExpression,
   isAssignmentExpression,
   isCallExpression,
   isIdentifierExpression,
   isStringLiteralExpression,
   isTupleExpression,
-  StringLiteralExpression,
 } from "@nn-lang/nn-language";
 import { Flow, Polynomial, Size, TypeChecker } from "@nn-lang/nn-type-checker";
 
@@ -22,8 +22,8 @@ export const DEFAULT_OPSET_IMPORTS = [
   new onnx.OperatorSetIdProto({
     domain: "ai.onnx.ml",
     version: 2,
-  })
-]
+  }),
+];
 
 export const ONNX_NN_DOMAIN = new onnx.OperatorSetIdProto({
   domain: "nn",
@@ -41,7 +41,7 @@ interface OnnxContext {
 
 export function declaration(
   decl: Declaration,
-  context: OnnxContext
+  context: OnnxContext,
 ): onnx.FunctionProto {
   const [input, output, nodes] = declarationNodes(decl, context);
 
@@ -57,7 +57,7 @@ export function declaration(
 
 export function declarationNodes(
   decl: Declaration,
-  context: OnnxContext
+  context: OnnxContext,
 ): [input: string[], output: string[], nodes: onnx.NodeProto[]] {
   const declArgs = decl.argumentList.args.map((arg) => arg.ident.value);
   let args = decl.firstPipe ? [...declArgs] : [];
@@ -80,7 +80,7 @@ export function declarationNodes(
     if (isTupleExpression(expr)) {
       const [first, ...rest] = expr.elements;
 
-      if (!isCallExpression(first)) {
+      if (!first || !isCallExpression(first)) {
         throw new Error("Unreachable");
       }
 
@@ -149,7 +149,7 @@ export function expressionName(expr: Expression, context: OnnxContext): string {
 export function assign(
   expr: AssignmentExpression,
   prevArgs: string[],
-  context: OnnxContext
+  context: OnnxContext,
 ): [string[], onnx.NodeProto] {
   if (!isCallExpression(expr.right)) {
     throw new Error("Unreachable");
@@ -173,7 +173,7 @@ export function assign(
 export function call(
   expr: CallExpression,
   prevArgs: string[],
-  context: OnnxContext
+  context: OnnxContext,
 ): [string[], onnx.NodeProto] {
   const result = new onnx.NodeProto({
     opType: expr.callee.value,
@@ -187,7 +187,7 @@ export function call(
 
 export function tensorShape(
   flow: Flow,
-  context: OnnxContext
+  context: OnnxContext,
 ): [onnx.TypeProto[], onnx.TypeProto] {
   const sizeMap = Object.entries(flow.declaration.sizes).reduce(
     (prev, [ident, size]) => {
@@ -198,7 +198,7 @@ export function tensorShape(
       prev.set(size, Polynomial.constant(context.sizeMap[ident]));
       return prev;
     },
-    new Map<Size, Polynomial>()
+    new Map<Size, Polynomial>(),
   );
 
   const inputs = flow.args.map((v) => {
@@ -216,7 +216,7 @@ export function tensorShape(
             (p) =>
               new onnx.TensorShapeProto.Dimension({
                 dimValue: p.constant,
-              })
+              }),
           ),
         }),
       },
@@ -225,7 +225,7 @@ export function tensorShape(
 
   const outputType = TypeChecker.getType(
     flow.return!,
-    context.checker
+    context.checker,
   ).unwrap();
   const assigned = outputType.shape
     .map((s) => Polynomial.from(s))
@@ -239,7 +239,7 @@ export function tensorShape(
           (p) =>
             new onnx.TensorShapeProto.Dimension({
               dimValue: p.constant,
-            })
+            }),
         ),
       }),
     },

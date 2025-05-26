@@ -1,14 +1,15 @@
+import { Size, TypeChecker, Value } from "..";
 import { None, Option, Some } from "ts-features";
+
 import {
   Expression,
   Identifier,
+  TypeNode,
   isCallExpression,
   travel,
-  TypeNode,
 } from "@nn-lang/nn-language";
 
 import { DeclarationScope, FileScope } from "./scope";
-import { Size, TypeChecker, Value } from "..";
 
 export interface Flow {
   calls: Set<Flow>;
@@ -46,17 +47,17 @@ export namespace Flow {
 
   function _resolveInternal(
     scope: DeclarationScope,
-    _context: TypeChecker
+    _context: TypeChecker,
   ): void {
     const flow = scope.flow!;
 
     flow.sizes = scope.node.sizeDeclList
       ? scope.node.sizeDeclList.decls.map((decl) =>
-          Size.find(scope, decl).unwrap()
+          Size.find(scope, decl).unwrap(),
         )
       : [];
     flow.args = scope.node.argumentList.args.map(
-      (arg) => scope.values[arg.ident.value]
+      (arg) => scope.values[arg.ident.value]!,
     );
     flow.return = scope.node.exprs.at(-1);
     flow.returnType = scope.node.returnType;
@@ -64,7 +65,7 @@ export namespace Flow {
 
   function _resolveCallInternal(
     scope: DeclarationScope,
-    context: TypeChecker
+    context: TypeChecker,
   ): void {
     travel(scope.node, isCallExpression).forEach((callExpression) => {
       if (callExpression.callee.value === scope.declaration) {
@@ -74,7 +75,7 @@ export namespace Flow {
           position: callExpression.callee.position,
         });
       } else if (callExpression.callee.value in scope.file.flows) {
-        const callFlow = scope.file.flows[callExpression.callee.value];
+        const callFlow = scope.file.flows[callExpression.callee.value]!;
         scope.flow!.calls.add(callFlow);
       } else if (!_builtin.includes(callExpression.callee.value)) {
         context.diagnostics.push({
@@ -98,11 +99,11 @@ export namespace Flow {
    */
   export function resolve(scope: FileScope, context: TypeChecker): void {
     Object.values(scope.declarations).forEach((declaration) =>
-      _resolveInternal(declaration, context)
+      _resolveInternal(declaration, context),
     );
 
     Object.values(scope.declarations).forEach((declaration) =>
-      _resolveCallInternal(declaration, context)
+      _resolveCallInternal(declaration, context),
     );
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "@nn-lang/nn-tree-sitter",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "dependencies": {
     "node-addon-api": "^8.3.1",
     "node-gyp-build": "^4.8.1",
@@ -23,7 +23,8 @@
     "build:wasm": "tree-sitter build --wasm",
     "build:node": "node-gyp-build",
     "build:full": "yarn prebuild && (yarn build:wasm | yarn build:node)",
-    "prebuild": "yarn clean && tree-sitter init && tree-sitter generate"
+    "prebuild": "yarn clean && tree-sitter init && tree-sitter generate",
+    "postinstall": "yarn build"
   },
   "main": "./bindings/node/index.js",
   "typings": "./bindings/node/index.d.ts",
@@ -32,7 +33,8 @@
     "binding.gyp",
     "tree-sitter.json",
     "prebuilds/**",
-    "bindings/*",
+    "bindings/node/*",
+    "bindings/wasm/*",
     "tree-sitter-nn.wasm",
     "queries/*",
     "src/**",

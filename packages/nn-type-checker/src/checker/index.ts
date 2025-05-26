@@ -1,18 +1,18 @@
-import { Vertex } from "./vertex";
-import { Edge } from "./edge";
-
 import { Type, TypeChecker } from "..";
+
+import { Edge } from "./edge";
+import { Vertex } from "./vertex";
 
 export function checker(context: TypeChecker) {
   Object.values(context.scope.files).forEach((fileScope) => {
     Object.values(fileScope.declarations).forEach((decl) =>
-      Vertex.getAll(decl, context.vertices)
+      Vertex.getAll(decl, context.vertices),
     );
   });
 
   Object.values(context.scope.files).forEach((fileScope) => {
     Object.values(fileScope.declarations).forEach((decl) =>
-      Edge.getAll(decl, context.edges, context)
+      Edge.getAll(decl, context.edges, context),
     );
   });
 
@@ -38,7 +38,7 @@ export function checker(context: TypeChecker) {
         const left = Type.from(flow.returnType, flow.declaration);
         const right = context.vertices.get(flow.return!)!.type;
 
-        if (right.is_none()) {
+        if (right.isNone()) {
           return;
         }
 
@@ -46,7 +46,7 @@ export function checker(context: TypeChecker) {
           context.diagnostics.push({
             source: flow.declaration.file.file,
             message: `Return type mismatch: ${Type.toString(
-              left
+              left,
             )} != ${Type.toString(right.unwrap())}.`,
             position: flow.return!.position,
           });

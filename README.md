@@ -31,7 +31,7 @@ nn allows you to intuitively express the flow of size values through size argume
 ### Tensor Type Checking
 
 ```nn
-Linear[input, output](x: Tensor[input]) = 
+Linear[input, output](x: Tensor[input]) =
   |> MatMul(Trainable[input, output]('weight'))
   |> Bias(Trainable[input]('bias'))
                     ^^^^^
@@ -68,7 +68,7 @@ UNet[Channel](x: Tensor[H, W, C]) =
   |> s2 = UNetEncoder[Channel * 2]()
   |> s3 = UNetEncoder[Channel * 4]()
   |> s4 = UNetEncoder[Channel * 8]()
-  
+
   |> ConvBlock[Channel * 8]()
 
   |> UNetDecoder[Channel * 8](s4)
@@ -82,7 +82,7 @@ It's 30 lines of code, compared to 125 lines of [code in Python](https://github.
 ### Compile-Time Static Analysis
 
 ```
-Linear[input, output](x: Tensor[input]) = 
+Linear[input, output](x: Tensor[input]) =
   |> MatMul(Trainable[input, output]('weight'))
   |> Bias(Trainable[output]('bias'))
 
@@ -92,7 +92,7 @@ Estimated Size
 
 Estimated Computing Size
 - MatMul[input, output] x 1
-- Bias[output] x 1 
+- Bias[output] x 1
 ```
 
 When the model is compiled, you can use the model's parameters to indicate how many parameters and how much computation the model will have.

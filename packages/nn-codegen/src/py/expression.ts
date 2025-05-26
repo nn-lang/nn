@@ -1,26 +1,25 @@
+import { PySynthSettings } from ".";
 import { None, Option, Some } from "ts-features";
 
 import {
   CallExpression,
   Declaration,
   Expression,
+  StringLiteralExpression,
   isAssignmentExpression,
   isCallExpression,
   isIdentifierExpression,
   isStringLiteralExpression,
   isTupleExpression,
-  StringLiteralExpression,
 } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
-
-import { PySynthSettings } from ".";
 
 function subExpression(
   expr: Expression,
   checker: TypeChecker,
   settings: PySynthSettings,
   dict: Map<CallExpression, string>,
-  buffer: string[]
+  buffer: string[],
 ): string {
   const sub = (expr: Expression | string) =>
     typeof expr === "string"
@@ -42,7 +41,7 @@ function subExpression(
     }
 
     const operation = settings.operations.find(
-      (op) => op.target === callee.value
+      (op) => op.target === callee.value,
     );
 
     if (!operation) {
@@ -80,7 +79,7 @@ function expression(
   checker: TypeChecker,
   settings: PySynthSettings,
   dict: Map<CallExpression, string>,
-  buffer: string[]
+  buffer: string[],
 ): [Option<string>, string[]] {
   const sub = (expr: Expression) =>
     subExpression(expr, checker, settings, dict, buffer);
@@ -101,6 +100,10 @@ function expression(
   }
   if (isTupleExpression(expr)) {
     const [first, ...rest] = expr.elements;
+
+    if (!first) {
+      throw new Error("Unreachable");
+    }
 
     if (isCallExpression(first)) {
       return [Some(`y = ${sub(first)}`), ["y", ...rest.map(sub)]];
@@ -126,7 +129,7 @@ export function expressions(
   checker: TypeChecker,
   settings: PySynthSettings,
   dict: Map<CallExpression, string>,
-  indent: number = 4
+  indent: number = 4,
 ): string {
   const indentStr = " ".repeat(indent);
 

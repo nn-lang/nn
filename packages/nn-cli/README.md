@@ -1,20 +1,21 @@
-nn-cli
-=================
+# nn-cli
 
 A new CLI generated with oclif
-
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/nn-cli.svg)](https://npmjs.org/package/nn-cli)
 [![Downloads/week](https://img.shields.io/npm/dw/nn-cli.svg)](https://npmjs.org/package/nn-cli)
 
-
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @nn-lang/nn-cli
 $ nn-cli COMMAND
@@ -26,22 +27,26 @@ USAGE
   $ nn-cli COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`nn-cli check FILE`](#nn-cli-check-file)
-* [`nn-cli help [COMMAND]`](#nn-cli-help-command)
-* [`nn-cli onnx FILE`](#nn-cli-onnx-file)
-* [`nn-cli plugins`](#nn-cli-plugins)
-* [`nn-cli plugins:add PLUGIN`](#nn-cli-pluginsadd-plugin)
-* [`nn-cli plugins:inspect PLUGIN...`](#nn-cli-pluginsinspect-plugin)
-* [`nn-cli plugins:install PLUGIN`](#nn-cli-pluginsinstall-plugin)
-* [`nn-cli plugins:link PATH`](#nn-cli-pluginslink-path)
-* [`nn-cli plugins:remove [PLUGIN]`](#nn-cli-pluginsremove-plugin)
-* [`nn-cli plugins:reset`](#nn-cli-pluginsreset)
-* [`nn-cli plugins:uninstall [PLUGIN]`](#nn-cli-pluginsuninstall-plugin)
-* [`nn-cli plugins:unlink [PLUGIN]`](#nn-cli-pluginsunlink-plugin)
-* [`nn-cli plugins:update`](#nn-cli-pluginsupdate)
+
+- [`nn-cli check FILE`](#nn-cli-check-file)
+- [`nn-cli help [COMMAND]`](#nn-cli-help-command)
+- [`nn-cli onnx FILE`](#nn-cli-onnx-file)
+- [`nn-cli plugins`](#nn-cli-plugins)
+- [`nn-cli plugins:add PLUGIN`](#nn-cli-pluginsadd-plugin)
+- [`nn-cli plugins:inspect PLUGIN...`](#nn-cli-pluginsinspect-plugin)
+- [`nn-cli plugins:install PLUGIN`](#nn-cli-pluginsinstall-plugin)
+- [`nn-cli plugins:link PATH`](#nn-cli-pluginslink-path)
+- [`nn-cli plugins:remove [PLUGIN]`](#nn-cli-pluginsremove-plugin)
+- [`nn-cli plugins:reset`](#nn-cli-pluginsreset)
+- [`nn-cli plugins:uninstall [PLUGIN]`](#nn-cli-pluginsuninstall-plugin)
+- [`nn-cli plugins:unlink [PLUGIN]`](#nn-cli-pluginsunlink-plugin)
+- [`nn-cli plugins:update`](#nn-cli-pluginsupdate)
 
 ## `nn-cli check FILE`
 
@@ -386,4 +391,5 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/update.ts)_
+
 <!-- commandsstop -->

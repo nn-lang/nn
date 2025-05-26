@@ -1,0 +1,19 @@
+.git
+
+# modules 
+.yarn
+node_modules
+
+# build output
+**/out
+**/dist
+**/build
+
+# binary files
+**/*.wasm
+**/*.node
+**/*.onnx
+
+# privates
+.env
+yarn.lock

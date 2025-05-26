@@ -1,4 +1,4 @@
-let language = __dirname + "/tree-sitter-nn.wasm"
+let language = __dirname + "/tree-sitter-nn.wasm";
 
 module.exports = language;
 

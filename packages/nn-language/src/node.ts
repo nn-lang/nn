@@ -1,6 +1,6 @@
+import { SourceFile, emptyPosition, toPosition } from ".";
 import type { SyntaxNode } from "tree-sitter";
 
-import { emptyPosition, SourceFile, toPosition } from ".";
 import { Position } from "./types";
 import { Workspace } from "./workspace";
 
@@ -28,7 +28,7 @@ export function createNode<T extends Node>(
   type: T["type"],
   props: Omit<T, "type" | "id" | "position" | "source">,
   node: SyntaxNode | null,
-  { source, workspace }: { source: SourceFile; workspace: Workspace }
+  { source, workspace }: { source: SourceFile; workspace: Workspace },
 ): T {
   const result = {
     type,

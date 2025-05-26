@@ -1,4 +1,5 @@
 import { onnx } from "onnx-proto";
+import { Result, err, ok } from "ts-features";
 
 import { Workspace } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
@@ -20,18 +21,22 @@ export namespace Onnx {
   export function codegen(
     workspace: Workspace,
     checker: TypeChecker,
-    settings: OnnxSettings
-  ): Uint8Array {
-    const flow =
-      checker.scope.files[settings.target.source].flows[
-        settings.target.declaration
-      ];
+    settings: OnnxSettings,
+  ): Result<Uint8Array, string> {
+    const file = checker.scope.files[settings.target.source];
+
+    if (!file) {
+      return err(`File ${settings.target.source} is not in workspace`);
+    }
+
+    const flow = file.flows[settings.target.declaration];
 
     if (!flow) {
-      throw new Error(`Flow ${settings.target} not found`);
+      return err(`Flow ${settings.target} not found`);
     }
 
     const context = {
+      workspace,
       checker,
       _nextTemporaryIndex: 0,
       temporaryNameRecord: new Map(),
@@ -53,14 +58,14 @@ export namespace Onnx {
             new onnx.ValueInfoProto({
               name: i,
               type: inputShapes[index],
-            })
+            }),
         ),
         output: target.output.map(
           (o) =>
             new onnx.ValueInfoProto({
               name: o,
               type: outputShape,
-            })
+            }),
         ),
         node: target.node,
         initializer: [],
@@ -68,6 +73,6 @@ export namespace Onnx {
       opsetImport: [...DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN],
     });
 
-    return onnx.ModelProto.encode(modelProto).finish();
+    return ok(onnx.ModelProto.encode(modelProto).finish());
   }
 }

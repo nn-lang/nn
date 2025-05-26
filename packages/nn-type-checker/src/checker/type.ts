@@ -1,23 +1,27 @@
+import { DeclarationScope, Size } from "../resolver";
 import { None, Option, Some } from "ts-features";
+
 import { CallExpression, TypeNode } from "@nn-lang/nn-language";
 
-import { DeclarationScope, Size } from "../resolver";
-import { SizeType } from "./sizetype";
 import { Polynomial } from "./polynomial";
+import { SizeType } from "./sizetype";
 
 export interface Type {
-  type: 'Tensor';
+  type: "Tensor";
   shape: SizeType[];
 }
 
 export namespace Type {
-  export function from(node: TypeNode | CallExpression, scope: DeclarationScope): Type {
+  export function from(
+    node: TypeNode | CallExpression,
+    scope: DeclarationScope,
+  ): Type {
     return {
-      type: 'Tensor',
-      shape: node.sizes 
-        ? node.sizes.map(size => SizeType.from(size, scope))
-        : []
-    }
+      type: "Tensor",
+      shape: node.sizes
+        ? node.sizes.map((size) => SizeType.from(size, scope))
+        : [],
+    };
   }
 
   export function isSame(left: Type, right: Type): boolean {
@@ -26,12 +30,15 @@ export namespace Type {
     }
 
     for (let i = 0; i < left.shape.length; i++) {
-      const leftSize = left.shape[i];
-      const rightSize = right.shape[i];
+      const leftSize = left.shape.at(i)!;
+      const rightSize = right.shape.at(i)!;
 
       if (
         !SizeType.isSame(leftSize, rightSize) &&
-        !Polynomial.isSame(Polynomial.from(leftSize), Polynomial.from(rightSize))
+        !Polynomial.isSame(
+          Polynomial.from(leftSize),
+          Polynomial.from(rightSize),
+        )
       ) {
         return false;
       }
@@ -40,7 +47,10 @@ export namespace Type {
     return true;
   }
 
-  export function isAssignable(from: Type, to: Type): Option<[SizeType[], [SizeType[], Size[]]]> {
+  export function isAssignable(
+    from: Type,
+    to: Type,
+  ): Option<[SizeType[], [SizeType[], Size[]]]> {
     const result_: [SizeType[], Size[]] = [[], []];
 
     if (from.shape.length < to.shape.length) {
@@ -70,7 +80,10 @@ export namespace Type {
     return Some([from_, result_]);
   }
 
-  export function isAssignableExact(from: Type, to: Type): Option<[SizeType[], Size[]]> {
+  export function isAssignableExact(
+    from: Type,
+    to: Type,
+  ): Option<[SizeType[], Size[]]> {
     const result_: [SizeType[], Size[]] = [[], []];
 
     if (from.shape.length !== to.shape.length) {
@@ -78,8 +91,8 @@ export namespace Type {
     }
 
     for (let i = 0; i < from.shape.length; i++) {
-      const leftSize = from.shape[i];
-      const rightSize = to.shape[i];
+      const leftSize = from.shape.at(i)!;
+      const rightSize = to.shape.at(i)!;
 
       const result = SizeType.isAssignable(leftSize, rightSize);
 
@@ -97,7 +110,10 @@ export namespace Type {
     return Some(result_);
   }
 
-  export function findAssignable(from: Type, to: Type): Option<[SizeType[], SizeType[]]> {
+  export function findAssignable(
+    from: Type,
+    to: Type,
+  ): Option<[SizeType[], SizeType[]]> {
     const result_: [SizeType[], SizeType[]] = [[], []];
 
     if (from.shape.length < to.shape.length) {
@@ -120,7 +136,10 @@ export namespace Type {
     return Some(result_);
   }
 
-  export function findAssignableExact(from: Type, to: Type): Option<[SizeType[], SizeType[]]> {
+  export function findAssignableExact(
+    from: Type,
+    to: Type,
+  ): Option<[SizeType[], SizeType[]]> {
     const result_: [SizeType[], SizeType[]] = [[], []];
 
     if (from.shape.length !== to.shape.length) {
@@ -128,8 +147,8 @@ export namespace Type {
     }
 
     for (let i = 0; i < from.shape.length; i++) {
-      const leftSize = from.shape[i];
-      const rightSize = to.shape[i];
+      const leftSize = from.shape.at(1)!;
+      const rightSize = to.shape.at(1)!;
 
       const result = SizeType.findAssignable(leftSize, rightSize);
 
@@ -145,19 +164,19 @@ export namespace Type {
 
   export function convert(type: Type, dict: Map<Size, SizeType>): Type {
     return {
-      type: 'Tensor',
-      shape: type.shape.map(size => SizeType.convert(size, dict))
-    }
+      type: "Tensor",
+      shape: type.shape.map((size) => SizeType.convert(size, dict)),
+    };
   }
-  
+
   export function concatShape(type: Type, shape: SizeType[]): Type {
     return {
-      type: 'Tensor',
-      shape: shape.concat(type.shape)
-    }
+      type: "Tensor",
+      shape: shape.concat(type.shape),
+    };
   }
 
   export function toString(type: Type): string {
-    return `Tensor[${type.shape.map(SizeType.toString).join(', ')}]`;
+    return `Tensor[${type.shape.map(SizeType.toString).join(", ")}]`;
   }
 }

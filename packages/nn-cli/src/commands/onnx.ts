@@ -1,11 +1,9 @@
+import { compilation, formatDiagnostic } from "../utils";
+import { Args, Command, Flags } from "@oclif/core";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { Args, Command, Flags } from "@oclif/core";
-
 import Codegen from "@nn-lang/nn-codegen";
-
-import { compilation, formatDiagnostic } from "../utils";
 
 export default class Onnx extends Command {
   static args = {
@@ -40,18 +38,21 @@ export default class Onnx extends Command {
     const filePath = args.file;
     const compilationResult = compilation(filePath);
 
-    const { checker, workspace } = compilationResult.unwrap_or_else(
+    const { checker, workspace } = compilationResult.unwrapOrElse(
       (diagnostics) => {
         console.error(diagnostics.map(formatDiagnostic).join("\n\n"));
         this.exit(1);
-      }
+      },
     );
 
-    const sizeMap = flags.size.split(",").reduce((acc, s) => {
-      const [key, value] = s.split("=");
-      acc[key] = Number(value);
-      return acc;
-    }, {} as Record<string, number>);
+    const sizeMap = flags.size.split(",").reduce(
+      (acc, s) => {
+        const [key, value] = s.split("=");
+        key && value && (acc[key] = parseInt(value));
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const result = Codegen.Onnx.codegen(workspace, checker, {
       version: "0.1",
@@ -63,9 +64,14 @@ export default class Onnx extends Command {
       flags.output ||
       path.join(
         process.cwd(),
-        path.basename(filePath.replace(/\.nn$/, ".onnx"))
+        path.basename(filePath.replace(/\.nn$/, ".onnx")),
       );
 
-    fs.writeFileSync(output, result);
+    result.mapOrElse(
+      (result) => fs.writeFileSync(output, result),
+      () => {
+        this.exit(1);
+      },
+    );
   }
 }

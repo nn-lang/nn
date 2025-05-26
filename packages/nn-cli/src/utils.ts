@@ -1,14 +1,16 @@
-import Parser from "tree-sitter";
-import { Err, Ok, Result } from "ts-features";
 import { cwd } from "node:process";
+import Parser from "tree-sitter";
+import { Result, err, ok } from "ts-features";
 
 import { Diagnostic, Workspace } from "@nn-lang/nn-language";
-import { TypeChecker } from "@nn-lang/nn-type-checker";
 import language from "@nn-lang/nn-tree-sitter";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
-export function formatDiagnostic(
-  { source, message, position }: Diagnostic
-): string {
+export function formatDiagnostic({
+  source,
+  message,
+  position,
+}: Diagnostic): string {
   const lines = source.content.split("\n");
   let result = "";
 
@@ -20,7 +22,7 @@ export function formatDiagnostic(
       return pos >= position.pos;
     });
 
-    return [line, position.pos - pos + lines[line].length + 1];
+    return [line, position.pos - pos + lines[line]!.length + 1];
   })();
 
   const maxLength = String(lines.length).length;
@@ -50,10 +52,13 @@ export function formatDiagnostic(
   return result;
 }
 
-export function compilation(path: string): Result<{
-  workspace: Workspace;
-  checker: TypeChecker;
-}, Diagnostic[]> {
+export function compilation(path: string): Result<
+  {
+    workspace: Workspace;
+    checker: TypeChecker;
+  },
+  Diagnostic[]
+> {
   const parser = new Parser();
   parser.setLanguage(language as any);
 
@@ -64,14 +69,14 @@ export function compilation(path: string): Result<{
 
   const diagnostics = [
     ...[...workspace.sources.values()].flatMap(
-      ({ diagnostics }) => diagnostics
+      ({ diagnostics }) => diagnostics,
     ),
     ...checker.diagnostics,
   ];
 
-  if (diagnostics.length) return Err(diagnostics);
+  if (diagnostics.length) return err(diagnostics);
 
-  return Ok({
+  return ok({
     workspace,
     checker,
   });

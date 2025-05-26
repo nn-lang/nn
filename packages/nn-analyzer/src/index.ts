@@ -1,9 +1,11 @@
+import { Result, err, ok } from "ts-features";
+
 import { isCallExpression, travel } from "@nn-lang/nn-language";
 import { Flow, Polynomial, TypeChecker } from "@nn-lang/nn-type-checker";
 
 export interface AnalyzerTarget {
   source: string;
-  declaration: string;
+  flow: string;
 }
 
 export interface AnalyzerSettings {
@@ -13,18 +15,22 @@ export interface AnalyzerSettings {
 export function analyze(
   checker: TypeChecker,
   target: AnalyzerTarget,
-  settings: AnalyzerSettings
-) {
-  const flow = checker.scope.files[target.source].flows[target.declaration];
+  settings: AnalyzerSettings,
+): Result<string, string> {
+  const file = checker.scope.files[target.source];
+  if (!file) return err(`File ${target.source} not in workspace`);
+
+  const flow = file.flows[target.flow];
+  if (!flow) return err(`Flow ${target.flow} not in the file ${target.source}`);
 
   const polynomial = getPolynomialForFlow(checker, flow, settings);
-  return Polynomial.inspect(polynomial);
+  return ok(Polynomial.inspect(polynomial));
 }
 
 function getPolynomialForFlow(
   checker: TypeChecker,
   flow: Flow,
-  _settings: AnalyzerSettings
+  _settings: AnalyzerSettings,
 ) {
   const calls = travel(flow.declaration.node, isCallExpression);
 
@@ -36,7 +42,7 @@ function getPolynomialForFlow(
 
       const product = type.shape.reduce(
         (prev, curr) => Polynomial.mul(prev, Polynomial.from(curr)),
-        Polynomial.constant(1)
+        Polynomial.constant(1),
       );
 
       return Polynomial.add(prev, product);

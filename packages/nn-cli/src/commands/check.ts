@@ -1,6 +1,5 @@
-import { Args, Command } from "@oclif/core";
-
 import { compilation, formatDiagnostic } from "../utils";
+import { Args, Command } from "@oclif/core";
 
 export default class Check extends Command {
   static args = {
@@ -16,14 +15,14 @@ export default class Check extends Command {
     const filePath = args.file;
     const compilationResult = compilation(filePath);
 
-    compilationResult.map_or_else(
+    compilationResult.mapOrElse(
+      () => {
+        this.exit(0);
+      },
       (diagnostics) => {
         console.error(diagnostics.map(formatDiagnostic).join("\n\n"));
         this.exit(1);
       },
-      () => {
-        this.exit(0);
-      }
     );
   }
 }

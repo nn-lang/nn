@@ -1,10 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
-
 import Parser from "tree-sitter";
 
-import language from "@nn-lang/nn-tree-sitter";
 import { Workspace } from "@nn-lang/nn-language";
+import language from "@nn-lang/nn-tree-sitter";
 
 import { getErrorJson } from "./utils";
 
@@ -14,10 +13,10 @@ const sources = file.filter((f) => f.endsWith(".nn"));
 const errors = file.filter((f) => f.endsWith(".error.json"));
 
 const ok = sources.filter(
-  (f) => !errors.includes(`${f.replace(".nn", "")}.error.json`)
+  (f) => !errors.includes(`${f.replace(".nn", "")}.error.json`),
 );
 const err = sources.filter((f) =>
-  errors.includes(`${f.replace(".nn", "")}.error.json`)
+  errors.includes(`${f.replace(".nn", "")}.error.json`),
 );
 
 const parser = new Parser();
@@ -34,7 +33,7 @@ describe("parser", () => {
 
       const diagnostics = [
         ...[...workspace.sources.values()].flatMap(
-          ({ diagnostics }) => diagnostics
+          ({ diagnostics }) => diagnostics,
         ),
       ];
 
@@ -55,7 +54,7 @@ describe("parser", () => {
 
       const diagnostics = [
         ...[...workspace.sources.values()].flatMap(
-          ({ diagnostics }) => diagnostics
+          ({ diagnostics }) => diagnostics,
         ),
       ].map(({ message, position }) => ({ message, position }));
 

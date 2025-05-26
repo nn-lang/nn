@@ -1,16 +1,20 @@
 import type * as TreeSitter from "tree-sitter";
 
+import { SizeNode, TypeNode } from "./ast";
 import { Node } from "./node";
 import { Position } from "./types";
-import { SizeNode, TypeNode } from "./ast";
 
 export const emptyPosition: Position = { pos: 0, end: 0 };
 
-export function toPosition(node: TreeSitter.SyntaxNode | TreeSitter.SyntaxNode[]): Position {
+export function toPosition(
+  node: TreeSitter.SyntaxNode | TreeSitter.SyntaxNode[],
+): Position {
   if (Array.isArray(node)) {
+    if (node.length == 0) throw new Error("node was empty array");
+
     return {
-      pos: node[0].startIndex,
-      end: node[node.length - 1].endIndex,
+      pos: node.at(0)!.startIndex,
+      end: node.at(-1)!.endIndex,
     };
   }
 
@@ -28,7 +32,7 @@ type TravelCallback<T> = T extends Node
 
 export function travel<T>(
   node: Node | Node[],
-  callback: TravelCallback<T> | BooleanCallback
+  callback: TravelCallback<T> | BooleanCallback,
 ): T[] {
   const result: T[] = [];
 
@@ -64,7 +68,7 @@ export function travel<T>(
 export function nodeOnPosition<T extends Node = Node>(
   node: Node | Node[],
   position: number,
-  filter?: TravelCallback<T> | BooleanCallback
+  filter?: TravelCallback<T> | BooleanCallback,
 ): T | undefined {
   const filtered = filter ? travel(node, filter) : (node as T[]);
 

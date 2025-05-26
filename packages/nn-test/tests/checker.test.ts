@@ -1,12 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
-
 import Parser from "tree-sitter";
 
 import { Workspace } from "@nn-lang/nn-language";
-import { TypeChecker } from "@nn-lang/nn-type-checker";
-
 import language from "@nn-lang/nn-tree-sitter";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 
 const file = fs.readdirSync(path.join(__dirname, "cases"));
 const sources = file.filter((f) => f.endsWith(".nn"));

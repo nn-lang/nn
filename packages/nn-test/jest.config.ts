@@ -1,8 +1,8 @@
 import { JestConfigWithTsJest } from "ts-jest";
 
 const config: JestConfigWithTsJest = {
-  roots: ['./tests'],
+  roots: ["./tests"],
   preset: "ts-jest",
-}
+};
 
 export default config;

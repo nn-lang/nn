@@ -1,7 +1,8 @@
+import { Flow, Size, TypeChecker, Value } from "..";
+
 import { Workspace } from "@nn-lang/nn-language";
 
 import { Scope } from "./scope";
-import { Flow, Size, TypeChecker, Value } from "..";
 
 /**
  * Resolves the names in the syntax tree.
@@ -28,30 +29,40 @@ export function resolve(workspace: Workspace, context: TypeChecker): void {
     });
 
     Object.values(fileScope.declarations).flatMap((scope) =>
-      Value.resolve(scope, context)
+      Value.resolve(scope, context),
     );
 
     Object.values(fileScope.declarations).flatMap((scope) =>
-      Size.resolve(scope, context)
+      Size.resolve(scope, context),
     );
   });
 
-  workspace.sources.forEach((source, path) => {
-    const fileScope = context.scope.files[path];
+  workspace.sources.forEach((_, path) => {
+    const fileScope = context.scope.files[path]!;
     const dependencies = workspace.dependencyGraph.get(path) || [];
 
     dependencies.forEach(({ path, clause }) => {
       const targetScope = context.scope.files[path];
-      if (!targetScope) return;
+      if (!targetScope)
+        throw new Error(`Already checked file ${path} not found`);
 
-      clause.idents.forEach(({ value }) => {
-        fileScope.flows[value] = targetScope.flows[value];
+      clause.idents.forEach(({ value, position, source }) => {
+        const targetFlow = targetScope.flows[value];
+        if (!targetFlow) {
+          context.diagnostics.push({
+            source,
+            position,
+            message: `File '${clause.target}' has no member ${value}.`,
+          });
+        } else {
+          fileScope.flows[value] = targetFlow;
+        }
       });
     });
   });
 
   workspace.sources.forEach((_, path) => {
-    const fileScope = context.scope.files[path];
+    const fileScope = context.scope.files[path]!;
     Flow.resolve(fileScope, context);
 
     Object.values(fileScope.declarations)
@@ -69,7 +80,7 @@ export function resolve(workspace: Workspace, context: TypeChecker): void {
     Object.values(fileScope.flows).map((flow) => {
       const result = Flow.findCircular(flow);
 
-      if (result.is_some()) {
+      if (result.isSome()) {
         const flows = result.unwrap();
 
         context.diagnostics.push({
@@ -77,7 +88,7 @@ export function resolve(workspace: Workspace, context: TypeChecker): void {
           message: `Circular flow detected from '${flows
             .map((flow) => flow.declaration.declaration)
             .join(", ")}'.`,
-          position: flows[0].declaration.node.position,
+          position: flows[0]!.declaration.node.position,
         });
         context.nonRecoverable = true;
       }

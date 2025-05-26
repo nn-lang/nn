@@ -1,13 +1,18 @@
-import { Err, None, Ok, Option, Result, Some } from 'ts-features';
-import { CallExpression, Diagnostic, Node, Workspace } from '@nn-lang/nn-language';
+import { None, Option, Result, Some, err, ok } from "ts-features";
 
-import { checker, Type, Vertex } from './checker';
-import { Flow, resolve, WorkspaceScope } from './resolver';
+import {
+  CallExpression,
+  Diagnostic,
+  Node,
+  Workspace,
+} from "@nn-lang/nn-language";
 
-import { Callee, Edge } from './checker/edge';
+import { Type, Vertex, checker } from "./checker";
+import { Callee, Edge } from "./checker/edge";
+import { Flow, WorkspaceScope, resolve } from "./resolver";
 
-export * from './resolver'
-export * from './checker'
+export * from "./resolver";
+export * from "./checker";
 
 export interface TypeChecker {
   scope: WorkspaceScope;
@@ -21,14 +26,13 @@ export interface TypeChecker {
 
   _internal: {
     calleeMap: Map<Flow, Callee>;
-  }
+  };
 }
 
 export namespace TypeChecker {
-
   /**
    * Check the syntax tree and return the type checker object
-   * 
+   *
    * @param source the source file object to check
    * @returns the type checker object
    */
@@ -45,8 +49,8 @@ export namespace TypeChecker {
 
       _internal: {
         calleeMap: new Map(),
-      }
-    }
+      },
+    };
 
     resolve(workspace, context);
     if (context.nonRecoverable) {
@@ -58,36 +62,40 @@ export namespace TypeChecker {
   }
 
   export enum GetTypeError {
-    NodeHasNoType = 'Node has no type',
-    NodeIsNotVertex = 'Node is not a vertex',
+    NodeHasNoType = "Node has no type",
+    NodeIsNotVertex = "Node is not a vertex",
   }
 
   /**
-   * 
+   *
    * @param node the target node
-   * @param checker the type checker object 
-   * @returns Some if the node has a type, None 
+   * @param checker the type checker object
+   * @returns Some if the node has a type, None
    */
-  export function getType(node: Node, checker: TypeChecker): Result<Type, GetTypeError> {
+  export function getType(
+    node: Node,
+    checker: TypeChecker,
+  ): Result<Type, GetTypeError> {
     return checker.vertices.has(node)
-      ? checker.vertices.get(node)!.type
-        .map_or_else(
-          () => Err(GetTypeError.NodeHasNoType),
-          (type) => Ok(type)
+      ? checker.vertices.get(node)!.type.mapOrElse<Result<Type, GetTypeError>>(
+          () => err(GetTypeError.NodeHasNoType),
+          (type) => ok(type),
         )
-      : Err(GetTypeError.NodeIsNotVertex)
+      : err(GetTypeError.NodeIsNotVertex);
   }
 
   /**
-   * 
+   *
    * @param node the target call expression node
    * @param checker the type checker object
    * @returns the edge object
    */
-  export function getEdge(node: CallExpression, checker: TypeChecker): Option<Edge> {
-    const edge = checker.edges.find(edge => edge.toSolve.expression === node);
+  export function getEdge(
+    node: CallExpression,
+    checker: TypeChecker,
+  ): Option<Edge> {
+    const edge = checker.edges.find((edge) => edge.toSolve.expression === node);
 
     return edge ? Some(edge) : None();
   }
-
 }

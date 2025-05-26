@@ -40,7 +40,7 @@ export function isExpression(node: Node): node is Expression {
 }
 
 export function isIdentifierExpression(
-  node: Node
+  node: Node,
 ): node is IdentifierExpression {
   return node.type === "IdentifierExpression";
 }
@@ -54,13 +54,13 @@ export function isTupleExpression(node: Node): node is TupleExpression {
 }
 
 export function isAssignmentExpression(
-  node: Node
+  node: Node,
 ): node is AssignmentExpression {
   return node.type === "AssignmentExpression";
 }
 
 export function isStringLiteralExpression(
-  node: Node
+  node: Node,
 ): node is StringLiteralExpression {
   return node.type === "StringLiteralExpression";
 }

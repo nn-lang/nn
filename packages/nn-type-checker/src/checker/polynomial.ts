@@ -1,4 +1,5 @@
 import { Size } from "../resolver";
+
 import { SizeType } from "./sizetype";
 
 export interface Polynomial {
@@ -9,22 +10,25 @@ export interface Polynomial {
 export namespace Polynomial {
   export function from(sizeType: SizeType): Polynomial {
     switch (sizeType.computeKind) {
-      case 'pow':
-      case 'mul':
-      case 'div':
-      case 'add':
-      case 'sub':
-        return Polynomial[sizeType.computeKind](from(sizeType.left), from(sizeType.right));
-      case 'ident':
+      case "pow":
+      case "mul":
+      case "div":
+      case "add":
+      case "sub":
+        return Polynomial[sizeType.computeKind](
+          from(sizeType.left),
+          from(sizeType.right),
+        );
+      case "ident":
         return ident(sizeType.left as Size);
-      case 'number':
+      case "number":
         return constant(sizeType.left as number);
     }
   }
 
   export function pow(left: Polynomial, right: Polynomial): Polynomial {
     // TODO
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 
   export function constant(c: number): Polynomial {
@@ -40,7 +44,7 @@ export namespace Polynomial {
       constant: 0,
     };
   }
-  
+
   export function isConstant(p: Polynomial): boolean {
     return p.product.size === 0;
   }
@@ -70,7 +74,10 @@ export namespace Polynomial {
     return true;
   }
 
-  export function assign(p: Polynomial, map: Map<Size, Polynomial>): Polynomial {
+  export function assign(
+    p: Polynomial,
+    map: Map<Size, Polynomial>,
+  ): Polynomial {
     const result = copy(p);
 
     for (const [size, value] of p.product) {
@@ -119,10 +126,10 @@ export namespace Polynomial {
         if (key.ident < size.ident) {
           result.product.delete(key);
         }
-      })
+      });
 
       return result;
-    }
+    };
 
     const greater = (p: Polynomial, size: Size): Polynomial => {
       const result = copy(p);
@@ -131,10 +138,10 @@ export namespace Polynomial {
         if (key.ident <= size.ident) {
           result.product.delete(key);
         }
-      })
+      });
 
       return result;
-    }
+    };
 
     const lefts: Polynomial = [...left.product]
       .map(([size, value]): [Size, Polynomial] => {
@@ -154,12 +161,17 @@ export namespace Polynomial {
         return acc;
       }, Polynomial.constant(0));
 
-    return clean(add(add(lefts, rights), Polynomial.constant(left.constant * right.constant)));
+    return clean(
+      add(
+        add(lefts, rights),
+        Polynomial.constant(left.constant * right.constant),
+      ),
+    );
   }
 
   export function div(left: Polynomial, right: Polynomial): Polynomial {
     if (right.product.size) {
-      throw new Error('Not implemented for non-constant divisor');
+      throw new Error("Not implemented for non-constant divisor");
     }
 
     if (right.constant === 1) {
@@ -178,7 +190,9 @@ export namespace Polynomial {
 
   export function copy(p: Polynomial): Polynomial {
     return {
-      product: new Map([...p.product].map(([size, value]) => [size, copy(value)])),
+      product: new Map(
+        [...p.product].map(([size, value]) => [size, copy(value)]),
+      ),
       constant: p.constant,
     };
   }
@@ -198,15 +212,17 @@ export namespace Polynomial {
   }
 
   export function inspect(p: Polynomial): string {
-    const product = [...p.product].map(([size, value]) => {
-      const child = inspect(value);
+    const product = [...p.product]
+      .map(([size, value]) => {
+        const child = inspect(value);
 
-      if (child === '1') {
-        return `${size.ident}`;
-      } else {
-        return `${size.ident} * ${child}`;
-      }
-    }).join(' + ');
+        if (child === "1") {
+          return `${size.ident}`;
+        } else {
+          return `${size.ident} * ${child}`;
+        }
+      })
+      .join(" + ");
 
     if (p.constant === 0) {
       return product;
