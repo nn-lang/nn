@@ -56,7 +56,10 @@ export default class Onnx extends Command {
 
     const result = Codegen.Onnx.codegen(workspace, checker, {
       version: "0.1",
-      target: { declaration: flags.target, source: filePath },
+      target: {
+        declaration: flags.target,
+        source: path.normalize(path.join(process.cwd(), args.file)),
+      },
       sizeMap,
     });
 
@@ -69,7 +72,8 @@ export default class Onnx extends Command {
 
     result.mapOrElse(
       (result) => fs.writeFileSync(output, result),
-      () => {
+      (err) => {
+        console.error(err);
         this.exit(1);
       },
     );

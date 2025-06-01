@@ -66,6 +66,15 @@ export namespace TypeChecker {
     NodeIsNotVertex = "Node is not a vertex",
   }
 
+  export function getVertex(
+    node: Node,
+    checker: TypeChecker,
+  ): Result<Vertex, GetTypeError> {
+    return checker.vertices.has(node)
+      ? ok(checker.vertices.get(node)!)
+      : err(GetTypeError.NodeIsNotVertex);
+  }
+
   /**
    *
    * @param node the target node
@@ -76,12 +85,14 @@ export namespace TypeChecker {
     node: Node,
     checker: TypeChecker,
   ): Result<Type, GetTypeError> {
-    return checker.vertices.has(node)
-      ? checker.vertices.get(node)!.type.mapOrElse<Result<Type, GetTypeError>>(
+    return getVertex(node, checker).mapOrElse<Result<Type, GetTypeError>>(
+      (vertex) =>
+        vertex.type.mapOrElse<Result<Type, GetTypeError>>(
           () => err(GetTypeError.NodeHasNoType),
           (type) => ok(type),
-        )
-      : err(GetTypeError.NodeIsNotVertex);
+        ),
+      () => err(GetTypeError.NodeIsNotVertex),
+    );
   }
 
   /**
