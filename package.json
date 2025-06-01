@@ -9,18 +9,16 @@
   "private": true,
   "scripts": {
     "test": "yarn workspace @nn-lang/nn-test test",
-    "build": "yarn workspaces foreach --all --parallel run build && yarn build:cli",
-    "build:cli": "yarn swc src -d out",
+    "build": "yarn workspaces foreach --all --parallel run build",
     "clean": "yarn workspaces foreach --all --parallel run clean",
     "treesitter": "yarn workspace nn-tree-sitter run tree-sitter",
     "lint": "yarn eslint .",
     "lint:fix": "yarn eslint . --fix",
-    "nn": "node --enable-source-maps out/src/nn.js",
+    "nn-cli": "node packages/nn-cli/bin/dev.js",
     "publish": "yarn workspaces foreach -Apit --no-private npm publish --tolerate-republish",
     "bump:patch": "yarn workspaces foreach -Apit --no-private version patch"
   },
   "dependencies": {
-    "@nn-lang/nn-cli": "workspace:^",
     "ts-features": "^2.0.0"
   },
   "devDependencies": {
