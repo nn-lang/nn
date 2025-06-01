@@ -38,14 +38,24 @@ export namespace Onnx {
 
     const { outputs, initializers, nodes } = OnnxNode.fromFlow(flow, settings.sizeMap, checker);
 
+    const initializerMap = initializers.reduce((map, initializer) => {
+      map.set(initializer.name, initializer);
+      return map;
+    }, new Map<string, onnx.ValueInfoProto>());
+
+    const nodeMap = nodes.reduce((map, node) => {
+      map.set(node.name, node);
+      return map;
+    }, new Map<string, onnx.NodeProto>());
+
     const modelProto = new onnx.ModelProto({
       irVersion: onnx.Version.IR_VERSION,
       graph: new onnx.GraphProto({
         name: flow.declaration.declaration,
         input: [],
         output: outputs,
-        node: nodes,
-        initializer: initializers,
+        node: [...nodeMap.values()],
+        initializer: [...initializerMap.values()],
       }),
       opsetImport: [...DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN],
     });

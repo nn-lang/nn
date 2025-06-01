@@ -1,6 +1,11 @@
 import { onnx } from "onnx-proto";
 
-import { isCallExpression, travel } from "@nn-lang/nn-language";
+import {
+  isCallExpression,
+  isIdentifier,
+  isStringLiteralExpression,
+  travel,
+} from "@nn-lang/nn-language";
 import {
   Edge,
   Flow,
@@ -10,55 +15,148 @@ import {
   TypeChecker,
 } from "@nn-lang/nn-type-checker";
 
-import { TensorShape } from "./tensor-shape";
+import { flowAttribute } from "./attribute";
+import { TensorShape, TensorSizes } from "./tensor-shape";
 
 export namespace OnnxNode {
+  const _nodeMap = new Map<string, onnx.NodeProto>();
+
+  function makeNode(
+    flow: Flow,
+    parent: string,
+    inputs: string[],
+    sizes: Map<Size, Polynomial>,
+  ): onnx.NodeProto {
+    if (_nodeMap.has(parent)) return _nodeMap.get(parent)!;
+
+    const record = [...sizes.entries()].reduce(
+      (record, [size, polynomial]) => {
+        record[size.ident] = polynomial.constant;
+        return record;
+      },
+      {} as Record<string, number>,
+    );
+
+    const result = new onnx.NodeProto({
+      input: inputs,
+      output: [`${parent}_output_0`],
+      opType: flow.declaration.declaration,
+      name: `${parent}`,
+      attribute: flowAttribute(flow.declaration.declaration, record),
+    });
+
+    _nodeMap.set(parent, result);
+    return result;
+  }
+
   function solveEdge(
+    parentFlow: Flow,
     edge: Edge,
     flowEdges: Edge[],
     parent: string,
+    inputs: string[],
     sizes: Map<Size, Polynomial>,
     checker: TypeChecker,
   ): {
-    initializers: onnx.ValueInfoProto[];
+    initializers: onnx.TensorProto[];
     nodes: onnx.NodeProto[];
+    outputs: onnx.ValueInfoProto[];
   } {
-    const { initializers, nodes } = fromEdge(edge, parent, sizes, checker);
-    const toSolve = flowEdges.filter((edge) =>
-      edge.args.includes(edge.toSolve),
+    const initializers: onnx.TensorProto[] = [];
+    const nodes: onnx.NodeProto[] = [];
+    const edgeInputs: string[] = [];
+
+    edge.args.forEach((arg) => {
+      const fromOtherEdge = flowEdges.find(
+        (flowEdge) => flowEdge.toSolve === arg,
+      );
+
+      if (fromOtherEdge) {
+        const solved = solveEdge(
+          parentFlow,
+          fromOtherEdge,
+          flowEdges,
+          parent,
+          inputs,
+          sizes,
+          checker,
+        );
+
+        edgeInputs.push(...solved.outputs.map(({ name }) => name));
+        initializers.push(...solved.initializers);
+        nodes.push(...solved.nodes);
+      } else if (isIdentifier(arg.expression)) {
+        const argIdx = parentFlow.declaration.node.argumentList.args.findIndex(
+          ({ ident }) => ident === arg.expression,
+        );
+
+        edgeInputs.push(inputs[argIdx]!);
+      } else if (
+        isCallExpression(arg.expression) &&
+        arg.expression.callee.value === "Trainable"
+      ) {
+        if (isStringLiteralExpression(arg.expression.args[0]!)) {
+          initializers.push(
+            new onnx.TensorProto({
+              name: `${parent}_trainable_${arg.expression.args[0].value}`,
+              dataType: onnx.TensorProto.DataType.FLOAT,
+              dims: TensorSizes.fromType(arg.type.unwrap(), sizes),
+            }),
+          );
+
+          edgeInputs.push(
+            `${parent}_trainable_${arg.expression.args[0].value}`,
+          );
+        }
+      }
+    });
+
+    const callIdx = travel(
+      parentFlow.declaration.node,
+      isCallExpression,
+    ).findIndex((expr) => expr === edge.toSolve.expression);
+
+    const edgeSizeDict = [...edge.sizeDict.entries()].reduce(
+      (dict, [key, value]) => {
+        dict.set(key, Polynomial.assign(Polynomial.from(value), sizes));
+
+        return dict;
+      },
+      new Map<Size, Polynomial>(),
     );
 
-    toSolve.forEach((edge) => {
-      const solved = solveEdge(edge, flowEdges, parent, sizes, checker);
-      initializers.push(...solved.initializers);
-      nodes.push(...solved.nodes);
-    });
+    const solvedEdge = fromEdge(
+      edge,
+      `${parent}/${edge.callee.flow.declaration.declaration}_${callIdx}`,
+      edgeInputs,
+      edgeSizeDict,
+      checker,
+      sizes,
+    );
+
+    initializers.push(...solvedEdge.initializers);
+    nodes.push(...solvedEdge.nodes);
 
     return {
       initializers,
       nodes,
+      outputs: solvedEdge.outputs,
     };
   }
 
   export function fromEdge(
     edge: Edge,
     parent: string,
+    inputs: string[],
     sizes: Map<Size, Polynomial>,
     checker: TypeChecker,
+    outerSizes?: Map<Size, Polynomial>,
   ): {
     outputs: onnx.ValueInfoProto[];
-    initializers: onnx.ValueInfoProto[];
+    initializers: onnx.TensorProto[];
     nodes: onnx.NodeProto[];
   } {
     const flow = edge.callee.flow;
-
-    const outputs = [
-      TypeChecker.getType(flow.declaration.node, checker).unwrap(),
-    ];
-
-    const trainables = travel(flow.declaration.node, isCallExpression).filter(
-      (call) => call.callee.value === "Trainable",
-    );
 
     const flowEdges = travel(flow.declaration.node, isCallExpression)
       .filter((call) => call.callee.value !== "Trainable")
@@ -68,56 +166,32 @@ export namespace OnnxNode {
         ),
       );
 
-    const head = TypeChecker.getVertex(flow.declaration.node, checker).expect(
-      `Couldn't get head node vertex`,
-    );
-    const headEdge = flowEdges.find((edge) => edge.toSolve === head)!;
+    const head = edge.callee.return;
+    const headEdge = flowEdges.find((edge) => edge.toSolve === head);
 
-    const { initializers, nodes } = solveEdge(
-      headEdge,
-      flowEdges,
-      parent,
-      sizes,
-      checker,
-    );
-
-    return {
-      outputs: outputs.map(
-        (output, index) =>
+    if (!headEdge) {
+      // Declaration only
+      return {
+        outputs: [
           new onnx.ValueInfoProto({
-            name: `${parent}_output_${index}`,
+            name: `${parent}_output_0`,
             type: {
               tensorType: {
                 elemType: onnx.TensorProto.DataType.FLOAT,
-                shape: TensorShape.fromType(output, sizes),
+                shape: TensorShape.fromType(
+                  edge.toSolve.type.expect("Output type was Err"),
+                  outerSizes ?? sizes,
+                ),
               },
             },
           }),
-      ),
-      initializers: [
-        ...trainables
-          .map((call) => TypeChecker.getType(call, checker))
-          .map((type, index) =>
-            type.expect(
-              `Couldn't get trainable[${index}] type from type checker.`,
-            ),
-          )
-          .map(
-            (type, index) =>
-              new onnx.ValueInfoProto({
-                name: `${parent}_trainable_${index}`,
-                type: {
-                  tensorType: {
-                    elemType: onnx.TensorProto.DataType.FLOAT,
-                    shape: TensorShape.fromType(type, sizes),
-                  },
-                },
-              }),
-          ),
-        ...initializers,
-      ],
-      nodes,
-    };
+        ],
+        initializers: [],
+        nodes: [makeNode(flow, parent, inputs, sizes)],
+      };
+    }
+
+    return solveEdge(flow, headEdge, flowEdges, parent, inputs, sizes, checker);
   }
 
   export function fromFlow(
@@ -125,11 +199,21 @@ export namespace OnnxNode {
     sizes: Record<string, number>,
     checker: TypeChecker,
   ) {
-    const args = flow.args.map((value) =>
-      TypeChecker.getVertex(value.first, checker).unwrap(),
+    const callee = Edge._getCallee(flow, checker);
+    const args = flow.args.map((value, index) =>
+      TypeChecker.getVertex(value.first, checker).expect(
+        `Flow args[${index}] was err`,
+      ),
     );
-    const [sizeArgs, sizeDict] = flow.sizes.reduce(
+
+    const [sizeArgs, sizeDict] = Object.values(flow.declaration.sizes).reduce(
       ([sizeArgs, sizeDict], size) => {
+        if (!(size.ident in sizes)) {
+          throw new Error(
+            `Size ${size.ident} needed for flow ${callee.flow.declaration.declaration}`,
+          );
+        }
+
         const sizeType: SizeType = {
           computeKind: "number",
           left: sizes[size.ident]!,
@@ -144,21 +228,29 @@ export namespace OnnxNode {
       [[] as SizeType[], new Map<Size, SizeType>()],
     );
 
-    const sizeMap = flow.sizes.reduce((sizeMap, size) => {
-      sizeMap.set(size, sizeDict.get(size)!.polynomial!);
-      return sizeMap;
-    }, new Map<Size, Polynomial>());
+    const sizeMap = Object.values(flow.declaration.sizes).reduce(
+      (sizeMap, size) => {
+        sizeMap.set(size, sizeDict.get(size)!.polynomial!);
+        return sizeMap;
+      },
+      new Map<Size, Polynomial>(),
+    );
 
     const edge: Edge = {
       args,
-      callee: Edge._getCallee(flow, checker),
+      callee,
       sizeArgs,
       sizeDict,
-      toSolve: TypeChecker.getVertex(flow.declaration.node, checker).unwrap(),
+      toSolve: callee.return,
       passed: true,
     };
 
-    console.log(flow)
-    return fromEdge(edge, "", sizeMap, checker);
+    return fromEdge(
+      edge,
+      flow.declaration.declaration,
+      flow.args.map((arg) => arg.ident),
+      sizeMap,
+      checker,
+    );
   }
 }

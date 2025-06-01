@@ -15,3 +15,15 @@ export namespace TensorShape {
     });
   }
 }
+
+export namespace TensorSizes {
+  export function fromType(
+    type: Type,
+    sizes: Map<Size, Polynomial>,
+  ): number[] {
+    return type.shape
+      .map(Polynomial.from)
+      .map((p) => Polynomial.assign(p, sizes))
+      .map((p) => p.constant)
+  }
+}
