@@ -1,0 +1,27 @@
+# https://onnx.ai/onnx/operators/onnx__BatchNormalization.html
+BatchNormalizaton[input](x: Tensor[input]): Tensor[input]
+
+# https://onnx.ai/onnx/operators/onnx__Concat.html
+Concat(x: Tensor[Cx, H, W], y: Tensor[Cy, H, W]): Tensor[Cx + Cy, H, W]
+
+# https://onnx.ai/onnx/operators/onnx__Conv.html
+Conv[Group, Pads, Strides](x: Tensor[C, H, W], w: Tensor[M, C / Group, kH, kW], b: Tensor[M]): 
+  Tensor[
+    M,
+    (H + (2 * Pads) - kH) / Strides + 1,
+    (W + (2 * Pads) - kW) / Strides + 1
+  ]
+
+# https://onnx.ai/onnx/operators/onnx__ConvTranspose.html
+ConvTranspose[Group, Pads, Strides, M](x: Tensor[C, H, W], w: Tensor[C, M / Group, kH, kW], b: Tensor[M]):
+  Tensor[
+    M,
+    (H - 1) * Strides - 2 * Pads + kH,
+    (W - 1) * Strides - 2 * Pads + kW
+  ]
+
+# https://onnx.ai/onnx/operators/onnx__Relu.html
+Relu[input](x: Tensor[input]): Tensor[input]
+
+# https://onnx.ai/onnx/operators/onnx__Upsample.html
+Upsample[sH, sW](x: Tensor[H, W]): Tensor[H * sH, W * sW]
