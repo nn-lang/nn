@@ -147,8 +147,8 @@ export namespace Type {
     }
 
     for (let i = 0; i < from.shape.length; i++) {
-      const leftSize = from.shape.at(1)!;
-      const rightSize = to.shape.at(1)!;
+      const leftSize = from.shape.at(i)!;
+      const rightSize = to.shape.at(i)!;
 
       const result = SizeType.findAssignable(leftSize, rightSize);
 

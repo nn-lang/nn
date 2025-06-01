@@ -258,8 +258,8 @@ export namespace Edge {
       if (!Polynomial.isSame(leftPolynomial, rightPolynomial)) {
         context.diagnostics.push({
           source: edge.toSolve.expression.source,
-          message: `Size mismatch: ${Polynomial.inspect(leftPolynomial)} != ${Polynomial.inspect(rightPolynomial)}.`,
-          position: edge.toSolve.expression.position,
+          message: `Size mismatch. expected: ${Polynomial.inspect(rightPolynomial)}, actual: ${Polynomial.inspect(leftPolynomial)}.`,
+          position: left[index]?.node?.position || edge.toSolve.expression.position,
         });
 
         edge.passed = false; // unrecoverable

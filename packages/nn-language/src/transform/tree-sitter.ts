@@ -368,10 +368,15 @@ export namespace Transform {
         throw new Error("Expected a string literal expression node");
       }
 
+      const targetString =
+        node.grammarType === "single_quoted_string"
+          ? node.text.replace(/'/g, "")
+          : node.text.replace(/"/g, "");
+
       return createNode(
         "StringLiteralExpression",
         {
-          value: node.text,
+          value: targetString,
         },
         node,
         context,
