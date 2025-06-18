@@ -5,7 +5,7 @@ import Parser from "tree-sitter";
 import { Workspace } from "@nn-lang/nn-language";
 import language from "@nn-lang/nn-tree-sitter";
 
-import { getErrorJson } from "./utils";
+import { TestFileSystem, getErrorJson } from "./utils";
 
 const file = fs.readdirSync(path.join(__dirname, "cases"));
 
@@ -28,8 +28,11 @@ beforeAll(async () => {
 describe("parser", () => {
   ok.forEach((file) => {
     it(`should parse ${file}`, async () => {
-      const options = { cwd: path.join(__dirname, "cases") };
-      const workspace = Workspace.create([file], options, parser);
+      const options = {
+        cwd: path.join(__dirname, "cases"),
+        fileSystem: TestFileSystem,
+      };
+      const workspace = await Workspace.create([file], options, parser);
 
       const diagnostics = [
         ...[...workspace.sources.values()].flatMap(
@@ -47,10 +50,13 @@ describe("parser", () => {
 
   err.forEach((file) => {
     it(`should emit errors at ${file}`, async () => {
-      const options = { cwd: path.join(__dirname, "cases") };
+      const options = {
+        cwd: path.join(__dirname, "cases"),
+        fileSystem: TestFileSystem,
+      };
 
-      const errorJson = getErrorJson(__dirname, file);
-      const workspace = Workspace.create([file], options, parser);
+      const errorJson = await getErrorJson(__dirname, file);
+      const workspace = await Workspace.create([file], options, parser);
 
       const diagnostics = [
         ...[...workspace.sources.values()].flatMap(

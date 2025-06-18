@@ -1,10 +1,42 @@
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import { cwd } from "node:process";
 import Parser from "tree-sitter";
 import { Result, err, ok } from "ts-features";
 
-import { Diagnostic, Workspace } from "@nn-lang/nn-language";
+import {
+  CompilerFileSystem,
+  Diagnostic,
+  Workspace,
+} from "@nn-lang/nn-language";
 import language from "@nn-lang/nn-tree-sitter";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
+
+export const CliFileSystem: CompilerFileSystem = {
+  dirname: (filePath) => path.normalize(path.dirname(filePath)),
+  resolve: (...paths) => path.normalize(path.join(...paths)),
+
+  optionResolver: (filePath, options) =>
+    path.normalize(path.join(options.cwd, filePath)),
+
+  readFile: async (path) => fs.readFile(path, "utf-8"),
+  writeFile: async (path, content) => {
+    try {
+      await fs.writeFile(path, content);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  checkExists: async (path) => {
+    try {
+      await fs.access(path, fs.constants.R_OK);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+};
 
 export function formatDiagnostic({
   source,
@@ -52,19 +84,19 @@ export function formatDiagnostic({
   return result;
 }
 
-export function compilation(path: string): Result<
+export async function compilation(path: string): Promise<Result<
   {
     workspace: Workspace;
     checker: TypeChecker;
   },
   Diagnostic[]
-> {
+>> {
   const parser = new Parser();
   parser.setLanguage(language as any);
 
-  const options = { cwd: cwd() };
+  const options = { cwd: cwd(), fileSystem: CliFileSystem };
 
-  const workspace = Workspace.create([path], options, parser);
+  const workspace = await Workspace.create([path], options, parser);
   const checker = TypeChecker.check(workspace);
 
   const diagnostics = [

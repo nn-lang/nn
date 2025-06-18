@@ -7,46 +7,43 @@ A new CLI generated with oclif
 [![Downloads/week](https://img.shields.io/npm/dw/nn-cli.svg)](https://npmjs.org/package/nn-cli)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [nn-cli](#nn-cli)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @nn-lang/nn-cli
 $ nn-cli COMMAND
 running command...
 $ nn-cli (--version)
-@nn-lang/nn-cli/0.1.8 linux-x64 node-v22.15.0
+@nn-lang/nn-cli/0.1.9 linux-x64 node-v22.15.0
 $ nn-cli --help [COMMAND]
 USAGE
   $ nn-cli COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`nn-cli check FILE`](#nn-cli-check-file)
-- [`nn-cli help [COMMAND]`](#nn-cli-help-command)
-- [`nn-cli onnx FILE`](#nn-cli-onnx-file)
-- [`nn-cli plugins`](#nn-cli-plugins)
-- [`nn-cli plugins:add PLUGIN`](#nn-cli-pluginsadd-plugin)
-- [`nn-cli plugins:inspect PLUGIN...`](#nn-cli-pluginsinspect-plugin)
-- [`nn-cli plugins:install PLUGIN`](#nn-cli-pluginsinstall-plugin)
-- [`nn-cli plugins:link PATH`](#nn-cli-pluginslink-path)
-- [`nn-cli plugins:remove [PLUGIN]`](#nn-cli-pluginsremove-plugin)
-- [`nn-cli plugins:reset`](#nn-cli-pluginsreset)
-- [`nn-cli plugins:uninstall [PLUGIN]`](#nn-cli-pluginsuninstall-plugin)
-- [`nn-cli plugins:unlink [PLUGIN]`](#nn-cli-pluginsunlink-plugin)
-- [`nn-cli plugins:update`](#nn-cli-pluginsupdate)
+* [`nn-cli check FILE`](#nn-cli-check-file)
+* [`nn-cli help [COMMAND]`](#nn-cli-help-command)
+* [`nn-cli onnx FILE`](#nn-cli-onnx-file)
+* [`nn-cli plugins`](#nn-cli-plugins)
+* [`nn-cli plugins:add PLUGIN`](#nn-cli-pluginsadd-plugin)
+* [`nn-cli plugins:inspect PLUGIN...`](#nn-cli-pluginsinspect-plugin)
+* [`nn-cli plugins:install PLUGIN`](#nn-cli-pluginsinstall-plugin)
+* [`nn-cli plugins:link PATH`](#nn-cli-pluginslink-path)
+* [`nn-cli plugins:remove [PLUGIN]`](#nn-cli-pluginsremove-plugin)
+* [`nn-cli plugins:reset`](#nn-cli-pluginsreset)
+* [`nn-cli plugins:uninstall [PLUGIN]`](#nn-cli-pluginsuninstall-plugin)
+* [`nn-cli plugins:unlink [PLUGIN]`](#nn-cli-pluginsunlink-plugin)
+* [`nn-cli plugins:update`](#nn-cli-pluginsupdate)
 
 ## `nn-cli check FILE`
 
@@ -58,7 +55,7 @@ ARGUMENTS
   FILE  nn source file path to check
 ```
 
-_See code: [src/commands/check.ts](https://github.com/nn-lang/nn/blob/v0.1.8/src/commands/check.ts)_
+_See code: [src/commands/check.ts](https://github.com/nn-lang/nn/blob/v0.1.9/src/commands/check.ts)_
 
 ## `nn-cli help [COMMAND]`
 
@@ -100,7 +97,7 @@ DESCRIPTION
   Compile nn source code to onnx graph
 ```
 
-_See code: [src/commands/onnx.ts](https://github.com/nn-lang/nn/blob/v0.1.8/src/commands/onnx.ts)_
+_See code: [src/commands/onnx.ts](https://github.com/nn-lang/nn/blob/v0.1.9/src/commands/onnx.ts)_
 
 ## `nn-cli plugins`
 
@@ -391,5 +388,4 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/update.ts)_
-
 <!-- commandsstop -->

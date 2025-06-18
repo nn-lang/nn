@@ -13,7 +13,7 @@ export default class Check extends Command {
     const { args } = await this.parse(Check);
 
     const filePath = args.file;
-    const compilationResult = compilation(filePath);
+    const compilationResult = await compilation(filePath);
 
     compilationResult.mapOrElse(
       () => {
