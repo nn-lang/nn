@@ -9,17 +9,33 @@ export interface CompilerFileSystem {
   dirname: (path: string) => string;
   resolve: (...paths: string[]) => string;
 
-  optionResolver: (path: string, options: CompilerOptions) => string;
+  dependencyResolver: (
+    fromUri: string,
+    reference: string,
+    options: CompilerOptions,
+  ) => string;
 
-  readFile: (path: string) => Promise<string>;
-  writeFile: (path: string, content: string) => Promise<boolean>;
-  checkExists: (path: string) => Promise<boolean>;
+  readFile: (uri: string) => Promise<string>;
+  writeFile: (uri: string, content: string) => Promise<boolean>;
+  checkExists: (uri: string) => Promise<boolean>;
+}
+
+export interface Dependency {
+  source: SourceFile;
+  dependency: Import;
+  targetFileUri: string;
 }
 
 export interface Workspace {
+  /**
+   * Source List map
+   *
+   * K: URI for file
+   * V: SourceFile
+   */
   sources: Map<string, SourceFile>;
 
-  dependencyGraph: Map<string, { path: string; clause: Import }[]>;
+  dependencyGraph: Map<string, Dependency[]>;
 
   options: CompilerOptions;
   parser: Parser;
@@ -30,19 +46,12 @@ export interface Workspace {
 }
 
 export namespace Workspace {
-  interface ToResolve {
-    source: SourceFile;
-    dependency: Import;
-    targetFile: string;
-  }
-
   export async function create(
-    files: string[],
+    fileUriList: string[],
     options: CompilerOptions,
     parser: Parser,
     old?: Workspace,
   ): Promise<Workspace> {
-    const fs = options.fileSystem;
     const workspace: Workspace = {
       sources: new Map(),
       dependencyGraph: new Map(),
@@ -53,82 +62,34 @@ export namespace Workspace {
       _context: { node: CreateNodeState.default },
     };
 
-    const unresolved: ToResolve[] = [];
+    return addFiles(fileUriList, workspace);
+  }
 
-    await Promise.all(files.map(async (file) => {
-      const filePath = options.fileSystem.optionResolver(file, options);
+  export async function addFiles(
+    fileUriList: string[],
+    workspace: Workspace,
+  ): Promise<Workspace> {
+    const unresolved: Dependency[] = [];
+    const sources = await Promise.all(
+      fileUriList.map((uri) => makeSource(uri, workspace)),
+    );
 
-      const sourceFile = await SourceFile.create(
-        filePath,
-        workspace,
-        parser,
-        old?.sources.get(filePath),
-      );
-
-      const dependencies = sourceFile.dependencies.map((dependency) => ({
-        source: sourceFile,
-        dependency,
-        targetFile: fs.optionResolver(
-          fs.resolve(fs.dirname(sourceFile.path), dependency.target),
-          options,
-        ),
-      }));
-
-      workspace.sources.set(filePath, sourceFile);
-      workspace.dependencyGraph.set(
-        filePath,
-        dependencies.map(({ dependency, targetFile }) => ({
-          clause: dependency,
-          path: targetFile,
-        })),
-      );
+    sources.forEach(([source, dependencies]) => {
+      workspace.sources.set(source.path, source);
+      workspace.dependencyGraph.set(source.path, dependencies);
 
       unresolved.push(...dependencies);
-    }));
+    });
 
     while (unresolved.length) {
-      const { source, dependency, targetFile } = unresolved.pop()!;
+      const toResolve = unresolved.pop()!;
+      const resolved = await resolveDependency(toResolve, workspace);
 
-      if (workspace.sources.has(targetFile)) {
-        continue;
-      }
+      if (!resolved) continue;
 
-      if (!(await fs.checkExists(targetFile))) {
-        source.diagnostics.push({
-          source,
-          message: `File not exists: ${dependency.target}`,
-          position: dependency.position,
-        });
-
-        continue;
-      }
-
-      const sourceFile = await SourceFile.create(
-        targetFile,
-        workspace,
-        parser,
-        old?.sources.get(targetFile),
-      );
-
-      const dependencies = await Promise.all(
-        sourceFile.dependencies.map((dependency) => ({
-          source: sourceFile,
-          dependency,
-          targetFile: fs.optionResolver(
-            fs.resolve(fs.dirname(sourceFile.path), dependency.target),
-            options,
-          ),
-        })),
-      );
-
-      workspace.sources.set(targetFile, sourceFile);
-      workspace.dependencyGraph.set(
-        targetFile,
-        dependencies.map(({ dependency, targetFile }) => ({
-          clause: dependency,
-          path: targetFile,
-        })),
-      );
+      const [source, dependencies] = resolved;
+      workspace.sources.set(source.path, source);
+      workspace.dependencyGraph.set(source.path, dependencies);
 
       unresolved.push(...dependencies);
     }
@@ -136,89 +97,55 @@ export namespace Workspace {
     return workspace;
   }
 
-  export async function addFiles(
-    files: string[],
+  async function resolveDependency(
+    toResolve: Dependency,
     workspace: Workspace,
-  ): Promise<Workspace> {
+  ): Promise<[SourceFile, Dependency[]] | undefined> {
     const fs = workspace.options.fileSystem;
-    const unresolved: ToResolve[] = [];
+    const { source, dependency, targetFileUri } = toResolve;
 
-    await Promise.all(files.map(async (file) => {
-      const filePath = fs.optionResolver(file, workspace.options);
-
-      const sourceFile = await SourceFile.create(
-        filePath,
-        workspace,
-        workspace.parser,
-        workspace.sources.get(filePath),
-      );
-
-      const dependencies = sourceFile.dependencies.map((dependency) => ({
-        source: sourceFile,
-        dependency,
-        targetFile: fs.optionResolver(
-          fs.resolve(fs.dirname(sourceFile.path), dependency.target),
-          workspace.options,
-        ),
-      }));
-
-      workspace.sources.set(filePath, sourceFile);
-      workspace.dependencyGraph.set(
-        filePath,
-        dependencies.map(({ dependency, targetFile }) => ({
-          clause: dependency,
-          path: targetFile,
-        })),
-      );
-
-      unresolved.push(...dependencies);
-    }));
-
-    while (unresolved.length) {
-      const { source, dependency, targetFile } = unresolved.pop()!;
-
-      if (workspace.sources.has(targetFile)) {
-        continue;
-      }
-
-      if (!(await fs.checkExists(targetFile))) {
-        source.diagnostics.push({
-          source,
-          message: `File not exists: ${dependency.target}`,
-          position: dependency.position,
-        });
-
-        continue;
-      }
-
-      const sourceFile = await SourceFile.create(
-        targetFile,
-        workspace,
-        workspace.parser,
-        workspace.sources.get(targetFile),
-      );
-
-      const dependencies = sourceFile.dependencies.map((dependency) => ({
-        source: sourceFile,
-        dependency,
-        targetFile: fs.optionResolver(
-          fs.resolve(fs.dirname(sourceFile.path), dependency.target),
-          workspace.options,
-        ),
-      }));
-
-      workspace.sources.set(targetFile, sourceFile);
-      workspace.dependencyGraph.set(
-        targetFile,
-        dependencies.map(({ dependency, targetFile }) => ({
-          clause: dependency,
-          path: targetFile,
-        })),
-      );
-
-      unresolved.push(...dependencies);
+    if (workspace.sources.has(targetFileUri)) {
+      return;
     }
 
-    return workspace;
+    if (!(await fs.checkExists(targetFileUri))) {
+      source.diagnostics.push({
+        source,
+        message: `File not exists: ${dependency.target}`,
+        position: dependency.position,
+      });
+
+      return;
+    }
+
+    return await makeSource(targetFileUri, workspace);
+  }
+
+  async function makeSource(
+    fileUri: string,
+    workspace: Workspace,
+  ): Promise<[SourceFile, Dependency[]]> {
+    const fs = workspace.options.fileSystem;
+
+    const sourceFile = await SourceFile.create(
+      fileUri,
+      workspace,
+      workspace.parser,
+      workspace.sources.get(fileUri),
+    );
+
+    const dependencies: Dependency[] = sourceFile.dependencies.map(
+      (dependency) => ({
+        source: sourceFile,
+        dependency,
+        targetFileUri: fs.dependencyResolver(
+          fileUri,
+          dependency.target,
+          workspace.options,
+        ),
+      }),
+    );
+
+    return [sourceFile, dependencies];
   }
 }

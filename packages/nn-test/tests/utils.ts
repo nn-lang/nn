@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
-import * as path from "path";
+import * as path from "node:path";
+import * as url from "node:url";
 
 import { CompilerFileSystem } from "@nn-lang/nn-language";
 
@@ -18,21 +19,22 @@ export const TestFileSystem: CompilerFileSystem = {
   dirname: (filePath) => path.normalize(path.dirname(filePath)),
   resolve: (...paths) => path.normalize(path.join(...paths)),
 
-  optionResolver: (filePath, options) =>
-    path.normalize(path.join(options.cwd, filePath)),
+  dependencyResolver: (fromUri, reference, options) =>
+    url.resolve(fromUri, reference),
 
-  readFile: async (path) => fs.readFile(path, "utf-8"),
-  writeFile: async (path, content) => {
+  readFile: async (fileUri) => fs.readFile(url.fileURLToPath(fileUri), "utf-8"),
+
+  writeFile: async (fileUri, content) => {
     try {
-      await fs.writeFile(path, content);
+      await fs.writeFile(url.fileURLToPath(fileUri), content);
       return true;
     } catch {
       return false;
     }
   },
-  checkExists: async (path) => {
+  checkExists: async (fileUri) => {
     try {
-      await fs.access(path, fs.constants.R_OK);
+      await fs.access(url.fileURLToPath(fileUri), fs.constants.R_OK);
       return true;
     } catch {
       return false;

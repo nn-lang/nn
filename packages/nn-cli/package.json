@@ -1,7 +1,7 @@
 {
   "name": "@nn-lang/nn-cli",
   "description": "A new CLI generated with oclif",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": "SieR-VR",
   "bin": "./bin/run.js",
   "bugs": "https://github.com/nn-lang/nn/issues",
@@ -36,7 +36,7 @@
   },
   "files": [
     "./bin",
-    "./dist",
+    "./out",
     "./oclif.manifest.json"
   ],
   "homepage": "https://github.com/nn-lang/nn",
@@ -44,11 +44,11 @@
     "oclif"
   ],
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "out/src/index.js",
   "oclif": {
     "bin": "nn-cli",
     "dirname": "nn-cli",
-    "commands": "./dist/commands",
+    "commands": "./out/src/commands",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
@@ -56,12 +56,12 @@
   },
   "repository": "nn-lang/nn",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf out && swc ./src -d ./out",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
     "prepack": "oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md"
   },
-  "types": "dist/index.d.ts"
+  "types": "src/index.ts"
 }

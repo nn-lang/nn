@@ -2339,12 +2339,10 @@ __metadata:
     "@swc/cli": "npm:^0.7.7"
     "@swc/core": "npm:^1.10.0"
     "@trivago/prettier-plugin-sort-imports": "npm:^5.2.2"
-    "@types/node": "npm:^22.10.1"
     eslint: "npm:^9.16.0"
     globals: "npm:^16.2.0"
     prettier: "npm:^3.5.3"
     ts-features: "npm:^2.0.0"
-    ts-node: "npm:^10.9.1"
     typescript: "npm:^5.7.2"
     typescript-eslint: "npm:^8.17.0"
   languageName: unknown
@@ -3949,7 +3947,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^22.10.1":
+"@types/node@npm:*, @types/node@npm:>=13.7.0":
   version: 22.13.14
   resolution: "@types/node@npm:22.13.14"
   dependencies:
@@ -11603,7 +11601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10, ts-node@npm:^10.9.1":
+"ts-node@npm:^10":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:

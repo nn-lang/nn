@@ -41,18 +41,18 @@ export function resolve(workspace: Workspace, context: TypeChecker): void {
     const fileScope = context.scope.files[path]!;
     const dependencies = workspace.dependencyGraph.get(path) || [];
 
-    dependencies.forEach(({ path, clause }) => {
-      const targetScope = context.scope.files[path];
+    dependencies.forEach(({ targetFileUri, dependency }) => {
+      const targetScope = context.scope.files[targetFileUri];
       if (!targetScope)
-        throw new Error(`Already checked file ${path} not found`);
+        throw new Error(`Already checked file ${targetFileUri} not found`);
 
-      clause.idents.forEach(({ value, position, source }) => {
+      dependency.idents.forEach(({ value, position, source }) => {
         const targetFlow = targetScope.flows[value];
         if (!targetFlow) {
           context.diagnostics.push({
             source,
             position,
-            message: `File '${clause.target}' has no member ${value}.`,
+            message: `File '${dependency.target}' has no member ${value}.`,
           });
         } else {
           fileScope.flows[value] = targetFlow;
