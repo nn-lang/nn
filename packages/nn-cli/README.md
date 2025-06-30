@@ -20,7 +20,7 @@ $ npm install -g @nn-lang/nn-cli
 $ nn-cli COMMAND
 running command...
 $ nn-cli (--version)
-@nn-lang/nn-cli/0.1.9 linux-x64 node-v22.15.0
+@nn-lang/nn-cli/0.1.10 linux-x64 node-v22.15.0
 $ nn-cli --help [COMMAND]
 USAGE
   $ nn-cli COMMAND
@@ -55,7 +55,7 @@ ARGUMENTS
   FILE  nn source file path to check
 ```
 
-_See code: [src/commands/check.ts](https://github.com/nn-lang/nn/blob/v0.1.9/src/commands/check.ts)_
+_See code: [src/commands/check.ts](https://github.com/nn-lang/nn/blob/v0.1.10/src/commands/check.ts)_
 
 ## `nn-cli help [COMMAND]`
 
@@ -97,7 +97,7 @@ DESCRIPTION
   Compile nn source code to onnx graph
 ```
 
-_See code: [src/commands/onnx.ts](https://github.com/nn-lang/nn/blob/v0.1.9/src/commands/onnx.ts)_
+_See code: [src/commands/onnx.ts](https://github.com/nn-lang/nn/blob/v0.1.10/src/commands/onnx.ts)_
 
 ## `nn-cli plugins`
 
