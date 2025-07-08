@@ -36,7 +36,7 @@ export default class Onnx extends Command {
     const { args, flags } = await this.parse(Onnx);
 
     const filePath = args.file;
-    const compilationResult = compilation(filePath);
+    const compilationResult = await compilation(filePath);
 
     const { checker, workspace } = compilationResult.unwrapOrElse(
       (diagnostics) => {

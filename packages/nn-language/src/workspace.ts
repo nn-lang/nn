@@ -1,119 +1,151 @@
 import { CreateNodeState, Import, Parser, SourceFile } from ".";
-import * as fs from "node:fs";
-import path from "path";
 
 export interface CompilerOptions {
   cwd: string;
+  fileSystem: CompilerFileSystem;
+}
+
+export interface CompilerFileSystem {
+  dirname: (path: string) => string;
+  resolve: (...paths: string[]) => string;
+
+  dependencyResolver: (
+    fromUri: string,
+    reference: string,
+    options: CompilerOptions,
+  ) => string;
+
+  readFile: (uri: string) => Promise<string>;
+  writeFile: (uri: string, content: string) => Promise<boolean>;
+  checkExists: (uri: string) => Promise<boolean>;
+}
+
+export interface Dependency {
+  source: SourceFile;
+  dependency: Import;
+  targetFileUri: string;
 }
 
 export interface Workspace {
+  /**
+   * Source List map
+   *
+   * K: URI for file
+   * V: SourceFile
+   */
   sources: Map<string, SourceFile>;
 
-  dependencyGraph: Map<string, { path: string; clause: Import }[]>;
+  dependencyGraph: Map<string, Dependency[]>;
 
   options: CompilerOptions;
+  parser: Parser;
+
   _context: {
     node: CreateNodeState;
   };
 }
 
 export namespace Workspace {
-  interface ToResolve {
-    source: SourceFile;
-    dependency: Import;
-    targetFile: string;
-  }
-
-  export function create(
-    files: string[],
+  export async function create(
+    fileUriList: string[],
     options: CompilerOptions,
     parser: Parser,
     old?: Workspace,
-  ): Workspace {
+  ): Promise<Workspace> {
     const workspace: Workspace = {
       sources: new Map(),
       dependencyGraph: new Map(),
 
       options,
+      parser,
+
       _context: { node: CreateNodeState.default },
     };
 
-    const unresolved: ToResolve[] = [];
+    return addFiles(fileUriList, workspace);
+  }
 
-    files.forEach((file) => {
-      const filePath = path.normalize(path.join(options.cwd, file));
+  export async function addFiles(
+    fileUriList: string[],
+    workspace: Workspace,
+  ): Promise<Workspace> {
+    const unresolved: Dependency[] = [];
+    const sources = await Promise.all(
+      fileUriList.map((uri) => makeSource(uri, workspace)),
+    );
 
-      const sourceFile = SourceFile.create(
-        filePath,
-        workspace,
-        parser,
-        old?.sources.get(filePath),
-      );
-
-      const dependencies = sourceFile.dependencies.map((dependency) => ({
-        source: sourceFile,
-        dependency,
-        targetFile: path.normalize(
-          path.resolve(path.dirname(sourceFile.path), dependency.target),
-        ),
-      }));
-
-      workspace.sources.set(filePath, sourceFile);
-      workspace.dependencyGraph.set(
-        filePath,
-        dependencies.map(({ dependency, targetFile }) => ({
-          clause: dependency,
-          path: targetFile,
-        })),
-      );
+    sources.forEach(([source, dependencies]) => {
+      workspace.sources.set(source.path, source);
+      workspace.dependencyGraph.set(source.path, dependencies);
 
       unresolved.push(...dependencies);
     });
 
     while (unresolved.length) {
-      const { source, dependency, targetFile } = unresolved.pop()!;
+      const toResolve = unresolved.pop()!;
+      const resolved = await resolveDependency(toResolve, workspace);
 
-      if (workspace.sources.has(targetFile)) {
-        continue;
-      }
+      if (!resolved) continue;
 
-      if (!fs.existsSync(targetFile)) {
-        source.diagnostics.push({
-          source,
-          message: `File not exists: ${dependency.target}`,
-          position: dependency.position,
-        });
-
-        continue;
-      }
-
-      const sourceFile = SourceFile.create(
-        targetFile,
-        workspace,
-        parser,
-        old?.sources.get(targetFile),
-      );
-
-      const dependencies = sourceFile.dependencies.map((dependency) => ({
-        source: sourceFile,
-        dependency,
-        targetFile: path.normalize(
-          path.resolve(path.dirname(sourceFile.path), dependency.target),
-        ),
-      }));
-
-      workspace.sources.set(targetFile, sourceFile);
-      workspace.dependencyGraph.set(
-        targetFile,
-        dependencies.map(({ dependency, targetFile }) => ({
-          clause: dependency,
-          path: targetFile,
-        })),
-      );
+      const [source, dependencies] = resolved;
+      workspace.sources.set(source.path, source);
+      workspace.dependencyGraph.set(source.path, dependencies);
 
       unresolved.push(...dependencies);
     }
 
     return workspace;
+  }
+
+  async function resolveDependency(
+    toResolve: Dependency,
+    workspace: Workspace,
+  ): Promise<[SourceFile, Dependency[]] | undefined> {
+    const fs = workspace.options.fileSystem;
+    const { source, dependency, targetFileUri } = toResolve;
+
+    if (workspace.sources.has(targetFileUri)) {
+      return;
+    }
+
+    if (!(await fs.checkExists(targetFileUri))) {
+      source.diagnostics.push({
+        source,
+        message: `File not exists: ${dependency.target}`,
+        position: dependency.position,
+      });
+
+      return;
+    }
+
+    return await makeSource(targetFileUri, workspace);
+  }
+
+  async function makeSource(
+    fileUri: string,
+    workspace: Workspace,
+  ): Promise<[SourceFile, Dependency[]]> {
+    const fs = workspace.options.fileSystem;
+
+    const sourceFile = await SourceFile.create(
+      fileUri,
+      workspace,
+      workspace.parser,
+      workspace.sources.get(fileUri),
+    );
+
+    const dependencies: Dependency[] = sourceFile.dependencies.map(
+      (dependency) => ({
+        source: sourceFile,
+        dependency,
+        targetFileUri: fs.dependencyResolver(
+          fileUri,
+          dependency.target,
+          workspace.options,
+        ),
+      }),
+    );
+
+    return [sourceFile, dependencies];
   }
 }

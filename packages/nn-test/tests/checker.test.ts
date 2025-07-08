@@ -6,6 +6,8 @@ import { Workspace } from "@nn-lang/nn-language";
 import language from "@nn-lang/nn-tree-sitter";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 
+import { TestFileSystem } from "./utils";
+
 const file = fs.readdirSync(path.join(__dirname, "cases"));
 const sources = file.filter((f) => f.endsWith(".nn"));
 
@@ -18,9 +20,9 @@ beforeAll(async () => {
 describe("checker", () => {
   sources.forEach((file) => {
     it(`should type check ${file}`, async () => {
-      const options = { cwd: path.join(__dirname, "cases") };
+      const options = { cwd: path.join(__dirname, "cases"), fileSystem: TestFileSystem };
 
-      const workspace = Workspace.create([file], options, parser);
+      const workspace = await Workspace.create([file], options, parser);
       expect(() => TypeChecker.check(workspace)).not.toThrow();
     });
   });

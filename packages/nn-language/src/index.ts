@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import type * as TreeSitter from "tree-sitter";
 
 import { Declaration, Import } from "./ast";
@@ -24,13 +23,14 @@ export interface Parser {
 }
 
 export namespace SourceFile {
-  export function create(
+  export async function create(
     path: string,
     workspace: Workspace,
     parser: Parser,
     old?: SourceFile,
-  ): SourceFile {
-    const content = fs.readFileSync(path, "utf-8");
+  ): Promise<SourceFile> {
+    const fs = workspace.options.fileSystem;
+    const content = await fs.readFile(path);
 
     const tree = parser.parse(content, old?._oldTree);
     const context: SourceFile = old ?? {

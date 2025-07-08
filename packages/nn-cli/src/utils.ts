@@ -1,10 +1,43 @@
-import { cwd } from "node:process";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import * as url from "node:url";
 import Parser from "tree-sitter";
 import { Result, err, ok } from "ts-features";
 
-import { Diagnostic, Workspace } from "@nn-lang/nn-language";
+import {
+  CompilerFileSystem,
+  Diagnostic,
+  Workspace,
+} from "@nn-lang/nn-language";
 import language from "@nn-lang/nn-tree-sitter";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
+
+export const CliFileSystem: CompilerFileSystem = {
+  dirname: (filePath) => path.normalize(path.dirname(filePath)),
+  resolve: (...paths) => path.normalize(path.join(...paths)),
+
+  dependencyResolver: (fromUri, reference, options) =>
+    url.resolve(fromUri, reference),
+
+  readFile: async (fileUri) => fs.readFile(url.fileURLToPath(fileUri), "utf-8"),
+
+  writeFile: async (fileUri, content) => {
+    try {
+      await fs.writeFile(url.fileURLToPath(fileUri), content);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  checkExists: async (fileUri) => {
+    try {
+      await fs.access(url.fileURLToPath(fileUri), fs.constants.R_OK);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+};
 
 export function formatDiagnostic({
   source,
@@ -52,19 +85,25 @@ export function formatDiagnostic({
   return result;
 }
 
-export function compilation(path: string): Result<
-  {
-    workspace: Workspace;
-    checker: TypeChecker;
-  },
-  Diagnostic[]
+export async function compilation(filePath: string): Promise<
+  Result<
+    {
+      workspace: Workspace;
+      checker: TypeChecker;
+    },
+    Diagnostic[]
+  >
 > {
   const parser = new Parser();
   parser.setLanguage(language as any);
 
-  const options = { cwd: cwd() };
+  const options = { cwd: process.cwd(), fileSystem: CliFileSystem };
+  const fileUri = new url.URL(
+    path.join(options.cwd, filePath),
+    "file:",
+  ).href;
 
-  const workspace = Workspace.create([path], options, parser);
+  const workspace = await Workspace.create([fileUri], options, parser);
   const checker = TypeChecker.check(workspace);
 
   const diagnostics = [
