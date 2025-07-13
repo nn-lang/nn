@@ -37,15 +37,21 @@ export namespace Edge {
       return context._internal.calleeMap.get(flow)!;
     }
 
-    const callee = {
+    let calleeReturn: Vertex | undefined = flow.return
+      ? context.vertices.get(flow.return!)
+      : flow.returnType
+      ? Vertex.from(
+          flow.declaration.node,
+          Some(Type.from(flow.returnType, flow.declaration)),
+        )
+      : undefined;
+  
+    if (!calleeReturn) throw new Error("Unreachable code");
+
+    const callee: Callee = {
       sizes: [...flow.sizes],
       args: flow.args.map((arg) => context.vertices.get(arg.first)!),
-      return: flow.returnType
-        ? Vertex.from(
-            flow.declaration.node,
-            Some(Type.from(flow.returnType, flow.declaration)),
-          )
-        : context.vertices.get(flow.return!)!,
+      return: calleeReturn,
       flow,
     };
 
