@@ -1,5 +1,6 @@
 import { compilation, formatDiagnostic } from "../utils";
 import { Args, Command, Flags } from "@oclif/core";
+import { URL } from "node:url";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -58,7 +59,7 @@ export default class Onnx extends Command {
       version: "0.1",
       target: {
         declaration: flags.target,
-        source: path.normalize(path.join(process.cwd(), args.file)),
+        source: new URL(path.join(process.cwd(), args.file), "file:").href,
       },
       sizeMap,
     });
