@@ -20,6 +20,9 @@ ConvTranspose[Group, Pads, Strides, M](x: Tensor[C, H, W], w: Tensor[C, M / Grou
     (W - 1) * Strides - 2 * Pads + kW
   ]
 
+# https://onnx.ai/onnx/operators/onnx__Gemm.html
+Gemm(a: Tensor[K], b: Tensor[K, N], c: Tensor[N]): Tensor[N]
+
 # https://onnx.ai/onnx/operators/onnx__Relu.html
 Relu[input](x: Tensor[input]): Tensor[input]
 

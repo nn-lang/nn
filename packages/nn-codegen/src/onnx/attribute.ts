@@ -37,6 +37,15 @@ export function flowAttribute(
     ];
   }
 
+  if (operator === "Gemm") {
+    return [
+      makeAttr("alpha", AttributeType.FLOAT, 1.0),
+      makeAttr("beta", AttributeType.FLOAT, 1.0),
+      makeAttr("transA", AttributeType.INT, 0),
+      makeAttr("transB", AttributeType.INT, 0),
+    ];
+  }
+
   return [];
 }
 
