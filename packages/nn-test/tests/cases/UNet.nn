@@ -1,66 +1,32 @@
-BatchNorm[input](x: Tensor[input]): Tensor[input]
+import { BatchNormalizaton, Concat, Conv, ConvTranspose, Relu } from "./onnx.nn"
 
-ReLU[input](x: Tensor[input]): Tensor[input]
+MaxPool[Pool](x: Tensor[C, H, W]): Tensor[C, H / Pool, W / Pool]
 
-Conv2D[
-  Kernel, 
-  Padding, 
-  Stride, 
-  Channel
-](
-  x: Tensor[H, W, C]
-): Tensor[
-  (H + (2 * Padding) - Kernel) / Stride + 1, 
-  (W + (2 * Padding) - Kernel) / Stride + 1,
-  Channel 
-]
+ConvBlock[Channel](x: Tensor[C, H, W]) =
+  |> Conv[1, 1, 1](Trainable[Channel, C, 3, 3]("w_0"), Trainable[Channel]("b_0"))
+  |> BatchNormalizaton()
+  |> Relu()
+  |> Conv[1, 1, 1](Trainable[Channel, Channel, 3, 3]("w_1"), Trainable[Channel]("b_1"))
+  |> BatchNormalizaton()
+  |> Relu()
 
-MaxPool[Pool](x: Tensor[H, W, C]): Tensor[H / Pool, W / Pool, C]
-
-Conv2DTransposed[
-  Kernel,
-  Padding,
-  Stride,
-  Pool,
-  Channel
-](
-  x: Tensor[H, W, C]
-): Tensor[
-  ((H - 1) * Stride - 2 * Padding + Kernel) * Pool,
-  ((W - 1) * Stride - 2 * Padding + Kernel) * Pool,
-  Channel
-]
-
-Concat(x: Tensor[H, W, Cx], y: Tensor[H, W, Cy]): Tensor[H, W, Cx + Cy]
-
-ConvBlock[Channel](x: Tensor[H, W, C]) =
-  |> Conv2D[3, 1, 1, Channel]()
-  |> BatchNorm()
-  |> ReLU()
-  |> Conv2D[3, 1, 1, Channel]()
-  |> BatchNorm()
-  |> ReLU()
-
-UNetEncoder[Channel](x: Tensor[H, W, C]) =
+UNetEncoder[Channel](x: Tensor[C, H, W]) =
   |> ConvBlock[Channel]()
+  |> MaxPool[2]()
 
-UNetDecoder[Channel](x: Tensor[H, W, C], skip: Tensor[H * 2, W * 2, Channel]) =
+UNetDecoder[Channel](x: Tensor[C, H, W], skip: Tensor[Channel, H * 2, W * 2]) =
   x
-  |> Conv2DTransposed[3, 1, 1, 2, Channel]()
+  |> ConvTranspose[1, 0, 2, Channel](Trainable[C, Channel, 2, 2]("w_0"), Trainable[Channel]("b_0"))
   |> Concat(skip)
   |> ConvBlock[Channel]()
 
-UNet[Channel](x: Tensor[H, W, C]) =
-  |> s1 = UNetEncoder[Channel]()
-  |> p1 = MaxPool[2]()
+UNet[Channel](x: Tensor[C, H, W]) =
+  |> s1 = ConvBlock[Channel]()
   |> s2 = UNetEncoder[Channel * 2]()
-  |> p2 = MaxPool[2]()
   |> s3 = UNetEncoder[Channel * 4]()
-  |> p3 = MaxPool[2]()
   |> s4 = UNetEncoder[Channel * 8]()
-  |> p4 = MaxPool[2]()
-  
-  |> ConvBlock[Channel * 8]()
+
+  |> UNetEncoder[Channel * 16]()
 
   |> UNetDecoder[Channel * 8](s4)
   |> UNetDecoder[Channel * 4](s3)

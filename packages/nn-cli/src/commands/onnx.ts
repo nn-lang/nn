@@ -1,5 +1,6 @@
 import { compilation, formatDiagnostic } from "../utils";
 import { Args, Command, Flags } from "@oclif/core";
+import { URL } from "node:url";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -56,7 +57,10 @@ export default class Onnx extends Command {
 
     const result = Codegen.Onnx.codegen(workspace, checker, {
       version: "0.1",
-      target: { declaration: flags.target, source: filePath },
+      target: {
+        declaration: flags.target,
+        source: new URL(path.join(process.cwd(), args.file), "file:").href,
+      },
       sizeMap,
     });
 
@@ -69,7 +73,8 @@ export default class Onnx extends Command {
 
     result.mapOrElse(
       (result) => fs.writeFileSync(output, result),
-      () => {
+      (err) => {
+        console.error(err);
         this.exit(1);
       },
     );

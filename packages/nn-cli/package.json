@@ -44,11 +44,11 @@
     "oclif"
   ],
   "license": "MIT",
-  "main": "out/src/index.js",
+  "main": "out/index.js",
   "oclif": {
     "bin": "nn-cli",
     "dirname": "nn-cli",
-    "commands": "./out/src/commands",
+    "commands": "./out/commands",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
@@ -56,12 +56,12 @@
   },
   "repository": "nn-lang/nn",
   "scripts": {
-    "build": "shx rm -rf out && swc ./src -d ./out",
+    "build": "shx rm -rf out && tsc -b",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
     "prepack": "oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md"
   },
-  "types": "src/index.ts"
+  "types": "out/index.d.ts"
 }

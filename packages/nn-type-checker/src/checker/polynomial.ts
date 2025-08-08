@@ -4,6 +4,8 @@ import { SizeType } from "./sizetype";
 
 export interface Polynomial {
   product: Map<Size, Polynomial>;
+  divisor?: Polynomial;
+
   constant: number;
 }
 
@@ -26,7 +28,7 @@ export namespace Polynomial {
     }
   }
 
-  export function pow(left: Polynomial, right: Polynomial): Polynomial {
+  export function pow(_left: Polynomial, _right: Polynomial): Polynomial {
     // TODO
     throw new Error("Not implemented");
   }
@@ -85,6 +87,10 @@ export namespace Polynomial {
         result.product.delete(size);
         add(result, mul(map.get(size)!, assign(value, map)));
       }
+    }
+
+    if (result.divisor) {
+      result.divisor = assign(result.divisor, map);
     }
 
     return clean(result);
@@ -171,7 +177,10 @@ export namespace Polynomial {
 
   export function div(left: Polynomial, right: Polynomial): Polynomial {
     if (right.product.size) {
-      throw new Error("Not implemented for non-constant divisor");
+      const result = copy(left);
+      result.divisor = copy(right);
+
+      return result;
     }
 
     if (right.constant === 1) {
@@ -194,11 +203,12 @@ export namespace Polynomial {
         [...p.product].map(([size, value]) => [size, copy(value)]),
       ),
       constant: p.constant,
+      divisor: p.divisor && copy(p.divisor),
     };
   }
 
   export function clean(p: Polynomial): Polynomial {
-    const result = copy(p);
+    let result = copy(p);
 
     for (const [size, value] of p.product) {
       if (value.constant === 0 && value.product.size === 0) {
@@ -206,6 +216,13 @@ export namespace Polynomial {
       }
 
       clean(value);
+    }
+
+    if (p.divisor && p.divisor.product.size === 0) {
+      const divisor = p.divisor;
+      delete p.divisor;
+
+      result = div(p, divisor);
     }
 
     return result;

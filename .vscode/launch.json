@@ -11,12 +11,14 @@
       "preLaunchTask": "npm: build"
     },
     {
-      "type": "node",
-      "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/src/index.ts",
-      "preLaunchTask": "npm: build",
-      "outFiles": ["${workspaceFolder}/**/out/**/*.js"]
+      "program": "yarn",
+      "args": [
+        "nn-cli onnx ./packages/nn-test/tests/cases/Import.nn --size A=0 --target Model"
+      ],
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
     }
   ]
 }

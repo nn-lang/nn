@@ -20,6 +20,7 @@ export interface Edge {
   callee: Callee;
   toSolve: Vertex;
 
+  sizeDict: Map<Size, SizeType>
   passed?: boolean;
 }
 
@@ -31,20 +32,26 @@ export interface Callee {
 }
 
 export namespace Edge {
-  function _getCallee(flow: Flow, context: TypeChecker): Callee {
+  export function _getCallee(flow: Flow, context: TypeChecker): Callee {
     if (context._internal.calleeMap.has(flow)) {
       return context._internal.calleeMap.get(flow)!;
     }
 
-    const callee = {
+    let calleeReturn: Vertex | undefined = flow.return
+      ? context.vertices.get(flow.return!)
+      : flow.returnType
+      ? Vertex.from(
+          flow.declaration.node,
+          Some(Type.from(flow.returnType, flow.declaration)),
+        )
+      : undefined;
+  
+    if (!calleeReturn) throw new Error("Unreachable code");
+
+    const callee: Callee = {
       sizes: [...flow.sizes],
       args: flow.args.map((arg) => context.vertices.get(arg.first)!),
-      return: flow.returnType
-        ? Vertex.from(
-            flow.declaration.node,
-            Some(Type.from(flow.returnType, flow.declaration)),
-          )
-        : context.vertices.get(flow.return!)!,
+      return: calleeReturn,
       flow,
     };
 
@@ -68,6 +75,8 @@ export namespace Edge {
 
       sizeArgs: (call.sizes ?? []).map((size) => SizeType.from(size, scope)),
       callee: _getCallee(callee, context),
+
+      sizeDict: new Map(),
       toSolve: context.vertices.get(call)!,
     };
   }
@@ -255,8 +264,8 @@ export namespace Edge {
       if (!Polynomial.isSame(leftPolynomial, rightPolynomial)) {
         context.diagnostics.push({
           source: edge.toSolve.expression.source,
-          message: `Size mismatch: ${Polynomial.inspect(leftPolynomial)} != ${Polynomial.inspect(rightPolynomial)}.`,
-          position: edge.toSolve.expression.position,
+          message: `Size mismatch. expected: ${Polynomial.inspect(rightPolynomial)}, actual: ${Polynomial.inspect(leftPolynomial)}.`,
+          position: left[index]?.node?.position || edge.toSolve.expression.position,
         });
 
         edge.passed = false; // unrecoverable
@@ -385,6 +394,7 @@ export namespace Edge {
     if (edge.passed === false) return;
 
     if (left.length === 0) {
+      edge.sizeDict = sizeDict;
       edge.passed = true;
       return;
     }
@@ -396,6 +406,7 @@ export namespace Edge {
         ? Some(Type.concatShape(type, from))
         : Some(type);
 
+      edge.sizeDict = sizeDict;
       edge.passed = true;
     } else {
       edge.passed = false; // unrecoverable

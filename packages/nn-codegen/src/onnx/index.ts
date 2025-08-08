@@ -4,7 +4,8 @@ import { Result, err, ok } from "ts-features";
 import { Workspace } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 
-import { DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN, tensorShape } from "./node";
+import { DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN } from "./node";
+import { OnnxNode } from "./flow";
 
 export namespace Onnx {
   export interface OnnxSettings {
@@ -35,40 +36,26 @@ export namespace Onnx {
       return err(`Flow ${settings.target} not found`);
     }
 
-    const context = {
-      workspace,
-      checker,
-      _nextTemporaryIndex: 0,
-      temporaryNameRecord: new Map(),
-      sizeMap: settings.sizeMap,
-    };
+    const { outputs, initializers, nodes } = OnnxNode.fromFlow(flow, settings.sizeMap, checker);
 
-    const functions: onnx.FunctionProto[] = []; // !TODO
+    const initializerMap = initializers.reduce((map, initializer) => {
+      map.set(initializer.name, initializer);
+      return map;
+    }, new Map<string, onnx.ValueInfoProto>());
 
-    const target = functions.find((f) => f.name === settings.target.source)!;
-    const [inputShapes, outputShape] = tensorShape(flow, context);
+    const nodeMap = nodes.reduce((map, node) => {
+      map.set(node.name, node);
+      return map;
+    }, new Map<string, onnx.NodeProto>());
 
     const modelProto = new onnx.ModelProto({
-      functions,
       irVersion: onnx.Version.IR_VERSION,
       graph: new onnx.GraphProto({
-        name: target.name,
-        input: target.input.map(
-          (i, index) =>
-            new onnx.ValueInfoProto({
-              name: i,
-              type: inputShapes[index],
-            }),
-        ),
-        output: target.output.map(
-          (o) =>
-            new onnx.ValueInfoProto({
-              name: o,
-              type: outputShape,
-            }),
-        ),
-        node: target.node,
-        initializer: [],
+        name: flow.declaration.declaration,
+        input: [],
+        output: outputs,
+        node: [...nodeMap.values()],
+        initializer: [...initializerMap.values()],
       }),
       opsetImport: [...DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN],
     });

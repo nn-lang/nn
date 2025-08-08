@@ -2244,7 +2244,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@nn-lang/nn-cli@workspace:^, @nn-lang/nn-cli@workspace:packages/nn-cli":
+"@nn-lang/nn-cli@workspace:packages/nn-cli":
   version: 0.0.0-use.local
   resolution: "@nn-lang/nn-cli@workspace:packages/nn-cli"
   dependencies:
@@ -2335,7 +2335,6 @@ __metadata:
   dependencies:
     "@dotenvx/dotenvx": "npm:^1.44.1"
     "@eslint/js": "npm:^9.16.0"
-    "@nn-lang/nn-cli": "workspace:^"
     "@swc/cli": "npm:^0.7.7"
     "@swc/core": "npm:^1.10.0"
     "@trivago/prettier-plugin-sort-imports": "npm:^5.2.2"
