@@ -1,0 +1,4 @@
+Complex[A, B, C, D, E](x: Tensor[]): Tensor[A, B, C] 
+
+ComplexSize[A, B, C](x: Tensor[A, B, C, D, E]) =
+    Complex[8 * 12, A, B, C, D](x)

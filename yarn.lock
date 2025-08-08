@@ -2304,6 +2304,7 @@ __metadata:
     jest: "npm:^29.7.0"
     tree-sitter: "npm:^0.22.4"
     ts-jest: "npm:^29.2.5"
+    ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
   languageName: unknown
   linkType: soft
@@ -11600,7 +11601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10":
+"ts-node@npm:^10, ts-node@npm:^10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:

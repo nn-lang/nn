@@ -1,2 +1,0 @@
-ComplexSize[A, B, C](x: Tensor[A, B, C, D, E]) =
-    Complex[8 * 12 ^ 256, A, B, C, D ^ 256](x)
