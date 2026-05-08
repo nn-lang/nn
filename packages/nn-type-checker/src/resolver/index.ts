@@ -40,10 +40,17 @@ export function resolve(workspace: Workspace, context: TypeChecker): void {
     const fileScope = context.scope.files[path]!;
     const dependencies = workspace.dependencyGraph.get(path) || [];
 
-    dependencies.forEach(({ targetFileUri, dependency }) => {
+    dependencies.forEach(({ source, targetFileUri, dependency }) => {
       const targetScope = context.scope.files[targetFileUri];
-      if (!targetScope)
-        throw new Error(`Already checked file ${targetFileUri} not found`);
+      if (!targetScope) {
+        context.diagnostics.push({
+          source,
+          message: `Resolver inconsistency: '${dependency.target}' was resolved to '${targetFileUri}' but no file scope exists.`,
+          position: dependency.position,
+        });
+        context.nonRecoverable = true;
+        return;
+      }
 
       dependency.idents.forEach(({ value, position, source }) => {
         const targetFlow = targetScope.flows[value];
@@ -59,6 +66,10 @@ export function resolve(workspace: Workspace, context: TypeChecker): void {
       });
     });
   });
+
+  if (context.nonRecoverable) {
+    return;
+  }
 
   workspace.sources.forEach((_, path) => {
     const fileScope = context.scope.files[path]!;

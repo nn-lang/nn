@@ -46,13 +46,24 @@ export namespace Flow {
 
   function _resolveInternal(
     scope: DeclarationScope,
-    _context: TypeChecker,
+    context: TypeChecker,
   ): void {
     const flow = scope.flow!;
 
     flow.sizes = scope.node.sizeDeclList
-      ? scope.node.sizeDeclList.decls.map((decl) =>
-          Size.find(scope, decl).unwrap(),
+      ? scope.node.sizeDeclList.decls.flatMap((decl) =>
+          Size.find(scope, decl).mapOrElse<Size[]>(
+            () => {
+              context.diagnostics.push({
+                source: scope.file.file,
+                message: `Using undeclared size name '${decl.value}'.`,
+                position: decl.position,
+              });
+              context.nonRecoverable = true;
+              return [];
+            },
+            (size) => [size],
+          ),
         )
       : [];
     flow.args = scope.node.argumentList.args.map(
