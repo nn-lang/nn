@@ -16,7 +16,7 @@ export const CliFileSystem: CompilerFileSystem = {
   dirname: (filePath) => path.normalize(path.dirname(filePath)),
   resolve: (...paths) => path.normalize(path.join(...paths)),
 
-  dependencyResolver: (fromUri, reference, options) =>
+  dependencyResolver: (fromUri, reference, _options) =>
     url.resolve(fromUri, reference),
 
   readFile: async (fileUri) => fs.readFile(url.fileURLToPath(fileUri), "utf-8"),

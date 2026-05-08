@@ -37,7 +37,7 @@ export namespace Edge {
       return context._internal.calleeMap.get(flow)!;
     }
 
-    let calleeReturn: Vertex | undefined = flow.return
+    const calleeReturn: Vertex | undefined = flow.return
       ? context.vertices.get(flow.return!)
       : flow.returnType
       ? Vertex.from(

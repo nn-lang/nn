@@ -50,7 +50,7 @@ export namespace Workspace {
     fileUriList: string[],
     options: CompilerOptions,
     parser: Parser,
-    old?: Workspace,
+    _old?: Workspace,
   ): Promise<Workspace> {
     const workspace: Workspace = {
       sources: new Map(),
