@@ -2,10 +2,11 @@
   "name": "@nn-lang/nn-type-checker",
   "version": "0.1.13",
   "dependencies": {
-    "@nn-lang/nn-language": "workspace:^"
+    "@nn-lang/nn-language": "workspace:^",
+    "@oxc-project/runtime": "^0.129.0"
   },
   "scripts": {
-    "build": "yarn run -T swc ./src -d ./out",
+    "build": "node ../../scripts/oxc-build.cjs .",
     "clean": "rm -rf ./out"
   },
   "main": "out/src/index.js",

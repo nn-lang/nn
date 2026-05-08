@@ -1,6 +1,6 @@
 .git
 
-# modules 
+# modules
 .yarn
 node_modules
 

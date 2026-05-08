@@ -2,12 +2,13 @@
   "name": "@nn-lang/nn-codegen",
   "version": "0.1.8",
   "scripts": {
-    "build": "yarn run -T swc ./src -d ./out",
+    "build": "node ../../scripts/oxc-build.cjs .",
     "clean": "rm -rf ./out"
   },
   "dependencies": {
     "@nn-lang/nn-language": "workspace:^",
     "@nn-lang/nn-type-checker": "workspace:^",
+    "@oxc-project/runtime": "^0.129.0",
     "onnx-proto": "^8.0.1"
   },
   "main": "out/src/index.js",

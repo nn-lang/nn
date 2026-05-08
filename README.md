@@ -11,6 +11,15 @@ git clone https://github.com/SieR-VR/nn
 yarn install && yarn build
 ```
 
+## Development
+
+```bash
+yarn lint        # oxlint
+yarn lint:fix    # oxlint --fix
+yarn format      # oxfmt write (TS/JS files)
+yarn format:check
+```
+
 ## Usage
 
 ```bash
