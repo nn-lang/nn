@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { URL } from "node:url";
+import { pathToFileURL } from "node:url";
 
 import Codegen from "@nn-lang/nn-codegen";
 import { Args, Command, Flags } from "@oclif/core";
@@ -47,20 +47,54 @@ export default class Onnx extends Command {
       },
     );
 
-    const sizeMap = flags.size.split(",").reduce(
-      (acc, s) => {
-        const [key, value] = s.split("=");
-        key && value && (acc[key] = parseInt(value));
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
+    const sizeMapResult = flags.size
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0)
+      .reduce<
+        | { ok: true; value: Record<string, number> }
+        | { ok: false; message: string }
+      >(
+        (acc, entry) => {
+          if (!acc.ok) {
+            return acc;
+          }
+
+          const [rawKey, rawValue, ...rest] = entry.split("=");
+          if (!rawKey || !rawValue || rest.length > 0) {
+            return {
+              ok: false,
+              message: `Invalid --size entry '${entry}'. Expected KEY=NUMBER format.`,
+            };
+          }
+
+          const key = rawKey.trim();
+          const parsed = Number.parseInt(rawValue.trim(), 10);
+          if (key.length === 0 || Number.isNaN(parsed)) {
+            return {
+              ok: false,
+              message: `Invalid --size entry '${entry}'. Value must be an integer.`,
+            };
+          }
+
+          acc.value[key] = parsed;
+          return acc;
+        },
+        { ok: true, value: {} },
+      );
+
+    if (!sizeMapResult.ok) {
+      console.error(sizeMapResult.message);
+      this.exit(1);
+    }
+
+    const sizeMap = sizeMapResult.value;
 
     const result = Codegen.Onnx.codegen(workspace, checker, {
       version: "0.1",
       target: {
         declaration: flags.target,
-        source: new URL(path.join(process.cwd(), args.file), "file:").href,
+        source: pathToFileURL(path.resolve(process.cwd(), args.file)).href,
       },
       sizeMap,
     });
