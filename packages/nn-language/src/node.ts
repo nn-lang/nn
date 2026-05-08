@@ -1,6 +1,6 @@
-import { SourceFile, emptyPosition, toPosition } from ".";
 import type { SyntaxNode } from "tree-sitter";
 
+import { SourceFile, emptyPosition, toPosition } from ".";
 import { Position } from "./types";
 import { Workspace } from "./workspace";
 

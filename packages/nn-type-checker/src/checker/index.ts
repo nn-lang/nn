@@ -1,5 +1,4 @@
 import { Type, TypeChecker } from "..";
-
 import { Edge } from "./edge";
 import { Vertex } from "./vertex";
 

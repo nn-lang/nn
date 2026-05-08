@@ -1,6 +1,3 @@
-import { DeclarationScope, Value } from "../resolver";
-import { None, Option, Some } from "ts-features";
-
 import {
   Node,
   isAssignmentExpression,
@@ -8,7 +5,9 @@ import {
   isIdentifierExpression,
   travel,
 } from "@nn-lang/nn-language";
+import { None, Option, Some } from "ts-features";
 
+import { DeclarationScope, Value } from "../resolver";
 import { Type } from "./type";
 
 export interface Vertex {

@@ -1,5 +1,3 @@
-import { PySynthSettings } from ".";
-
 import {
   CallExpression,
   Declaration,
@@ -8,6 +6,8 @@ import {
   travel,
 } from "@nn-lang/nn-language";
 import { SizeType, TypeChecker } from "@nn-lang/nn-type-checker";
+
+import { PySynthSettings } from ".";
 
 export function inits(
   declaration: Declaration,

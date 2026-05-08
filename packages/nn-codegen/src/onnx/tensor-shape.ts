@@ -1,6 +1,5 @@
-import { onnx } from "onnx-proto";
-
 import { Polynomial, Size, Type } from "@nn-lang/nn-type-checker";
+import { onnx } from "onnx-proto";
 
 export namespace TensorShape {
   export function fromType(
@@ -17,13 +16,10 @@ export namespace TensorShape {
 }
 
 export namespace TensorSizes {
-  export function fromType(
-    type: Type,
-    sizes: Map<Size, Polynomial>,
-  ): number[] {
+  export function fromType(type: Type, sizes: Map<Size, Polynomial>): number[] {
     return type.shape
       .map(Polynomial.from)
       .map((p) => Polynomial.assign(p, sizes))
-      .map((p) => p.constant)
+      .map((p) => p.constant);
   }
 }

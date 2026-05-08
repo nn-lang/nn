@@ -21,19 +21,31 @@ export function flowAttribute(
   if (operator === "Conv") {
     return [
       makeAttr("group", AttributeType.INT, sizes["Group"]!),
-      makeAttr("kernel_shape", AttributeType.INTS, [sizes["kH"]!, sizes["kW"]!]),
+      makeAttr("kernel_shape", AttributeType.INTS, [
+        sizes["kH"]!,
+        sizes["kW"]!,
+      ]),
       makeAttr("pads", AttributeType.INTS, [sizes["Pads"]!, sizes["Pads"]!]),
-      makeAttr("strides", AttributeType.INTS, [sizes["Strides"]!, sizes["Strides"]!]),
+      makeAttr("strides", AttributeType.INTS, [
+        sizes["Strides"]!,
+        sizes["Strides"]!,
+      ]),
     ];
   }
 
   if (operator === "ConvTranspose") {
     return [
       makeAttr("group", AttributeType.INT, sizes["Group"]!),
-      makeAttr("kernel_shape", AttributeType.INTS, [sizes["kH"]!, sizes["kW"]!]),
+      makeAttr("kernel_shape", AttributeType.INTS, [
+        sizes["kH"]!,
+        sizes["kW"]!,
+      ]),
       makeAttr("pads", AttributeType.INTS, [sizes["Pads"]!, sizes["Pads"]!]),
       makeAttr("pads", AttributeType.INTS, [sizes["Pads"]!, sizes["Pads"]!]),
-      makeAttr("strides", AttributeType.INTS, [sizes["Strides"]!, sizes["Strides"]!]),
+      makeAttr("strides", AttributeType.INTS, [
+        sizes["Strides"]!,
+        sizes["Strides"]!,
+      ]),
     ];
   }
 

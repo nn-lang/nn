@@ -1,8 +1,7 @@
-import { DeclarationScope, Size } from "../resolver";
+import { CallExpression, TypeNode } from "@nn-lang/nn-language";
 import { None, Option, Some } from "ts-features";
 
-import { CallExpression, TypeNode } from "@nn-lang/nn-language";
-
+import { DeclarationScope, Size } from "../resolver";
 import { Polynomial } from "./polynomial";
 import { SizeType } from "./sizetype";
 

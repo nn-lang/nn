@@ -1,13 +1,12 @@
-import { TypeChecker } from "..";
-import { None, Option, Some } from "ts-features";
-
 import {
   Identifier,
   Node,
   isIdentifierSizeNode,
   travel,
 } from "@nn-lang/nn-language";
+import { None, Option, Some } from "ts-features";
 
+import { TypeChecker } from "..";
 import { DeclarationScope } from "./scope";
 
 export interface Size {

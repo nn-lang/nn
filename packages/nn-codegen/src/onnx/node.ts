@@ -1,5 +1,3 @@
-import { onnx } from "onnx-proto";
-
 import {
   AssignmentExpression,
   CallExpression,
@@ -13,6 +11,7 @@ import {
   isTupleExpression,
 } from "@nn-lang/nn-language";
 import { Flow, Polynomial, Size, TypeChecker } from "@nn-lang/nn-type-checker";
+import { onnx } from "onnx-proto";
 
 export const DEFAULT_OPSET_IMPORTS = [
   new onnx.OperatorSetIdProto({

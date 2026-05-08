@@ -1,5 +1,4 @@
 import { Size } from "../resolver";
-
 import { SizeType } from "./sizetype";
 
 export interface Polynomial {

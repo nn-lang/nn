@@ -1,11 +1,10 @@
+import { Workspace } from "@nn-lang/nn-language";
+import { TypeChecker } from "@nn-lang/nn-type-checker";
 import { onnx } from "onnx-proto";
 import { Result, err, ok } from "ts-features";
 
-import { Workspace } from "@nn-lang/nn-language";
-import { TypeChecker } from "@nn-lang/nn-type-checker";
-
-import { DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN } from "./node";
 import { OnnxNode } from "./flow";
+import { DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN } from "./node";
 
 export namespace Onnx {
   export interface OnnxSettings {
@@ -36,7 +35,11 @@ export namespace Onnx {
       return err(`Flow ${settings.target} not found`);
     }
 
-    const { outputs, initializers, nodes } = OnnxNode.fromFlow(flow, settings.sizeMap, checker);
+    const { outputs, initializers, nodes } = OnnxNode.fromFlow(
+      flow,
+      settings.sizeMap,
+      checker,
+    );
 
     const initializerMap = initializers.reduce((map, initializer) => {
       map.set(initializer.name, initializer);

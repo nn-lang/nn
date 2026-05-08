@@ -1,6 +1,3 @@
-import { TypeChecker } from "..";
-import { None, Option, Some } from "ts-features";
-
 import {
   Identifier,
   Node,
@@ -8,7 +5,9 @@ import {
   isIdentifierExpression,
   travel,
 } from "@nn-lang/nn-language";
+import { None, Option, Some } from "ts-features";
 
+import { TypeChecker } from "..";
 import { DeclarationScope } from "./scope";
 
 export interface Value {

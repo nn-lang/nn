@@ -1,3 +1,5 @@
+import type { SyntaxNode, Tree } from "tree-sitter";
+
 import { SourceFile } from "..";
 import {
   ArgumentList,
@@ -19,7 +21,6 @@ import {
 } from "../ast";
 import { createNode } from "../node";
 import { Workspace } from "../workspace";
-import type { SyntaxNode, Tree } from "tree-sitter";
 
 export namespace Transform {
   export namespace TreeSitter {

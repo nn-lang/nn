@@ -1,10 +1,11 @@
-import { compilation, formatDiagnostic } from "../utils";
-import { Args, Command, Flags } from "@oclif/core";
-import { URL } from "node:url";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { URL } from "node:url";
 
 import Codegen from "@nn-lang/nn-codegen";
+import { Args, Command, Flags } from "@oclif/core";
+
+import { compilation, formatDiagnostic } from "../utils";
 
 export default class Onnx extends Command {
   static args = {

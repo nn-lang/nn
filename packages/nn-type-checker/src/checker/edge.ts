@@ -1,7 +1,3 @@
-import { SizeType, Type, TypeChecker, Vertex } from "..";
-import { DeclarationScope, Flow, Size } from "../resolver";
-import { None, Option, Some } from "ts-features";
-
 import {
   CallExpression,
   isAssignmentExpression,
@@ -10,7 +6,10 @@ import {
   isTupleExpression,
   travel,
 } from "@nn-lang/nn-language";
+import { None, Option, Some } from "ts-features";
 
+import { SizeType, Type, TypeChecker, Vertex } from "..";
+import { DeclarationScope, Flow, Size } from "../resolver";
 import { Polynomial } from "./polynomial";
 
 export interface Edge {
@@ -20,7 +19,7 @@ export interface Edge {
   callee: Callee;
   toSolve: Vertex;
 
-  sizeDict: Map<Size, SizeType>
+  sizeDict: Map<Size, SizeType>;
   passed?: boolean;
 }
 
@@ -40,12 +39,12 @@ export namespace Edge {
     const calleeReturn: Vertex | undefined = flow.return
       ? context.vertices.get(flow.return!)
       : flow.returnType
-      ? Vertex.from(
-          flow.declaration.node,
-          Some(Type.from(flow.returnType, flow.declaration)),
-        )
-      : undefined;
-  
+        ? Vertex.from(
+            flow.declaration.node,
+            Some(Type.from(flow.returnType, flow.declaration)),
+          )
+        : undefined;
+
     if (!calleeReturn) throw new Error("Unreachable code");
 
     const callee: Callee = {
@@ -240,13 +239,13 @@ export namespace Edge {
             leftArgs[index!]!,
             rightArgs[index!]!,
           ).unwrap();
-          left.push(...from), right.push(...to);
+          (left.push(...from), right.push(...to));
         } else {
           const [from, to] = Type.findAssignableExact(
             leftArgs[index!]!,
             rightArgs[index!]!,
           ).unwrap();
-          left.push(...from), right.push(...to);
+          (left.push(...from), right.push(...to));
         }
 
         return [left, right];
@@ -265,7 +264,8 @@ export namespace Edge {
         context.diagnostics.push({
           source: edge.toSolve.expression.source,
           message: `Size mismatch. expected: ${Polynomial.inspect(rightPolynomial)}, actual: ${Polynomial.inspect(leftPolynomial)}.`,
-          position: left[index]?.node?.position || edge.toSolve.expression.position,
+          position:
+            left[index]?.node?.position || edge.toSolve.expression.position,
         });
 
         edge.passed = false; // unrecoverable

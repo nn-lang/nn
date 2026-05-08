@@ -1,8 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as url from "node:url";
-import Parser from "tree-sitter";
-import { Result, err, ok } from "ts-features";
 
 import {
   CompilerFileSystem,
@@ -11,6 +9,8 @@ import {
 } from "@nn-lang/nn-language";
 import language from "@nn-lang/nn-tree-sitter";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
+import Parser from "tree-sitter";
+import { Result, err, ok } from "ts-features";
 
 function isFileUri(value: string): boolean {
   return value.startsWith("file://");

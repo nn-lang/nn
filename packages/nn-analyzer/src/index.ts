@@ -1,7 +1,6 @@
-import { Result, err, ok } from "ts-features";
-
 import { isCallExpression, travel } from "@nn-lang/nn-language";
 import { Flow, Polynomial, TypeChecker } from "@nn-lang/nn-type-checker";
+import { Result, err, ok } from "ts-features";
 
 export interface AnalyzerTarget {
   source: string;

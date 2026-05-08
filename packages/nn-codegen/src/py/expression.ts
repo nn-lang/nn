@@ -1,6 +1,3 @@
-import { PySynthSettings } from ".";
-import { None, Option, Some } from "ts-features";
-
 import {
   CallExpression,
   Declaration,
@@ -13,6 +10,9 @@ import {
   isTupleExpression,
 } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
+import { None, Option, Some } from "ts-features";
+
+import { PySynthSettings } from ".";
 
 function subExpression(
   expr: Expression,

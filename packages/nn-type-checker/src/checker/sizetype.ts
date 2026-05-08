@@ -1,7 +1,6 @@
-import { DeclarationScope, Size } from "../resolver";
-
 import { SizeNode } from "@nn-lang/nn-language";
 
+import { DeclarationScope, Size } from "../resolver";
 import { Polynomial } from "./polynomial";
 
 export type SizeType = SizeTypeIdent | SizeTypeNumber | SizeTypeBinary;

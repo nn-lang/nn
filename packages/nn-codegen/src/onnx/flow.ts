@@ -1,5 +1,3 @@
-import { onnx } from "onnx-proto";
-
 import {
   isCallExpression,
   isIdentifier,
@@ -14,6 +12,7 @@ import {
   SizeType,
   TypeChecker,
 } from "@nn-lang/nn-type-checker";
+import { onnx } from "onnx-proto";
 
 import { flowAttribute } from "./attribute";
 import { TensorShape, TensorSizes } from "./tensor-shape";

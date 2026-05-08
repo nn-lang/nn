@@ -1,7 +1,6 @@
-import { Flow, Size, TypeChecker, Value } from "..";
-
 import { Workspace } from "@nn-lang/nn-language";
 
+import { Flow, Size, TypeChecker, Value } from "..";
 import { Scope } from "./scope";
 
 /**

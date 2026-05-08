@@ -1,11 +1,10 @@
-import { None, Option, Result, Some, err, ok } from "ts-features";
-
 import {
   CallExpression,
   Diagnostic,
   Node,
   Workspace,
 } from "@nn-lang/nn-language";
+import { None, Option, Result, Some, err, ok } from "ts-features";
 
 import { Type, Vertex, checker } from "./checker";
 import { Callee, Edge } from "./checker/edge";

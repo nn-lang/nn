@@ -1,8 +1,7 @@
-import { PySynthSettings } from ".";
-
 import { Declaration } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
 
+import { PySynthSettings } from ".";
 import { expressions } from "./expression";
 import { inits } from "./init";
 

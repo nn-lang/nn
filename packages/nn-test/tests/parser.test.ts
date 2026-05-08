@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
-import Parser from "tree-sitter";
 
 import { Workspace } from "@nn-lang/nn-language";
 import language from "@nn-lang/nn-tree-sitter";
+import Parser from "tree-sitter";
 
 import { TestFileSystem, getErrorJson } from "./utils";
 

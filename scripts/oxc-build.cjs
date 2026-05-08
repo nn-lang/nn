@@ -88,7 +88,10 @@ for (const sourceFilePath of sourceFiles) {
     .join("/");
   const relativeFromSrc = path.relative(srcRoot, sourceFilePath);
   const outputExtension = getOutputExtension(sourceFilePath);
-  const outputRelativePath = relativeFromSrc.replace(/\.[^.]+$/, outputExtension);
+  const outputRelativePath = relativeFromSrc.replace(
+    /\.[^.]+$/,
+    outputExtension,
+  );
   const outputPath = path.join(outSrcRoot, outputRelativePath);
   const result = transformSync(relativeFromPackage, sourceCode, {
     lang: getLangFromExtension(sourceFilePath),
@@ -101,7 +104,9 @@ for (const sourceFilePath of sourceFiles) {
     hasError = true;
 
     for (const error of result.errors) {
-      const message = error.codeframe ? `${error.message}\n${error.codeframe}` : error.message;
+      const message = error.codeframe
+        ? `${error.message}\n${error.codeframe}`
+        : error.message;
       console.error(`[oxc-build] ${relativeFromPackage}: ${message}`);
     }
 
@@ -122,7 +127,10 @@ for (const sourceFilePath of sourceFiles) {
     hasError = true;
 
     for (const diagnostic of transpiled.diagnostics) {
-      const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
+      const message = ts.flattenDiagnosticMessageText(
+        diagnostic.messageText,
+        "\n",
+      );
       console.error(`[oxc-build] ${relativeFromPackage}: ${message}`);
     }
 

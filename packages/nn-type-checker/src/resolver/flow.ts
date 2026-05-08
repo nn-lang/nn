@@ -1,6 +1,3 @@
-import { Size, TypeChecker, Value } from "..";
-import { None, Option, Some } from "ts-features";
-
 import {
   Expression,
   Identifier,
@@ -8,7 +5,9 @@ import {
   isCallExpression,
   travel,
 } from "@nn-lang/nn-language";
+import { None, Option, Some } from "ts-features";
 
+import { Size, TypeChecker, Value } from "..";
 import { DeclarationScope, FileScope } from "./scope";
 
 export interface Flow {
