@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as url from "url";
 import Parser from "tree-sitter";
 
 import { Workspace } from "@nn-lang/nn-language";
@@ -32,7 +33,8 @@ describe("parser", () => {
         cwd: path.join(__dirname, "cases"),
         fileSystem: TestFileSystem,
       };
-      const workspace = await Workspace.create([file], options, parser);
+      const entryFileUri = url.pathToFileURL(path.join(options.cwd, file)).href;
+      const workspace = await Workspace.create([entryFileUri], options, parser);
 
       const diagnostics = [
         ...[...workspace.sources.values()].flatMap(
@@ -56,7 +58,8 @@ describe("parser", () => {
       };
 
       const errorJson = await getErrorJson(__dirname, file);
-      const workspace = await Workspace.create([file], options, parser);
+      const entryFileUri = url.pathToFileURL(path.join(options.cwd, file)).href;
+      const workspace = await Workspace.create([entryFileUri], options, parser);
 
       const diagnostics = [
         ...[...workspace.sources.values()].flatMap(

@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as url from "url";
 import Parser from "tree-sitter";
 
 import { Workspace } from "@nn-lang/nn-language";
@@ -21,8 +22,9 @@ describe("checker", () => {
   sources.forEach((file) => {
     it(`should type check ${file}`, async () => {
       const options = { cwd: path.join(__dirname, "cases"), fileSystem: TestFileSystem };
+      const entryFileUri = url.pathToFileURL(path.join(options.cwd, file)).href;
 
-      const workspace = await Workspace.create([file], options, parser);
+      const workspace = await Workspace.create([entryFileUri], options, parser);
       expect(() => TypeChecker.check(workspace)).not.toThrow();
     });
   });

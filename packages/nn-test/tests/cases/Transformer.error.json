@@ -1,0 +1,58 @@
+[
+  {
+    "message": "Unexpected /.",
+    "position": {
+      "pos": 198,
+      "end": 199
+    }
+  },
+  {
+    "message": "Unexpected ident.",
+    "position": {
+      "pos": 205,
+      "end": 299
+    }
+  },
+  {
+    "message": "Unexpected token '.'.",
+    "position": {
+      "pos": 390,
+      "end": 391
+    }
+  },
+  {
+    "message": "Unexpected ).",
+    "position": {
+      "pos": 403,
+      "end": 540
+    }
+  },
+  {
+    "message": "Unexpected token '@'.",
+    "position": {
+      "pos": 1411,
+      "end": 1412
+    }
+  },
+  {
+    "message": "Unexpected ).",
+    "position": {
+      "pos": 1434,
+      "end": 1485
+    }
+  },
+  {
+    "message": "Unexpected token '@'.",
+    "position": {
+      "pos": 1589,
+      "end": 1590
+    }
+  },
+  {
+    "message": "Unexpected ).",
+    "position": {
+      "pos": 1612,
+      "end": 1669
+    }
+  }
+]
