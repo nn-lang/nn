@@ -27,9 +27,40 @@ export namespace Polynomial {
     }
   }
 
-  export function pow(_left: Polynomial, _right: Polynomial): Polynomial {
-    // TODO
-    throw new Error("Not implemented");
+  export function pow(left: Polynomial, right: Polynomial): Polynomial {
+    if (!isConstant(right) || right.divisor) {
+      throw new Error("Exponent must be a constant polynomial");
+    }
+
+    const exponent = right.constant;
+    if (!Number.isInteger(exponent)) {
+      throw new Error("Exponent must be an integer");
+    }
+
+    if (exponent === 0) {
+      return constant(1);
+    }
+
+    if (exponent < 0) {
+      return div(constant(1), pow(copy(left), constant(-exponent)));
+    }
+
+    let power = exponent;
+    let result = constant(1);
+    let base = copy(left);
+
+    while (power > 0) {
+      if (power % 2 === 1) {
+        result = mul(result, copy(base));
+      }
+
+      power = Math.floor(power / 2);
+      if (power > 0) {
+        base = mul(base, copy(base));
+      }
+    }
+
+    return clean(result);
   }
 
   export function constant(c: number): Polynomial {
