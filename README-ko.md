@@ -14,7 +14,8 @@ yarn install && yarn build
 ## 사용법
 
 ```bash
-yarn nn -f {input file} -o {output file}
+yarn nn-cli check {input file}
+yarn nn-cli onnx {input file} --size A=1 --target {target flow} -o {output file}.onnx
 ```
 
 ## 기능
