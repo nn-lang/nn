@@ -62,16 +62,17 @@ export namespace Workspace {
       _context: { node: CreateNodeState.default },
     };
 
-    return addFiles(fileUriList, workspace);
+    return addFiles(fileUriList, workspace, _old);
   }
 
   export async function addFiles(
     fileUriList: string[],
     workspace: Workspace,
+    oldWorkspace?: Workspace,
   ): Promise<Workspace> {
     const unresolved: Dependency[] = [];
     const sources = await Promise.all(
-      fileUriList.map((uri) => makeSource(uri, workspace)),
+      fileUriList.map((uri) => makeSource(uri, workspace, oldWorkspace)),
     );
 
     sources.forEach(([source, dependencies]) => {
@@ -83,7 +84,11 @@ export namespace Workspace {
 
     while (unresolved.length) {
       const toResolve = unresolved.pop()!;
-      const resolved = await resolveDependency(toResolve, workspace);
+      const resolved = await resolveDependency(
+        toResolve,
+        workspace,
+        oldWorkspace,
+      );
 
       if (!resolved) continue;
 
@@ -100,6 +105,7 @@ export namespace Workspace {
   async function resolveDependency(
     toResolve: Dependency,
     workspace: Workspace,
+    oldWorkspace?: Workspace,
   ): Promise<[SourceFile, Dependency[]] | undefined> {
     const fs = workspace.options.fileSystem;
     const { source, dependency, targetFileUri } = toResolve;
@@ -118,20 +124,23 @@ export namespace Workspace {
       return;
     }
 
-    return await makeSource(targetFileUri, workspace);
+    return await makeSource(targetFileUri, workspace, oldWorkspace);
   }
 
   async function makeSource(
     fileUri: string,
     workspace: Workspace,
+    oldWorkspace?: Workspace,
   ): Promise<[SourceFile, Dependency[]]> {
     const fs = workspace.options.fileSystem;
+    const oldSource =
+      workspace.sources.get(fileUri) ?? oldWorkspace?.sources.get(fileUri);
 
     const sourceFile = await SourceFile.create(
       fileUri,
       workspace,
       workspace.parser,
-      workspace.sources.get(fileUri),
+      oldSource,
     );
 
     const dependencies: Dependency[] = sourceFile.dependencies.map(

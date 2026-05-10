@@ -98,7 +98,7 @@ module.exports = grammar({
     size_div: ($) => prec.left(10, seq($.size, "/", $.size)),
     size_add: ($) => prec.left(0, seq($.size, "+", $.size)),
     size_sub: ($) => prec.left(0, seq($.size, "-", $.size)),
-    size_paren: ($) => seq("(", $.size_operation, ")"),
+    size_paren: ($) => seq("(", $.size, ")"),
     size_ident: ($) => $.ident,
     size_number: ($) => $.number,
 
@@ -106,11 +106,11 @@ module.exports = grammar({
     ident: () => token(/[a-zA-Z_$][\w_]*/),
 
     string: ($) => choice($.single_quoted_string, $.double_quoted_string),
-    single_quoted_string: () => /'[^']*'/,
-    double_quoted_string: () => /"[^"]*"/,
+    single_quoted_string: () => /'([^'\\]|\\.)*'/,
+    double_quoted_string: () => /"([^"\\]|\\.)*"/,
 
     number: () => /-?\d+(\.\d+)?/,
-    comment: () => token(/#.*\n/),
+    comment: () => token(/#[^\n]*/),
   },
   extras: ($) => [$.comment, /[\s\uFEFF\u2060\u200B\u00A0]/],
 });

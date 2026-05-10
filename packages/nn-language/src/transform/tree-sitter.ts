@@ -31,12 +31,76 @@ export namespace Transform {
           ...node.childrenForFieldName("item_remain"),
         ].filter((node) => node !== null);
       }
+
+      export function parseStringLiteral(node: SyntaxNode): string {
+        const text = node.text;
+        const quote = text[0];
+        const lastQuote = text[text.length - 1];
+
+        if (
+          (quote !== "'" && quote !== '"') ||
+          quote !== lastQuote ||
+          text.length < 2
+        ) {
+          return text;
+        }
+
+        const inner = text.slice(1, -1);
+        let result = "";
+
+        for (let index = 0; index < inner.length; index++) {
+          const char = inner[index]!;
+
+          if (char !== "\\") {
+            result += char;
+            continue;
+          }
+
+          const escaped = inner[index + 1];
+          if (escaped === undefined) {
+            result += "\\";
+            continue;
+          }
+
+          switch (escaped) {
+            case "n":
+              result += "\n";
+              break;
+            case "r":
+              result += "\r";
+              break;
+            case "t":
+              result += "\t";
+              break;
+            case "\\":
+              result += "\\";
+              break;
+            case "'":
+              result += "'";
+              break;
+            case '"':
+              result += '"';
+              break;
+            default:
+              result += escaped;
+              break;
+          }
+
+          index += 1;
+        }
+
+        return result;
+      }
     }
 
     export function sourceFile(
       tree: Tree,
       context: { source: SourceFile; workspace: Workspace },
     ): { declarations: Declaration[]; imports: Import[] } {
+      if (!tree.rootNode) {
+        return { declarations: [], imports: [] };
+      }
+
       return {
         declarations: tree.rootNode.children
           .filter((node) => node.type === "declaration_statement")
@@ -94,10 +158,7 @@ export namespace Transform {
       context: { source: SourceFile; workspace: Workspace },
     ): Import {
       const target = node.childForFieldName("target")!.child(0)!;
-      const targetString =
-        target.grammarType === "single_quoted_string"
-          ? target.text.replace(/'/g, "")
-          : target.text.replace(/"/g, "");
+      const targetString = Util.parseStringLiteral(target);
 
       return createNode(
         "Import",
@@ -370,9 +431,10 @@ export namespace Transform {
       }
 
       const targetString =
-        node.grammarType === "single_quoted_string"
-          ? node.text.replace(/'/g, "")
-          : node.text.replace(/"/g, "");
+        node.type === "single_quoted_string" ||
+        node.type === "double_quoted_string"
+          ? Util.parseStringLiteral(node)
+          : node.text;
 
       return createNode(
         "StringLiteralExpression",
