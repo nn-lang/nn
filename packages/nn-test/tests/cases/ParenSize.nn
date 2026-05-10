@@ -1,0 +1,2 @@
+Foo[A, B](x: Tensor[A * (B + 1)]) : Tensor[A * (B + 1)] =
+  x

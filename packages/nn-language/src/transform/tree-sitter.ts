@@ -31,12 +31,39 @@ export namespace Transform {
           ...node.childrenForFieldName("item_remain"),
         ].filter((node) => node !== null);
       }
+
+      export function parseStringLiteral(node: SyntaxNode): string {
+        const isSingle = node.grammarType === "single_quoted_string";
+        const inner = node.text.slice(1, -1);
+        return inner.replace(/\\([\s\S])/g, (_match, ch: string) => {
+          switch (ch) {
+            case "n":
+              return "\n";
+            case "t":
+              return "\t";
+            case "r":
+              return "\r";
+            case "\\":
+              return "\\";
+            case "'":
+              return isSingle ? "'" : "\\'";
+            case '"':
+              return isSingle ? '\\"' : '"';
+            default:
+              return ch;
+          }
+        });
+      }
     }
 
     export function sourceFile(
       tree: Tree,
       context: { source: SourceFile; workspace: Workspace },
     ): { declarations: Declaration[]; imports: Import[] } {
+      if (!tree.rootNode) {
+        return { declarations: [], imports: [] };
+      }
+
       return {
         declarations: tree.rootNode.children
           .filter((node) => node.type === "declaration_statement")
@@ -94,10 +121,7 @@ export namespace Transform {
       context: { source: SourceFile; workspace: Workspace },
     ): Import {
       const target = node.childForFieldName("target")!.child(0)!;
-      const targetString =
-        target.grammarType === "single_quoted_string"
-          ? target.text.replace(/'/g, "")
-          : target.text.replace(/"/g, "");
+      const targetString = Util.parseStringLiteral(target);
 
       return createNode(
         "Import",
@@ -369,10 +393,7 @@ export namespace Transform {
         throw new Error("Expected a string literal expression node");
       }
 
-      const targetString =
-        node.grammarType === "single_quoted_string"
-          ? node.text.replace(/'/g, "")
-          : node.text.replace(/"/g, "");
+      const targetString = Util.parseStringLiteral(node);
 
       return createNode(
         "StringLiteralExpression",
