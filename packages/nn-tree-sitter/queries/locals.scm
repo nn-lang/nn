@@ -1,18 +1,19 @@
-; Scope definitions
 (source_file) @local.scope
 
-; Declaration introduces a new scope
 (declaration_statement) @local.scope
 
-; Size parameter declarations are definitions
+(declaration_statement
+  name: (ident) @local.definition.function)
+
 (size_declaration_list
-  (ident) @local.definition)
+  item_first: (ident) @local.definition.parameter)
 
-; Argument declarations are definitions
+(size_declaration_list
+  item_remain: (ident) @local.definition.parameter)
+
 (argument_declaration
-  (ident) @local.definition)
+  (ident) @local.definition.parameter)
 
-; References
 (size_ident
   (ident) @local.reference)
 

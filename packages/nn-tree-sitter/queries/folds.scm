@@ -1,7 +1,11 @@
-; Fold entire declarations
-(declaration_statement
-  "=" @fold.start
-  (#set! fold.end "@end"))
+(source_file
+  (declaration_statement) @fold)
 
-; Fold import groups
-(import_statement) @fold
+(source_file
+  (import_statement) @fold)
+
+(declaration_statement
+  argument_declaration_list: (argument_declaration_list) @fold)
+
+(declaration_statement
+  expressions: (_) @fold)

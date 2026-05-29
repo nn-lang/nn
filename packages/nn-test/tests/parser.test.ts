@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
 
+import language = require("@nn-lang/nn-tree-sitter");
 import { Workspace } from "@nn-lang/nn-language";
 import Parser from "tree-sitter";
 
@@ -19,17 +20,11 @@ const err = sources.filter((f) =>
   errors.includes(`${f.replace(".nn", "")}.error.json`),
 );
 
-function loadLanguage() {
-  const modulePath = require.resolve("@nn-lang/nn-tree-sitter");
-  delete require.cache[modulePath];
-  return require("@nn-lang/nn-tree-sitter");
-}
-
 describe("parser", () => {
   ok.forEach((file) => {
     it(`should parse ${file}`, async () => {
       const parser = new Parser();
-      parser.setLanguage(loadLanguage() as any);
+      parser.setLanguage(language as any);
       const options = {
         cwd: path.join(__dirname, "cases"),
         fileSystem: TestFileSystem,
@@ -54,7 +49,7 @@ describe("parser", () => {
   err.forEach((file) => {
     it(`should emit errors at ${file}`, async () => {
       const parser = new Parser();
-      parser.setLanguage(loadLanguage() as any);
+      parser.setLanguage(language as any);
       const options = {
         cwd: path.join(__dirname, "cases"),
         fileSystem: TestFileSystem,

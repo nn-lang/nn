@@ -33,26 +33,63 @@ export namespace Transform {
       }
 
       export function parseStringLiteral(node: SyntaxNode): string {
-        const isSingle = node.grammarType === "single_quoted_string";
-        const inner = node.text.slice(1, -1);
-        return inner.replace(/\\([\s\S])/g, (_match, ch: string) => {
-          switch (ch) {
-            case "n":
-              return "\n";
-            case "t":
-              return "\t";
-            case "r":
-              return "\r";
-            case "\\":
-              return "\\";
-            case "'":
-              return isSingle ? "'" : "\\'";
-            case '"':
-              return isSingle ? '\\"' : '"';
-            default:
-              return ch;
+        const text = node.text;
+        const quote = text[0];
+        const lastQuote = text[text.length - 1];
+
+        if (
+          (quote !== "'" && quote !== '"') ||
+          quote !== lastQuote ||
+          text.length < 2
+        ) {
+          return text;
+        }
+
+        const inner = text.slice(1, -1);
+        let result = "";
+
+        for (let index = 0; index < inner.length; index++) {
+          const char = inner[index]!;
+
+          if (char !== "\\") {
+            result += char;
+            continue;
           }
-        });
+
+          const escaped = inner[index + 1];
+          if (escaped === undefined) {
+            result += "\\";
+            continue;
+          }
+
+          switch (escaped) {
+            case "n":
+              result += "\n";
+              break;
+            case "r":
+              result += "\r";
+              break;
+            case "t":
+              result += "\t";
+              break;
+            case "\\":
+              result += "\\";
+              break;
+            case "'":
+              result += "'";
+              break;
+            case '"':
+              result += '"';
+              break;
+            default:
+              result += escaped;
+              break;
+          }
+
+          index += 1;
+        }
+
+        return result;
       }
     }
 
