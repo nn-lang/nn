@@ -1,9 +1,9 @@
 {
   "name": "@nn-lang/nn-type-checker",
   "version": "0.1.13",
+  "type": "module",
   "dependencies": {
-    "@nn-lang/nn-language": "workspace:^",
-    "@oxc-project/runtime": "^0.129.0"
+    "@nn-lang/nn-language": "workspace:^"
   },
   "scripts": {
     "build": "node ../../scripts/oxc-build.cjs .",

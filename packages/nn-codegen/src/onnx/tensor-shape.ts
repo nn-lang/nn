@@ -1,11 +1,14 @@
 import { Polynomial, Size, Type } from "@nn-lang/nn-type-checker";
-import { onnx } from "onnx-proto";
+import onnxProto from "onnx-proto";
+import type { onnx as Onnx } from "onnx-proto";
+
+const { onnx } = onnxProto;
 
 export namespace TensorShape {
   export function fromType(
     type: Type,
     sizes: Map<Size, Polynomial>,
-  ): onnx.TensorShapeProto {
+  ): Onnx.TensorShapeProto {
     return new onnx.TensorShapeProto({
       dim: type.shape
         .map(Polynomial.from)

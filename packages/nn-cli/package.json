@@ -2,6 +2,7 @@
   "name": "@nn-lang/nn-cli",
   "description": "A new CLI generated with oclif",
   "version": "0.1.10",
+  "type": "module",
   "author": "SieR-VR",
   "bin": "./bin/run.js",
   "bugs": "https://github.com/nn-lang/nn/issues",
@@ -51,12 +52,12 @@
   },
   "repository": "nn-lang/nn",
   "scripts": {
-    "build": "shx rm -rf out && tsc -b",
+    "build": "node ../../scripts/oxc-build.cjs .",
     "lint": "yarn -T oxlint .",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
     "prepack": "oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md"
   },
-  "types": "out/index.d.ts"
+  "types": "src/index.ts"
 }

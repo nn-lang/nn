@@ -1,11 +1,14 @@
-import { onnx } from "onnx-proto";
+import onnxProto from "onnx-proto";
+import type { onnx as Onnx } from "onnx-proto";
+
+const { onnx } = onnxProto;
 
 const AttributeType = onnx.AttributeProto.AttributeType;
 
 export function flowAttribute(
   operator: string,
   sizes: Record<string, number>,
-): onnx.AttributeProto[] {
+): Onnx.AttributeProto[] {
   if (operator === "BatchNormalization") {
     return [
       makeAttr("epsilon", AttributeType.FLOAT, 1e-5),
@@ -61,7 +64,7 @@ export function flowAttribute(
   return [];
 }
 
-function makeAttr<T extends onnx.AttributeProto.AttributeType>(
+function makeAttr<T extends Onnx.AttributeProto.AttributeType>(
   name: string,
   type: T,
   value: MakeAttrValueType<T>,
@@ -73,9 +76,9 @@ function makeAttr<T extends onnx.AttributeProto.AttributeType>(
   });
 }
 
-type MakeAttrValueType<T extends onnx.AttributeProto.AttributeType> =
-  (typeof Helper)[T] extends keyof onnx.AttributeProto
-    ? onnx.AttributeProto[(typeof Helper)[T]]
+type MakeAttrValueType<T extends Onnx.AttributeProto.AttributeType> =
+  (typeof Helper)[T] extends keyof Onnx.AttributeProto
+    ? Onnx.AttributeProto[(typeof Helper)[T]]
     : never;
 
 const Helper = {
@@ -95,6 +98,6 @@ const Helper = {
   [onnx.AttributeProto.AttributeType.SPARSE_TENSORS]: "sparseTensors",
   [onnx.AttributeProto.AttributeType.TYPE_PROTOS]: "typeProtos",
 } satisfies Record<
-  onnx.AttributeProto.AttributeType,
-  keyof onnx.AttributeProto | undefined
+  Onnx.AttributeProto.AttributeType,
+  keyof Onnx.AttributeProto | undefined
 >;

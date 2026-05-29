@@ -18,7 +18,7 @@
     "lint:fix": "yarn lint:ox:fix",
     "lint:ox": "yarn oxlint .",
     "lint:ox:fix": "yarn oxlint . --fix",
-    "nn-cli": "node packages/nn-cli/bin/dev.js",
+    "nn-cli": "node packages/nn-cli/bin/run.js",
     "publish": "yarn workspaces foreach -Apit --no-private npm publish --tolerate-republish",
     "bump:patch": "yarn workspaces foreach -Apit --no-private version patch"
   },
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.44.1",
-    "oxc-transform": "^0.129.0",
+    "oxc-transform": "^0.133.0",
     "oxfmt": "^0.48.0",
     "oxlint": "^1.63.0",
     "typescript": "^5.7.2"

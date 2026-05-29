@@ -1,6 +1,11 @@
-#!/usr/bin/env node_modules/.bin/ts-node
+#!/usr/bin/env node
+
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const currentDir = dirname(fileURLToPath(import.meta.url));
 
 (async () => {
   const oclif = await import("@oclif/core");
-  await oclif.execute({ development: true, dir: __dirname });
+  await oclif.execute({ dir: currentDir });
 })();

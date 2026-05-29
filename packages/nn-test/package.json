@@ -2,8 +2,9 @@
   "name": "@nn-lang/nn-test",
   "version": "0.1.3",
   "private": true,
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@nn-lang/nn-language": "workspace:^",

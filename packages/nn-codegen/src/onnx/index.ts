@@ -1,10 +1,13 @@
 import { Workspace } from "@nn-lang/nn-language";
 import { TypeChecker } from "@nn-lang/nn-type-checker";
-import { onnx } from "onnx-proto";
+import onnxProto from "onnx-proto";
+import type { onnx as OnnxProtoTypes } from "onnx-proto";
 import { Result, err, ok } from "ts-features";
 
 import { OnnxNode } from "./flow";
 import { DEFAULT_OPSET_IMPORTS, ONNX_NN_DOMAIN } from "./node";
+
+const { onnx } = onnxProto;
 
 export namespace Onnx {
   export interface OnnxSettings {
@@ -44,12 +47,12 @@ export namespace Onnx {
     const initializerMap = initializers.reduce((map, initializer) => {
       map.set(initializer.name, initializer);
       return map;
-    }, new Map<string, onnx.ValueInfoProto>());
+    }, new Map<string, OnnxProtoTypes.ValueInfoProto>());
 
     const nodeMap = nodes.reduce((map, node) => {
       map.set(node.name, node);
       return map;
-    }, new Map<string, onnx.NodeProto>());
+    }, new Map<string, OnnxProtoTypes.NodeProto>());
 
     const modelProto = new onnx.ModelProto({
       irVersion: onnx.Version.IR_VERSION,
