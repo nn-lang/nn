@@ -1,5 +1,7 @@
 # The nn Language Specification
 
+[**Korean / 한국어**](./ko/specification.md)
+
 Status: Draft, descriptive of the current implementation.
 
 This document specifies the `nn` language: a domain-specific language for
