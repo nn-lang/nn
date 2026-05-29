@@ -1,3 +1,6 @@
+import * as path from "node:path";
+import * as url from "node:url";
+
 import { CreateNodeState, Import, Parser, SourceFile } from ".";
 
 export interface CompilerOptions {
@@ -18,6 +21,43 @@ export interface CompilerFileSystem {
   readFile: (uri: string) => Promise<string>;
   writeFile: (uri: string, content: string) => Promise<boolean>;
   checkExists: (uri: string) => Promise<boolean>;
+}
+
+export namespace CompilerFileSystem {
+  export function isFileUri(value: string): boolean {
+    return value.startsWith("file://");
+  }
+
+  export function toFilePath(uriOrPath: string): string {
+    return isFileUri(uriOrPath) ? url.fileURLToPath(uriOrPath) : uriOrPath;
+  }
+
+  export function dirname(filePath: string): string {
+    return path.normalize(path.dirname(filePath));
+  }
+
+  export function resolve(...paths: string[]): string {
+    return path.normalize(path.join(...paths));
+  }
+
+  export function resolveDependencyPath(
+    fromUri: string,
+    reference: string,
+    cwd: string,
+  ): string {
+    if (isFileUri(fromUri)) {
+      return new url.URL(reference, fromUri).href;
+    }
+
+    const basePath = path.isAbsolute(fromUri)
+      ? fromUri
+      : path.resolve(cwd, fromUri);
+    const referencePath = isFileUri(reference)
+      ? url.fileURLToPath(reference)
+      : reference;
+
+    return path.resolve(path.dirname(basePath), referencePath);
+  }
 }
 
 export interface Dependency {

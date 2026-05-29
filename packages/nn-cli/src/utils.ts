@@ -12,45 +12,19 @@ import { TypeChecker } from "@nn-lang/nn-type-checker";
 import Parser from "tree-sitter";
 import { Result, err, ok } from "ts-features";
 
-function isFileUri(value: string): boolean {
-  return value.startsWith("file://");
-}
-
-function toFilePath(uriOrPath: string): string {
-  return isFileUri(uriOrPath) ? url.fileURLToPath(uriOrPath) : uriOrPath;
-}
-
-function resolveDependencyPath(
-  fromUri: string,
-  reference: string,
-  cwd: string,
-): string {
-  if (isFileUri(fromUri)) {
-    return new url.URL(reference, fromUri).href;
-  }
-
-  const basePath = path.isAbsolute(fromUri)
-    ? fromUri
-    : path.resolve(cwd, fromUri);
-  const referencePath = isFileUri(reference)
-    ? url.fileURLToPath(reference)
-    : reference;
-
-  return path.resolve(path.dirname(basePath), referencePath);
-}
-
 export const CliFileSystem: CompilerFileSystem = {
-  dirname: (filePath) => path.normalize(path.dirname(filePath)),
-  resolve: (...paths) => path.normalize(path.join(...paths)),
+  dirname: CompilerFileSystem.dirname,
+  resolve: CompilerFileSystem.resolve,
 
   dependencyResolver: (fromUri, reference, options) =>
-    resolveDependencyPath(fromUri, reference, options.cwd),
+    CompilerFileSystem.resolveDependencyPath(fromUri, reference, options.cwd),
 
-  readFile: async (fileUri) => fs.readFile(toFilePath(fileUri), "utf-8"),
+  readFile: async (fileUri) =>
+    fs.readFile(CompilerFileSystem.toFilePath(fileUri), "utf-8"),
 
   writeFile: async (fileUri, content) => {
     try {
-      await fs.writeFile(toFilePath(fileUri), content);
+      await fs.writeFile(CompilerFileSystem.toFilePath(fileUri), content);
       return true;
     } catch {
       return false;
@@ -58,7 +32,10 @@ export const CliFileSystem: CompilerFileSystem = {
   },
   checkExists: async (fileUri) => {
     try {
-      await fs.access(toFilePath(fileUri), fs.constants.R_OK);
+      await fs.access(
+        CompilerFileSystem.toFilePath(fileUri),
+        fs.constants.R_OK,
+      );
       return true;
     } catch {
       return false;
