@@ -2,13 +2,12 @@
   "name": "@nn-lang/nn-language",
   "version": "0.1.15",
   "scripts": {
-    "build": "node ../../scripts/oxc-build.cjs .",
+    "build": "node ../../scripts/ts-build.cjs .",
     "clean": "rm -rf ./out"
   },
   "main": "out/src/index.js",
   "typings": "src/index.ts",
   "dependencies": {
-    "@oxc-project/runtime": "^0.129.0",
     "web-tree-sitter": "^0.25.3"
   }
 }

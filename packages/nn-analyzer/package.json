@@ -2,13 +2,12 @@
   "name": "@nn-lang/nn-analyzer",
   "version": "0.1.8",
   "scripts": {
-    "build": "node ../../scripts/oxc-build.cjs .",
+    "build": "node ../../scripts/ts-build.cjs .",
     "clean": "rm -rf ./out"
   },
   "dependencies": {
     "@nn-lang/nn-language": "workspace:^",
-    "@nn-lang/nn-type-checker": "workspace:^",
-    "@oxc-project/runtime": "^0.129.0"
+    "@nn-lang/nn-type-checker": "workspace:^"
   },
   "main": "out/src/index.js",
   "typings": "src/index.ts"

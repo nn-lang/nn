@@ -1,13 +1,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { transformSync } = require("oxc-transform");
 const ts = require("typescript");
 
 const projectRoot = process.cwd();
 const packageArg = process.argv[2];
 
 if (!packageArg) {
-  console.error("Usage: node scripts/oxc-build.cjs <package-path>");
+  console.error("Usage: node scripts/ts-build.cjs <package-path>");
   process.exit(1);
 }
 
@@ -44,24 +43,6 @@ function collectSourceFiles(currentDir) {
   }
 }
 
-function getLangFromExtension(filePath) {
-  const ext = path.extname(filePath);
-
-  if (ext === ".ts" || ext === ".cts" || ext === ".mts") {
-    return "ts";
-  }
-
-  if (ext === ".tsx") {
-    return "tsx";
-  }
-
-  if (ext === ".jsx") {
-    return "jsx";
-  }
-
-  return "js";
-}
-
 function getOutputExtension(filePath) {
   const ext = path.extname(filePath);
 
@@ -93,34 +74,15 @@ for (const sourceFilePath of sourceFiles) {
     outputExtension,
   );
   const outputPath = path.join(outSrcRoot, outputRelativePath);
-  const result = transformSync(relativeFromPackage, sourceCode, {
-    lang: getLangFromExtension(sourceFilePath),
-    sourceType: "commonjs",
-    sourcemap: false,
-    target: "es2015",
-  });
-
-  if (result.errors.length > 0) {
-    hasError = true;
-
-    for (const error of result.errors) {
-      const message = error.codeframe
-        ? `${error.message}\n${error.codeframe}`
-        : error.message;
-      console.error(`[oxc-build] ${relativeFromPackage}: ${message}`);
-    }
-
-    continue;
-  }
-
-  const transpiled = ts.transpileModule(result.code, {
+  const transpiled = ts.transpileModule(sourceCode, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ESNext,
+      target: ts.ScriptTarget.ES2020,
       sourceMap: true,
       esModuleInterop: true,
+      importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
     },
-    fileName: path.basename(outputPath),
+    fileName: relativeFromPackage,
   });
 
   if (transpiled.diagnostics && transpiled.diagnostics.length > 0) {
@@ -131,7 +93,7 @@ for (const sourceFilePath of sourceFiles) {
         diagnostic.messageText,
         "\n",
       );
-      console.error(`[oxc-build] ${relativeFromPackage}: ${message}`);
+      console.error(`[ts-build] ${relativeFromPackage}: ${message}`);
     }
 
     continue;
