@@ -1,1 +1,3 @@
 ParenSize[A](x: Tensor[(A)]): Tensor[(A)] = x
+ParenSizeExpression[A, B](x: Tensor[A * (B + 1)]): Tensor[A * (B + 1)] =
+  x

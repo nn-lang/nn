@@ -50,19 +50,19 @@ export namespace Workspace {
     fileUriList: string[],
     options: CompilerOptions,
     parser: Parser,
-    _old?: Workspace,
+    old?: Workspace,
   ): Promise<Workspace> {
     const workspace: Workspace = {
-      sources: new Map(),
-      dependencyGraph: new Map(),
+      sources: new Map(old?.sources),
+      dependencyGraph: new Map(old?.dependencyGraph),
 
       options,
       parser,
 
-      _context: { node: CreateNodeState.default },
+      _context: { node: old?._context.node ?? CreateNodeState.default },
     };
 
-    return addFiles(fileUriList, workspace, _old);
+    return addFiles(fileUriList, workspace, old);
   }
 
   export async function addFiles(

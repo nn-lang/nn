@@ -1,6 +1,14 @@
-"(" @indent
-")" @outdent
-"[" @indent
-"]" @outdent
-"{" @indent
-"}" @outdent
+(declaration_statement
+  "|>" @indent)
+
+[
+  "["
+  "("
+  "{"
+] @indent
+
+[
+  "]"
+  ")"
+  "}"
+] @outdent

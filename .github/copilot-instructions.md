@@ -81,4 +81,4 @@ All strict flags are enabled (`strict`, `noUncheckedIndexedAccess`, `noPropertyA
 Public packages are scoped as `@nn-lang/<name>` (e.g., `@nn-lang/nn-language`). The test and tree-sitter packages are private and unscoped.
 
 ### Stage-based workflow
-When work is split into explicit stages, create a commit at the end of each completed stage before moving on to the next stage.
+When work is split into explicit stages, create a commit at the end of each completed stage before proceeding to the next. This ensures progress is captured incrementally and the branch history is clear.

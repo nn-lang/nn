@@ -430,11 +430,7 @@ export namespace Transform {
         throw new Error("Expected a string literal expression node");
       }
 
-      const targetString =
-        node.type === "single_quoted_string" ||
-        node.type === "double_quoted_string"
-          ? Util.parseStringLiteral(node)
-          : node.text;
+      const targetString = Util.parseStringLiteral(node);
 
       return createNode(
         "StringLiteralExpression",

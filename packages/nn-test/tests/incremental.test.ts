@@ -1,31 +1,32 @@
 import * as path from "path";
 import * as url from "url";
 
-import { Workspace } from "@nn-lang/nn-language";
+import { Parser as NnParser, Workspace } from "@nn-lang/nn-language";
 
 import { TestFileSystem } from "./utils";
 
-describe("incremental parser", () => {
-  it("reuses previous source tree through Workspace.create old context", async () => {
-    const previousTreeArgs: unknown[] = [];
-    const parserProxy = {
-      parse: (_content: string, old?: unknown) => {
-        previousTreeArgs.push(old);
+function makeParserProxy(inner: NnParser): {
+  proxy: NnParser;
+  capturedOldTrees: unknown[];
+} {
+  const capturedOldTrees: unknown[] = [];
+  const proxy: NnParser = {
+    parse(content: string, old?: unknown) {
+      capturedOldTrees.push(old ?? null);
+      return inner.parse(content, old as any);
+    },
+  };
 
-        return {
-          rootNode: {
-            type: "source_file",
-            text: "",
-            isError: false,
-            children: [],
-            namedChildren: [],
-            child: () => null,
-            childForFieldName: () => null,
-            childrenForFieldName: () => [],
-          },
-        };
-      },
-    };
+  return { proxy, capturedOldTrees };
+}
+
+describe("incremental parsing", () => {
+  it("passes the previous tree to the parser on re-parse", async () => {
+    const Parser = require("tree-sitter");
+    const language = require("@nn-lang/nn-tree-sitter");
+
+    const innerParser = new Parser();
+    innerParser.setLanguage(language);
 
     const options = {
       cwd: path.join(__dirname, "cases"),
@@ -35,25 +36,16 @@ describe("incremental parser", () => {
       path.join(options.cwd, "Linear.nn"),
     ).href;
 
-    const first = await Workspace.create([entryFileUri], options, parserProxy);
-    const firstSource = first.sources.get(entryFileUri);
+    const { proxy: proxy1, capturedOldTrees: captured1 } =
+      makeParserProxy(innerParser);
+    const workspace1 = await Workspace.create([entryFileUri], options, proxy1);
+    expect(captured1.length).toBeGreaterThan(0);
+    expect(captured1[0]).toBeNull();
 
-    expect(firstSource).toBeDefined();
-    expect(firstSource?._oldTree).toBeDefined();
-
-    previousTreeArgs.length = 0;
-    const second = await Workspace.create(
-      [entryFileUri],
-      options,
-      parserProxy,
-      first,
-    );
-    const secondSource = second.sources.get(entryFileUri);
-
-    expect(secondSource).toBeDefined();
-    expect(secondSource?._oldTree).toBeDefined();
-    expect(secondSource?.declarations.length).toBe(0);
-    expect(secondSource?.dependencies.length).toBe(0);
-    expect(previousTreeArgs.some((value) => value !== undefined)).toBe(true);
+    const { proxy: proxy2, capturedOldTrees: captured2 } =
+      makeParserProxy(innerParser);
+    await Workspace.create([entryFileUri], options, proxy2, workspace1);
+    expect(captured2.length).toBeGreaterThan(0);
+    expect(captured2[0]).not.toBeNull();
   });
 });

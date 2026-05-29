@@ -1,11 +1,9 @@
 import type * as TreeSitter from "tree-sitter";
 
 export function getErrorNodes(
-  root?: TreeSitter.SyntaxNode | null,
+  root: TreeSitter.SyntaxNode | null | undefined,
 ): TreeSitter.SyntaxNode[] {
-  if (!root) {
-    return [];
-  }
+  if (!root) return [];
 
   const travel = (
     node: TreeSitter.SyntaxNode,
