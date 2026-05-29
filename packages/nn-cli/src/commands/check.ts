@@ -1,6 +1,6 @@
 import { Args, Command } from "@oclif/core";
 
-import { compilation, formatDiagnostic } from "../utils";
+import { compilation, formatDiagnostic } from "../utils.js";
 
 export default class Check extends Command {
   static args = {

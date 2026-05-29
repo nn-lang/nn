@@ -1,6 +1,7 @@
 {
   "name": "@nn-lang/nn-language",
   "version": "0.1.15",
+  "type": "module",
   "scripts": {
     "build": "node ../../scripts/ts-build.cjs .",
     "clean": "rm -rf ./out"

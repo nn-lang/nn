@@ -1,9 +1,14 @@
 import * as path from "path";
 import * as url from "url";
 
-import { Parser as NnParser, Workspace } from "@nn-lang/nn-language";
+import { Workspace } from "@nn-lang/nn-language";
+import type { Parser as NnParser } from "@nn-lang/nn-language";
+import language from "@nn-lang/nn-tree-sitter";
+import Parser from "tree-sitter";
 
-import { TestFileSystem } from "./utils";
+import { TestFileSystem } from "./utils.js";
+
+const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 function makeParserProxy(inner: NnParser): {
   proxy: NnParser;
@@ -22,14 +27,11 @@ function makeParserProxy(inner: NnParser): {
 
 describe("incremental parsing", () => {
   it("passes the previous tree to the parser on re-parse", async () => {
-    const Parser = require("tree-sitter");
-    const language = require("@nn-lang/nn-tree-sitter");
-
     const innerParser = new Parser();
-    innerParser.setLanguage(language);
+    innerParser.setLanguage(language as any);
 
     const options = {
-      cwd: path.join(__dirname, "cases"),
+      cwd: path.join(currentDir, "cases"),
       fileSystem: TestFileSystem,
     };
     const entryFileUri = url.pathToFileURL(

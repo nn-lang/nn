@@ -1,4 +1,5 @@
-import { Node, SourceFile, travel } from "@nn-lang/nn-language";
+import { travel } from "@nn-lang/nn-language";
+import type { Node, SourceFile } from "@nn-lang/nn-language";
 
 const position = { pos: 0, end: 0 };
 

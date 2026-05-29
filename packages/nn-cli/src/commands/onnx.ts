@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 import Codegen from "@nn-lang/nn-codegen";
 import { Args, Command, Flags } from "@oclif/core";
 
-import { compilation, formatDiagnostic } from "../utils";
+import { compilation, formatDiagnostic } from "../utils.js";
 
 export default class Onnx extends Command {
   static args = {

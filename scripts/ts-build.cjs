@@ -57,6 +57,76 @@ function getOutputExtension(filePath) {
   return ".js";
 }
 
+function toPosixPath(filePath) {
+  return filePath.split(path.sep).join("/");
+}
+
+function resolveSourceSpecifier(sourceFilePath, specifier) {
+  if (!specifier.startsWith(".")) {
+    return specifier;
+  }
+
+  const sourceDir = path.dirname(sourceFilePath);
+  const resolvedPath = path.resolve(sourceDir, specifier);
+  const ext = path.extname(resolvedPath);
+
+  if (ext) {
+    return specifier;
+  }
+
+  const candidates = [
+    resolvedPath,
+    `${resolvedPath}.ts`,
+    `${resolvedPath}.tsx`,
+    `${resolvedPath}.mts`,
+    `${resolvedPath}.cts`,
+    `${resolvedPath}.js`,
+    `${resolvedPath}.jsx`,
+    `${resolvedPath}.mjs`,
+    `${resolvedPath}.cjs`,
+    path.join(resolvedPath, "index.ts"),
+    path.join(resolvedPath, "index.tsx"),
+    path.join(resolvedPath, "index.mts"),
+    path.join(resolvedPath, "index.cts"),
+    path.join(resolvedPath, "index.js"),
+    path.join(resolvedPath, "index.jsx"),
+    path.join(resolvedPath, "index.mjs"),
+    path.join(resolvedPath, "index.cjs"),
+  ];
+
+  const targetPath = candidates.find(
+    (candidate) => fs.existsSync(candidate) && fs.statSync(candidate).isFile(),
+  );
+
+  if (!targetPath) {
+    return `${specifier}.js`;
+  }
+
+  const outputExtension = getOutputExtension(targetPath);
+  const outputTargetPath = targetPath.replace(/\.[^.]+$/, outputExtension);
+  let relativePath = toPosixPath(path.relative(sourceDir, outputTargetPath));
+
+  if (!relativePath.startsWith(".")) {
+    relativePath = `./${relativePath}`;
+  }
+
+  return relativePath;
+}
+
+function rewriteModuleSpecifiers(code, sourceFilePath) {
+  return code
+    .replace(
+      /\b(from\s*["'])([^"']+)(["'])/g,
+      (_match, prefix, specifier, suffix) =>
+        `${prefix}${resolveSourceSpecifier(sourceFilePath, specifier)}${suffix}`,
+    )
+    .replace(
+      /\b(import\s*\(\s*["'])([^"']+)(["']\s*\))/g,
+      (_match, prefix, specifier, suffix) =>
+        `${prefix}${resolveSourceSpecifier(sourceFilePath, specifier)}${suffix}`,
+    );
+}
+
 collectSourceFiles(srcRoot);
 
 let hasError = false;
@@ -76,7 +146,7 @@ for (const sourceFilePath of sourceFiles) {
   const outputPath = path.join(outSrcRoot, outputRelativePath);
   const transpiled = ts.transpileModule(sourceCode, {
     compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
+      module: ts.ModuleKind.ES2020,
       target: ts.ScriptTarget.ES2020,
       sourceMap: true,
       esModuleInterop: true,
@@ -100,7 +170,11 @@ for (const sourceFilePath of sourceFiles) {
   }
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, transpiled.outputText, "utf8");
+  fs.writeFileSync(
+    outputPath,
+    rewriteModuleSpecifiers(transpiled.outputText, sourceFilePath),
+    "utf8",
+  );
 
   if (transpiled.sourceMapText) {
     fs.writeFileSync(`${outputPath}.map`, transpiled.sourceMapText, "utf8");

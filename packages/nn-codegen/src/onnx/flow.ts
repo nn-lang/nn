@@ -12,20 +12,23 @@ import {
   SizeType,
   TypeChecker,
 } from "@nn-lang/nn-type-checker";
-import { onnx } from "onnx-proto";
+import onnxProto from "onnx-proto";
+import type { onnx as Onnx } from "onnx-proto";
 
 import { flowAttribute } from "./attribute";
 import { TensorShape, TensorSizes } from "./tensor-shape";
 
+const { onnx } = onnxProto;
+
 export namespace OnnxNode {
-  const _nodeMap = new Map<string, onnx.NodeProto>();
+  const _nodeMap = new Map<string, Onnx.NodeProto>();
 
   function makeNode(
     flow: Flow,
     parent: string,
     inputs: string[],
     sizes: Map<Size, Polynomial>,
-  ): onnx.NodeProto {
+  ): Onnx.NodeProto {
     if (_nodeMap.has(parent)) return _nodeMap.get(parent)!;
 
     const record = [...sizes.entries()].reduce(
@@ -57,12 +60,12 @@ export namespace OnnxNode {
     sizes: Map<Size, Polynomial>,
     checker: TypeChecker,
   ): {
-    initializers: onnx.TensorProto[];
-    nodes: onnx.NodeProto[];
-    outputs: onnx.ValueInfoProto[];
+    initializers: Onnx.TensorProto[];
+    nodes: Onnx.NodeProto[];
+    outputs: Onnx.ValueInfoProto[];
   } {
-    const initializers: onnx.TensorProto[] = [];
-    const nodes: onnx.NodeProto[] = [];
+    const initializers: Onnx.TensorProto[] = [];
+    const nodes: Onnx.NodeProto[] = [];
     const edgeInputs: string[] = [];
 
     edge.args.forEach((arg) => {
@@ -151,9 +154,9 @@ export namespace OnnxNode {
     checker: TypeChecker,
     outerSizes?: Map<Size, Polynomial>,
   ): {
-    outputs: onnx.ValueInfoProto[];
-    initializers: onnx.TensorProto[];
-    nodes: onnx.NodeProto[];
+    outputs: Onnx.ValueInfoProto[];
+    initializers: Onnx.TensorProto[];
+    nodes: Onnx.NodeProto[];
   } {
     const flow = edge.callee.flow;
 

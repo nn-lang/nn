@@ -2,6 +2,7 @@
   "name": "@nn-lang/nn-cli",
   "description": "A new CLI generated with oclif",
   "version": "0.1.10",
+  "type": "module",
   "author": "SieR-VR",
   "bin": "./bin/run.js",
   "bugs": "https://github.com/nn-lang/nn/issues",

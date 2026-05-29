@@ -11,7 +11,10 @@ import {
   isTupleExpression,
 } from "@nn-lang/nn-language";
 import { Flow, Polynomial, Size, TypeChecker } from "@nn-lang/nn-type-checker";
-import { onnx } from "onnx-proto";
+import onnxProto from "onnx-proto";
+import type { onnx as Onnx } from "onnx-proto";
+
+const { onnx } = onnxProto;
 
 export const DEFAULT_OPSET_IMPORTS = [
   new onnx.OperatorSetIdProto({
@@ -41,7 +44,7 @@ interface OnnxContext {
 export function declaration(
   decl: Declaration,
   context: OnnxContext,
-): onnx.FunctionProto {
+): Onnx.FunctionProto {
   const [input, output, nodes] = declarationNodes(decl, context);
 
   return new onnx.FunctionProto({
@@ -57,11 +60,11 @@ export function declaration(
 export function declarationNodes(
   decl: Declaration,
   context: OnnxContext,
-): [input: string[], output: string[], nodes: onnx.NodeProto[]] {
+): [input: string[], output: string[], nodes: Onnx.NodeProto[]] {
   const declArgs = decl.argumentList.args.map((arg) => arg.ident.value);
   let args = decl.firstPipe ? [...declArgs] : [];
 
-  const result: onnx.NodeProto[] = [];
+  const result: Onnx.NodeProto[] = [];
 
   for (const expr of decl.exprs) {
     if (isAssignmentExpression(expr)) {
@@ -149,7 +152,7 @@ export function assign(
   expr: AssignmentExpression,
   prevArgs: string[],
   context: OnnxContext,
-): [string[], onnx.NodeProto] {
+): [string[], Onnx.NodeProto] {
   if (!isCallExpression(expr.right)) {
     throw new Error("Unreachable");
   }
@@ -173,7 +176,7 @@ export function call(
   expr: CallExpression,
   prevArgs: string[],
   context: OnnxContext,
-): [string[], onnx.NodeProto] {
+): [string[], Onnx.NodeProto] {
   const result = new onnx.NodeProto({
     opType: expr.callee.value,
     domain: "nn",
@@ -187,7 +190,7 @@ export function call(
 export function tensorShape(
   flow: Flow,
   context: OnnxContext,
-): [onnx.TypeProto[], onnx.TypeProto] {
+): [Onnx.TypeProto[], Onnx.TypeProto] {
   const sizeMap = Object.entries(flow.declaration.sizes).reduce(
     (prev, [ident, size]) => {
       if (!context.sizeMap[ident]) {
