@@ -29,6 +29,38 @@ type BooleanCallback = (node: Node) => boolean;
 type TravelCallback<T> = T extends Node
   ? IsCallback<T>
   : (node: Node) => T | undefined;
+type TraversableRecord = Record<string, unknown>;
+
+function isTraversableRecord(value: unknown): value is TraversableRecord {
+  return typeof value === "object" && value !== null;
+}
+
+function isPositionRecord(value: TraversableRecord): boolean {
+  return typeof value["pos"] === "number" && typeof value["end"] === "number";
+}
+
+function isSourceFileRecord(value: TraversableRecord): boolean {
+  return (
+    typeof value["path"] === "string" &&
+    typeof value["content"] === "string" &&
+    Array.isArray(value["declarations"]) &&
+    Array.isArray(value["dependencies"]) &&
+    Array.isArray(value["diagnostics"])
+  );
+}
+
+function isNodeRecord(
+  value: TraversableRecord,
+): value is TraversableRecord & Node {
+  return (
+    typeof value["type"] === "string" &&
+    typeof value["id"] === "number" &&
+    isTraversableRecord(value["position"]) &&
+    isPositionRecord(value["position"]) &&
+    isTraversableRecord(value["source"]) &&
+    isSourceFileRecord(value["source"])
+  );
+}
 
 export function travel<T>(
   node: Node | Node[],
@@ -36,29 +68,30 @@ export function travel<T>(
 ): T[] {
   const result: T[] = [];
 
-  const _travel = (node: Node | Node[] | Node[keyof Node]) => {
-    if (
-      !node ||
-      typeof node === "string" ||
-      typeof node === "boolean" ||
-      typeof node === "number"
-    )
-      return;
-    if ("pos" in node || "path" in node) return;
-
-    if (Array.isArray(node)) {
-      node.forEach(_travel);
+  const _travel = (value: unknown) => {
+    if (!isTraversableRecord(value)) {
       return;
     }
 
-    const res = callback(node);
-    if (typeof res === "boolean") {
-      res && result.push(node as T);
-    } else if (res !== undefined) {
-      result.push(res);
+    if (Array.isArray(value)) {
+      value.forEach(_travel);
+      return;
     }
 
-    Object.values(node).forEach(_travel);
+    if (isPositionRecord(value) || isSourceFileRecord(value)) {
+      return;
+    }
+
+    if (isNodeRecord(value)) {
+      const res = callback(value);
+      if (typeof res === "boolean") {
+        res && result.push(value as T);
+      } else if (res !== undefined) {
+        result.push(res);
+      }
+    }
+
+    Object.values(value).forEach(_travel);
   };
 
   _travel(node);
