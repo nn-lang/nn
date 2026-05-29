@@ -3,7 +3,7 @@
   "version": "0.1.8",
   "type": "module",
   "scripts": {
-    "build": "node ../../scripts/ts-build.cjs .",
+    "build": "node ../../scripts/oxc-build.cjs .",
     "clean": "rm -rf ./out"
   },
   "dependencies": {

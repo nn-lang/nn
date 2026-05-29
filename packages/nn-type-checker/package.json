@@ -6,7 +6,7 @@
     "@nn-lang/nn-language": "workspace:^"
   },
   "scripts": {
-    "build": "node ../../scripts/ts-build.cjs .",
+    "build": "node ../../scripts/oxc-build.cjs .",
     "clean": "rm -rf ./out"
   },
   "main": "out/src/index.js",

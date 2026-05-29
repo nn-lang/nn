@@ -1,12 +1,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const ts = require("typescript");
+const { transformSync } = require("oxc-transform");
 
 const projectRoot = process.cwd();
 const packageArg = process.argv[2];
 
 if (!packageArg) {
-  console.error("Usage: node scripts/ts-build.cjs <package-path>");
+  console.error("Usage: node scripts/oxc-build.cjs <package-path>");
   process.exit(1);
 }
 
@@ -19,8 +19,6 @@ if (!fs.existsSync(srcRoot)) {
   console.error(`Missing src directory: ${srcRoot}`);
   process.exit(1);
 }
-
-fs.rmSync(outSrcRoot, { recursive: true, force: true });
 
 const sourceFiles = [];
 
@@ -55,6 +53,24 @@ function getOutputExtension(filePath) {
   }
 
   return ".js";
+}
+
+function getLangFromExtension(filePath) {
+  const ext = path.extname(filePath);
+
+  if (ext === ".ts" || ext === ".cts" || ext === ".mts") {
+    return "ts";
+  }
+
+  if (ext === ".tsx") {
+    return "tsx";
+  }
+
+  if (ext === ".jsx") {
+    return "jsx";
+  }
+
+  return "js";
 }
 
 function toPosixPath(filePath) {
@@ -130,6 +146,15 @@ function rewriteModuleSpecifiers(code, sourceFilePath) {
 collectSourceFiles(srcRoot);
 
 let hasError = false;
+const packageJsonPath = path.join(packageRoot, "package.json");
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+const outputSourceRoot =
+  typeof packageJson.main === "string" &&
+  packageJson.main.startsWith("out/src/")
+    ? outSrcRoot
+    : outRoot;
+
+fs.rmSync(outputSourceRoot, { recursive: true, force: true });
 
 for (const sourceFilePath of sourceFiles) {
   const sourceCode = fs.readFileSync(sourceFilePath, "utf8");
@@ -143,41 +168,42 @@ for (const sourceFilePath of sourceFiles) {
     /\.[^.]+$/,
     outputExtension,
   );
-  const outputPath = path.join(outSrcRoot, outputRelativePath);
-  const transpiled = ts.transpileModule(sourceCode, {
-    compilerOptions: {
-      module: ts.ModuleKind.ES2020,
-      target: ts.ScriptTarget.ES2020,
-      sourceMap: true,
-      esModuleInterop: true,
-      importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
-    },
-    fileName: relativeFromPackage,
+  const outputPath = path.join(outputSourceRoot, outputRelativePath);
+  const transformed = transformSync(relativeFromPackage, sourceCode, {
+    lang: getLangFromExtension(sourceFilePath),
+    sourceType: "module",
+    sourcemap: true,
+    target: "es2022",
   });
 
-  if (transpiled.diagnostics && transpiled.diagnostics.length > 0) {
+  if (transformed.errors.length > 0) {
     hasError = true;
 
-    for (const diagnostic of transpiled.diagnostics) {
-      const message = ts.flattenDiagnosticMessageText(
-        diagnostic.messageText,
-        "\n",
-      );
-      console.error(`[ts-build] ${relativeFromPackage}: ${message}`);
+    for (const error of transformed.errors) {
+      const message = error.codeframe
+        ? `${error.message}\n${error.codeframe}`
+        : error.message;
+      console.error(`[oxc-build] ${relativeFromPackage}: ${message}`);
     }
 
     continue;
   }
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  const outputCode = rewriteModuleSpecifiers(transformed.code, sourceFilePath);
+
   fs.writeFileSync(
     outputPath,
-    rewriteModuleSpecifiers(transpiled.outputText, sourceFilePath),
+    `${outputCode}\n//# sourceMappingURL=${path.basename(outputPath)}.map\n`,
     "utf8",
   );
 
-  if (transpiled.sourceMapText) {
-    fs.writeFileSync(`${outputPath}.map`, transpiled.sourceMapText, "utf8");
+  if (transformed.map) {
+    fs.writeFileSync(
+      `${outputPath}.map`,
+      JSON.stringify(transformed.map),
+      "utf8",
+    );
   }
 }
 
